@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 import {store} from './app/store.js'
 
 createRoot(document.getElementById('root')).render(
-    <div className='font-[arial]'>
+    <div className='font-[arial] tracking-wide'>
         <StrictMode>
             <BrowserRouter>
                 <Provider store={store}>

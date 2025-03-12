@@ -5,6 +5,7 @@ import AdminOrderStatusComponent from '../../../components/admin/AdminOrderCompo
 import AdminOrderAmountComponent from '../../../components/admin/AdminOrderComponents/AdminOrderAmountComponent'
 import AdminOrderDeliveryAddressComponent from '../../../components/admin/AdminOrderComponents/AdminOrderDeliveryAddressComponent'
 import AdminOrderProductCard from '../../../components/admin/AdminOrderComponents/AdminOrderProductCard'
+import LoadingSpinner from '../../../components/LoadingSpinner'
 
 const AdminOrderViewPage = () => {
 
@@ -17,41 +18,33 @@ const AdminOrderViewPage = () => {
     const [order , setOrder ]  = useState(null) 
 
     useEffect(()=>{
+        const fetchOrder = async()=>{
+            try {
+                setLoading(true)
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/order/${id}`)
+                setOrder(res.data.data)
+                console.log("fetchOrder response : ",res.data)
+            } catch (error) {
+                if(error.response.status == 404){ navigate('/404')}
+                setError(true)
+                console.error("error in fetchOrder function :",error)
+            } finally { setLoading(false) }
+        }
+
         if(handleRef.current){
             fetchOrder()
             handleRef.current = false
         }
     })
 
-    const fetchOrder = async()=>{
-        setLoading(true)
-        try {
-            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/order/${id}`)
-            setOrder(res.data.data)
-            console.log(res.data)
-        } catch (error) {
-            if(error.response.status == 404){ navigate('/404') }
-            setError(true)
-            console.error("error in fetchOrder function :",error)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    if(loading){
-        return <div>Loading...</div>
-    }
-    if(error){
-        return <div>Error occured please refresh the page</div>
-    }
-    if(!order){
-        return <div>No Order Details Found</div>
-    }
+    if(loading){return <LoadingSpinner/>}
+    if(error){ return <div>Error occured please refresh the page</div>}
+    if(!order){return <div>No Order Details Found</div>}
 
   return (
     <div className='p-2 w-full bg-gray-100 min-h-screen'>
 
-        <div className='text-gray-800 mb-3 font-[arial]'>Order Id : <span className='italic font-sans font-medium text-gray-600'>{order?._id}</span></div>
+        <div className='text-gray-800 mb-3 font-[arial]'>Order Id : <span className='tracking-wider text-gray-600'>{order?.order_id}</span></div>
 
         <div className='p-1 bg-white'>
             <div className='h-36 flex gap-2 overflow-auto '>

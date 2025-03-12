@@ -2,7 +2,7 @@ import React, { useEffect, useReducer, useRef, useState } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import {useNavigate} from 'react-router-dom'
 import { emptyCart, getCart, getCartDeliveryCharge, getCartNoOfProductsInCart, getCartTotalAmount, getCartTotalMrp, getCartTotalSellingPrice } from '../../../slices/clientSlice/CartSlice.js';
-import { emptyCheckOut, getCheckOutAddress, getCheckOutPaymentMethod } from '../../../slices/clientSlice/OrderSlice.js'
+import { emptyCheckOut, getCheckOutAddress, getCheckOutPaymentMethod, getCheckOutProduct } from '../../../slices/clientSlice/OrderSlice.js'
 import axios from 'axios';
 import LoadingSpinner from '../../../components/LoadingSpinner.jsx';
 import { toast } from 'react-toastify';
@@ -14,7 +14,7 @@ const VerifyCheckOutOrderPage = () => {
     const handleRef = useRef(true)
     const [loading, setLoading] = useState(false)
 
-    const cart_product = useSelector(getCart)
+    const cart_product = useSelector(getCheckOutProduct)
 
     const total_mrp = useSelector(getCartTotalMrp)
     const total_price = useSelector(getCartTotalSellingPrice)
@@ -23,9 +23,8 @@ const VerifyCheckOutOrderPage = () => {
     const total_no_of_product = useSelector(getCartNoOfProductsInCart)
     const payment_method = useSelector(getCheckOutPaymentMethod)
     const delivery_address = useSelector(getCheckOutAddress)
-    const product_details = []
 
-    cart_product?.map((product)=>{
+    const product_details = cart_product?.map((product)=>{
         const data = {
             product_id : product.product_id._id,
             product_barcode : product.product_id.product_barcode,
@@ -37,15 +36,15 @@ const VerifyCheckOutOrderPage = () => {
             product_expire_date : product.product_id.product_stock.expire_date,
             no_of_product : product.quantity,
         }
-        product_details.push(data)
+        return data
     })
 
     useEffect(()=>{
-            if(!total_mrp || !total_price || !delivery_charges || !total_amount || !total_no_of_product || !payment_method || !delivery_address || !product_details.length ){
+        if(!total_mrp || !total_price || !delivery_charges || !total_amount || !total_no_of_product || !payment_method || !delivery_address || !product_details.length ){
             navigate('/404')
             return
         }
-        if(handleRef.current){
+        if(handleRef.current && product_details.length){
             createOrder()
             handleRef.current = false
         }

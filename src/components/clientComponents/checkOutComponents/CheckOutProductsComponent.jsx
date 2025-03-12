@@ -8,7 +8,7 @@ const CheckOutProductsComponent = () => {
   return (
     <div className='gap-2 flex flex-col'>
         {
-            cartProducts?.map(((product, index) => <CheckOutProductCard key={index} product={product} />)) 
+        cartProducts?.map(((product, index) => <CheckOutProductCard key={index} product={product} />)) 
         }
     </div>
   )

@@ -72,10 +72,10 @@ const AdminOrderPage = () => {
                         {orders?.map((order , index) =>
                             <tr key={order._id}>
                                 <th className='border-r'>{index+1}</th>
-                                <td>{order._id}</td>
+                                <td>{order.order_id}</td>
                                 <td>{order.delivery_address.name}</td>
                                 <td>{findOrderStatus(order.order_status)}</td>
-                                <td>{order.no_of_product ? order.no_of_product : "Nil"}</td>
+                                <td>{order.total_no_of_product ? order.total_no_of_product : "Nil"}</td>
                                 <td className='rounded-xl flex p-0 '>
                                     <button onClick={()=>navigate(`/admin/orders/${order.order_id}`)} className='bg-slate-500 text-white font-[arial]  rounded-xl hero m-1  p-2'>view</button>
                                 </td>

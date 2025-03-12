@@ -5,7 +5,6 @@ const CheckOutProductCard = ({product}) => {
     const mrp = product?.product_id?.product_stock?.mrp * product.quantity
     const price = product?.product_id?.product_stock?.price * product.quantity
     const percentage = Math.floor(((mrp - price)/mrp) * 100)
-    console.log({product})
 
   return (
     <div className="rounded-lg shadow-md w-full flex">
