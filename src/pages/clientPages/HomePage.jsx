@@ -1,17 +1,10 @@
-import axios from 'axios'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import ClientLayout from '../../layout/ClientLayout'
-import { useDispatch, useSelector } from 'react-redux'
 
 const HomePage = () => {
 
     const navigate = useNavigate()
-
-    axios.defaults.withCredentials = true;
-    const testing = async()=>{
-        return
-    }
 
   return (
     <div>

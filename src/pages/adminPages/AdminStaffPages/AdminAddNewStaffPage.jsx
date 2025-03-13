@@ -48,7 +48,7 @@ const AdminAddNewProductPage = () => {
     const [district , setDistrict ] = useState('')
     const [address , setAddress ] = useState('')
    
-    const types = [ "staff", "manager", "general_manager", "admin" ]
+    const types = ["delivery", "staff", "manager", "general_manager", "admin" ]
 
     const data =  {
         staff_username , 
@@ -241,9 +241,9 @@ const AdminAddNewProductPage = () => {
 
                             <div className="md:col-span-3 ">
                                 <label htmlFor="staff_pincode">Pincode</label>
-                                <input type="numer" name="staff_pincode" id="staff_pincode" autoComplete="off"
+                                <input type="number" name="staff_pincode" id="staff_pincode" autoComplete="off"
                                     value={pincode} onChange={(e)=>setPincode(e.target.value)}
-                                    ref={input14Ref} onKeyDown={(e) => handleKeyDown(e, input15Ref)}
+                                    ref={input14Ref} onKeyDown={(e)=> handleKeyDown(e, input15Ref)}
                                     className="input input-bordered w-full mt-1" />
                             </div>
 

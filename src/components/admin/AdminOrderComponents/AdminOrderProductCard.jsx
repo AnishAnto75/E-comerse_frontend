@@ -11,7 +11,7 @@ const AdminOrderProductCard = ({product}) => {
     <div className="rounded-lg shadow-sm h-48 border w-full font-poppins bg-white ">
         <div className="flex">
             <div className="h-40 w-36 min-w-36 font-[arial]">
-                <img className="rounded-t-lg h-full w-full object-contain text-xs" alt={product?.product_name} />
+                <img className="rounded-t-lg h-full w-full object-contain text-xs" src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8c25lYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60" alt={product?.product_name} />
                 <div className='h-7 rounded p-[1px] text-center'>
                     <span className="rounded-md px-1.5 bg-gray-600 text-white mr-2">{product?.no_of_product}</span>product
                 </div>

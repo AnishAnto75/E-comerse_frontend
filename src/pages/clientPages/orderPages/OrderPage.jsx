@@ -18,7 +18,7 @@ const OrderPage = () => {
                 setLoading(true)
                 const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}order/get-orders`)
                 console.log("fetchAllOrders payload : " , res.data)        
-                setOrders(res.data.data)
+                setOrders(res.data?.data)
             } catch (error) {
                 setError(true)
                 toast.error(error.response?.data?.message)
@@ -33,14 +33,14 @@ const OrderPage = () => {
     } , [])
 
     const findOrderStatus = (order_status)=> {
-        const placed = order_status.placed.status
-        const confirmed = order_status.confirmed.status 
-        const out = order_status.out.status 
-        const delivered = order_status.delivered.status 
-        const canceled = order_status.canceled.status 
-        const returns = order_status.return.status 
-        const returned = order_status.returned.status 
-        return canceled ? "Canceled" : returned ? "Returned" : returns ? "Return requested" : delivered ? "Delivered" : out ? "Out" : confirmed ? "Confirmed" : placed ? "Placed" : "NaN"    
+        const placed = order_status?.placed?.status
+        const confirmed = order_status?.confirmed?.status 
+        const out = order_status?.out?.status 
+        const delivered = order_status?.delivered?.status 
+        const canceled = order_status?.canceled?.status 
+        const return_requested = order_status?.return_requested?.status 
+        const returned = order_status?.returned?.status 
+        return canceled ? "Canceled" : returned ? "Returned" : return_requested ? "Return requested" : delivered ? "Delivered" : out ? "Out" : confirmed ? "Confirmed" : placed ? "Placed" : "NaN"    
     }  
 
     if(loading){return <LoadingSpinner/>}
@@ -64,11 +64,11 @@ const OrderPage = () => {
                         </thead>
                         <tbody>
                         {orders?.map((order , index) =>
-                            <tr key={order._id}>
+                            <tr key={index}>
                                 <th className='border-r'>{index+1}</th>
-                                <td>{order._id}</td>
+                                <td>{order.order_id}</td>
                                 <td>{order.delivery_address.name}</td>
-                                <td>{findOrderStatus(order.order_status)}</td>
+                                <td>{findOrderStatus(order?.order_status)}</td>
                                 <td>{order.no_of_product ? order.no_of_product : "Nil"}</td>
                                 <td className='rounded-xl flex p-0 '>
                                     <button onClick={()=>navigate(`/order/${order.order_id}`)} className='bg-slate-500 text-white font-[arial]  rounded-xl hero m-1  p-2'>view</button>
