@@ -47,7 +47,6 @@ const AdminOrderStatusComponent = ({order}) => {
         }
     }
 
-
 // Confirmed
     const [isConfirmedModal, setConfirmedModal] = useState(false);
 
@@ -157,6 +156,107 @@ const AdminOrderStatusComponent = ({order}) => {
     }
 
 
+// Reject Return Request
+
+    const [isRejectRequestModal, setRejectRequestModal] = useState(false);
+    const [reason_to_reject_return_req, setReasonToRejectReturnReq] = useState('');
+    const input5Ref = useRef(null)
+
+    const rejectReturnRequest = async()=>{
+        if(reason_to_reject_return_req.length < 10){
+            input5Ref.current.focus(); 
+            return
+        }
+        try {
+            setLoading(true)
+            const res = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}admin/order/update/reject_return_request/${order.order_id}`, {data: {reason_for_rejection: reason_to_reject_return_req }})
+            if(res){ setOrderStatus(res.data?.data)}
+            toast.success(res.data?.message)
+            console.log("rejectReturnRequest Response: ", res.data)        
+            setRejectRequestModal(false)
+            setReasonToRejectReturnReq('')
+        } catch (error) {
+            toast.error(error.response?.data?.message)
+            console.log("error in rejectReturnRequest :", error)
+        }finally {
+            setLoading(false)
+        }
+    }
+
+// Returned
+    const [isReturnedModal, setReturnedModal] = useState(false);
+    
+    const returnedOrder = async() =>{
+        try {
+            setLoading(true)
+            const res = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}admin/order/update/returned/${order.order_id}`)
+            if(res){ setOrderStatus(res.data?.data)}
+            toast.success(res.data?.message)
+            console.log("returnedOrder Response: ", res.data)        
+        } catch (error) {
+            toast.error(error.response?.data?.message)
+            console.log("error in returnedOrder :", error)
+        }finally {
+            setReturnedModal(false)
+            setLoading(false)
+        }
+    }
+    
+    // Reject Return
+    const [reject_return, setRejectReturn] = useState(false);
+    const [reason_for_rejection, setReasonForRejection] = useState('');
+    const input3Ref = useRef(null)
+
+    const rejectReturnedOrder = async() =>{
+        if(reason_for_rejection.length < 10){
+            input3Ref.current.focus(); 
+            toast.info("Describe the reason for not reciving the order")
+            return
+        }
+        try {
+            setLoading(true)
+            const res = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}admin/order/update/reject_returned/${order.order_id}`, {data: {reason_for_rejection}})
+            if(res){ setOrderStatus(res.data?.data)}
+            toast.success(res.data?.message)
+            console.log("rejectReturnedOrder Response: ", res.data)        
+            setReasonForRejection('')
+            setReturnedModal(false)
+        } catch (error) {
+            toast.error(error.response?.data?.message)
+            console.log("error in rejectReturnedOrder :", error)
+        }finally {
+            setLoading(false)
+        }
+    }
+
+// Refund
+
+    const [isRefundModal, setRefundModal] = useState(false)
+    const [refund_amount, setRefundAmount] = useState('')
+    const input4Ref = useRef(null)
+
+    const refundOrder = async() =>{
+        if(!refund_amount){
+            input3Ref.current.focus(); 
+            toast.info("Enter the amount")
+            return
+        }
+        try {
+            setLoading(true)
+            const res = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}admin/order/update/refund/${order.order_id}`, {data: {refund_amount}})
+            if(res){ setOrderStatus(res.data?.data)}
+            toast.success(res.data?.message)
+            console.log("refundOrder Response: ", res.data)        
+            setRefundModal(false)
+            setRefundAmount('')
+        } catch (error) {
+            toast.error(error.response?.data?.message)
+            console.log("error in refundOrder :", error)
+        }finally {
+            setLoading(false)
+        }
+    }
+
 
     const date = (date)=>{
         if(isNaN(Date.parse(date))){ return }
@@ -169,20 +269,23 @@ const AdminOrderStatusComponent = ({order}) => {
 
     const getStatusColor = () => {
         if (canceled.status ) return 'bg-red-500'
-        if (returnRequested.status) return 'bg-yellow-500'
-        if (returned.status) return 'bg-purple-500' 
+        if (refund.status) return 'bg-blue-500'
+        if (returned.rejected) return 'bg-red-500'
+        if (returned.status) return 'bg-blue-500' 
+        if (returnRequested.rejected) return 'bg-red-500'
+        if (returnRequested.status) return 'bg-blue-500'
         return 'bg-green-500'
-    };
+    }
     const getProgressWidth = () => {
         if (canceled.status || returnRequested.status || returned.status ){ return '100%' }
         return delivered.status ? "100%" : out.status? "80%" : confirmed.status? "55%" : placed.status? "25%" : '0%'
-    };
+    }
 
     if(loading) return <LoadingSpinner/>
     return (
         <>
         <div className='relative'>
-            <div className=' text-xl md:text-center px-2 md:pt-5 md:pb-8 text-gray-700 font-medium md:underline underline-offset-2'>Delivery status</div>
+            <div className=' text-xl md:text-center px-2 md:pt-5 md:pb-8 text-gray-700'>Delivery status</div>
             { !delivered.status && !canceled.status && <span onClick={()=> setCancelModal(true)} className='absolute top-1 right-2 text-sm cursor-pointer p-1 hover:bg-red-500 rounded hover:text-white text-red-500 '>Cancel</span>}
 
             {/* Cancel Modal */}
@@ -285,9 +388,7 @@ const AdminOrderStatusComponent = ({order}) => {
                 {/* Delivered */}
                 <div className={`flex-col items-center ${canceled.status ? "hidden" : "flex"}`}>
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${ delivered.status ? getStatusColor() : 'bg-gray-300'}`}>
-                    {delivered.status && (
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-                    )}
+                        {delivered.status && (<svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>)}
                     </div>
                     <span className="mt-2 text-sm text-gray-600">Delivered</span>
                     { !delivered.status && out.status && confirmed.status && 
@@ -325,35 +426,107 @@ const AdminOrderStatusComponent = ({order}) => {
 
                 {/* Return Requested */}
                 <div className={`flex-col items-center ${!returnRequested.status ? "hidden" : "flex"}`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${ returnRequested.status ? getStatusColor() : 'bg-gray-300'}`}>
-                    {returnRequested.status && (
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-                    )}
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${ returnRequested.rejected? 'bg-red-500' : returnRequested.status ? getStatusColor() : 'bg-gray-300'}`}>
+                        {returnRequested.status && !returnRequested.rejected && (<svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>)}
+                        {returnRequested.rejected && (<svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>)}
                     </div>
                     <span className="mt-2 text-sm text-gray-600">Return Requested</span>
-                    {returnRequested.date && (<span className="mt-1 text-xs text-gray-500 flex flex-wrap items-center"><span className='pr-1 hero'>{date(returnRequested.date)}</span><span className='hero'>{time(returnRequested.date)}</span></span>)}
+                    {returnRequested.date && !returnRequested.rejected && (<span className="mt-1 text-xs text-gray-500 flex flex-wrap items-center"><span className='pr-1 hero'>{date(returnRequested.date)}</span><span className='hero'>{time(returnRequested.date)}</span></span>)}
+                    {returnRequested.rejected && returnRequested.rejected_date && (<span className="mt-1 text-xs text-gray-500 flex flex-wrap items-center"><span className='pr-1 hero'>{date(returnRequested.rejected_date)}</span><span className='hero'>{time(returnRequested.rejected_date)}</span></span>)}
+                    {returnRequested.status && !returnRequested.rejected && !returned.status && !returned.rejected && (<span onClick={()=>setRejectRequestModal(true)} className='text-sm cursor-pointer p-1 text-red-500 hover:text-red-500 font-poppins'>Reject</span>)}
+                    {isRejectRequestModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                            <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+                                <button onClick={() => {setRejectRequestModal(false); setReasonToRejectReturnReq('')}} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                                <h2 className="text-xl font-bold mb-4">Reject Return Request</h2>
+                                <p className="text-gray-700 mb-1 font-poppins ">What is the reason to reject return request ?</p>
+                                <input type="text" name='reason_for_cancel' id='reason_for_cancel' autoComplete='off' ref={input5Ref}
+                                    value={reason_to_reject_return_req} onChange={(e)=>setReasonToRejectReturnReq(e.target.value)}
+                                    className='border border-gray-300 rounded-md p-2 px-5 w-full text-[15px]'/>
+                                <div className="mt-6 flex justify-end gap-5"> 
+                                    <button onClick={()=> {setRejectRequestModal(false); setReasonToRejectReturnReq('')}} className="px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition-all">Close</button>
+                                    <button onClick={rejectReturnRequest} className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-all">Reject</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Returned */}
-                <div className={`flex-col items-center ${!returned.status ? "hidden" : "flex"}`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${ returned.status ? getStatusColor() : 'bg-gray-300'}`}>
-                    {returned.status && (
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-                    )}
+                <div className={`flex-col items-center ${ !delivered.status ? 'hidden' : canceled.status ? "hidden" : !returnRequested.status ? 'hidden' : returnRequested.rejected ? "hidden" : "flex"}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${ returned.status ? getStatusColor() : returned.rejected? "bg-red-500" : 'bg-gray-300'}`}>
+                        {returned.status && (<svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>)}
+                        {returned.rejected && (<svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>)}
                     </div>
                     <span className="mt-2 text-sm text-gray-600">Returned</span>
+                    <span onClick={()=> setReturnedModal(true)} className={`text-sm cursor-pointer p-1 text-green-500 hover:text-emerald-500 font-poppins ${returned.status ? "hidden" : returned.rejected ? "hidden" : ''}`}>Update</span> 
                     {returned.date && (<span className="mt-1 text-xs text-gray-500 flex flex-wrap items-center"><span className='pr-1 hero'>{date(returned.date)}</span><span className='hero'>{time(returned.date)}</span></span>)}
+                    {isReturnedModal &&
+                        <div className='fixed flex inset-0 z-50 items-center justify-center bg-black bg-opacity-50'>
+                            <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative font-poppins">
+                                <button onClick={() => {setReturnedModal(false); setRejectReturn(false)}} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                                {!reject_return &&
+                                    <div>
+                                        <h2 className="text-xl font-bold mb-4">Order Picked Up</h2>
+                                        <p className="text-gray-700 mb-1">Is the order picked from the customer?</p>
+                                        <div className="mt-6 flex justify-end gap-5">
+                                            <button onClick={()=>setRejectReturn(true)} className="px-5 py-2 text-red-500 hover:text-white rounded-lg hover:bg-red-600">Reject</button>
+                                            <button onClick={returnedOrder} className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600">Confirm</button>
+                                        </div>
+                                    </div>
+                                }
+                                {reject_return &&
+                                    <div>
+                                        <h2 className="text-xl font-bold mb-4">Reject Order return</h2>
+                                        <p className="text-gray-700 mb-1">What's the reason to reject the returning order?</p>
+                                        <input type="text" name='reason_for_rejection' id='reason_for_rejection' autoComplete='off' ref={input3Ref}
+                                            value={reason_for_rejection} onChange={(e)=>setReasonForRejection(e.target.value)}
+                                            className='border border-gray-300 rounded-md p-2 px-5 w-full text-[15px]'/>
+                                        <div className="mt-6 flex justify-end gap-5">
+                                            <button onClick={()=>setRejectReturn(false)} className="px-4 py-2 text-red-500 rounded-lg hover:bg-gray-800 hover:text-white">Cancel</button>
+                                            <button onClick={rejectReturnedOrder} className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600">Submit</button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
                 </div>
 
                 {/* Refund */}
-                <div className={`flex-col items-center ${!refund.status ? "hidden" : "flex"}`}>
+                <div className={`flex-col items-center ${!returned.status ? "hidden" : returned.rejected ? "hidden" : "flex"}`}>
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${ refund.status ? getStatusColor() : 'bg-gray-300'}`}>
-                    {refund.status && (
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-                    )}
+                        {refund.status && (<svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>)}
                     </div>
                     <span className="mt-2 text-sm text-gray-600">Refund</span>
+                    {!refund.status && returned.status && <div className='flex flex-col text-xs hero text-gray-500'><span>Money will</span><span>be refund within</span><span>2 or 3 working days</span></div>}
                     {refund.date && (<span className="mt-1 text-xs text-gray-500 flex flex-wrap items-center"><span className='pr-1 hero'>{date(refund.date)}</span><span className='hero'>{time(refund.date)}</span></span>)}
+                    <span onClick={()=> setRefundModal(true)} className={`text-sm cursor-pointer p-1 text-green-500 hover:text-emerald-500 font-poppins ${refund.status ? "hidden" : ''}`}>Update</span> 
+                    {isRefundModal && 
+                        <div className='fixed flex inset-0 z-50 items-center justify-center bg-black bg-opacity-50 '>
+                            <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+                                <button onClick={() => {setRefundModal(false); setRefundAmount('')}} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                                <h2 className="text-xl font-bold mb-4">Refund Confirmation</h2>
+                                <p className="text-gray-700 mb-1 font-poppins ">How much Amount wants to be refund</p>
+                                <div className='grid grid-cols-6 gap-1'>
+                                    <input type="number" name='refund_amount' id='refund_amount' autoComplete='off' ref={input4Ref}
+                                        value={refund_amount} onChange={(e)=>setRefundAmount(e.target.value)}
+                                        className='border col-span-5 border-gray-300 rounded-md p-2 px-5 w-full text-[15px]'/>
+                                    <button onClick={()=>setRefundAmount(order.total_amount)} className='border text-sm hover:bg-gray-600 hover:text-white rounded-lg'>Full</button>
+                                </div>
+                                <div className="mt-6 flex justify-end gap-5"> 
+                                    <button onClick={()=> {setRefundModal(false); setRefundAmount('')}} className="px-12 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition-all">Close</button>
+                                    <button onClick={refundOrder} className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-all">Cancel Order</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>

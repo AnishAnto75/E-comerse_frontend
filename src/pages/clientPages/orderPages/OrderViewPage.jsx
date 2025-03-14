@@ -57,7 +57,7 @@ const OrderViewPage = () => {
         </div>
 
         <div className='mt-5 p-2 bg-white'>
-            <OrderStatusComponent order={order.order_status} />
+            <OrderStatusComponent order={order} />
         </div>
 
         <div className='mt-3 p-2 bg-white '>  
