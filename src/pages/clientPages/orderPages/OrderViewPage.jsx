@@ -5,7 +5,6 @@ import OrderStatusComponent from '../../../components/clientComponents/orderComp
 import OrderProductCard from '../../../components/clientComponents/orderComponents/orderProductCard'
 import OrderAmountComponent from '../../../components/clientComponents/orderComponents/orderAmountComponent.jsx'
 import OrderDeliveryAddressComponent from '../../../components/clientComponents/orderComponents/orderDeliveryAddressComponent.jsx'
-import AdminOrderStatusComponent from '../../../components/admin/AdminOrderComponents/AdminOrderStatusComponent.jsx'
 import LoadingSpinner from '../../../components/LoadingSpinner.jsx'
 
 const OrderViewPage = () => {

@@ -1,16 +1,12 @@
-import React, { useState } from "react";
-
 const TestingPage = () => {
-  
 
- 
+    return (
+        <>
+        
+      
 
-  return (
-    <div>
-
-     
-    </div>
-  );
-};
+        </>
+    )
+}
 
 export default TestingPage

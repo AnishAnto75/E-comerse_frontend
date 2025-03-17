@@ -38,10 +38,7 @@ const OrderPage = () => {
         const out = order_status.out
         const delivered = order_status.delivered 
         const canceled = order_status.canceled 
-        const return_requested = order_status.return_requested 
-        const returned = order_status.returned
-        const refund = order_status.refund 
-        return canceled.status ? "Canceled" : refund.status ? "Refunded" : returned.rejected ? "Return canceled" : returned.status ? "Returned" : return_requested.rejected ? "Request Canceled" : return_requested.status ? "Return requested" : delivered.status ? "Delivered" : out.status ? "Out" : confirmed.status ? "Confirmed" : placed.status ? "Placed" : "NaN"    
+        return canceled.status ? "Canceled" : delivered.status ? "Delivered" : out.status ? "Out" : confirmed.status ? "Confirmed" : placed.status ? "Placed" : "NaN"    
     }
 
     const getStatusColor = (order_status)=>{
@@ -50,10 +47,7 @@ const OrderPage = () => {
         const out = order_status.out
         const delivered = order_status.delivered 
         const canceled = order_status.canceled 
-        const return_requested = order_status.return_requested 
-        const returned = order_status.returned
-        const refund = order_status.refund 
-        return canceled.status ? "text-red-500" : refund.status ? "text-blue-500" : returned.rejected ? "text-red-500" : returned.status ? "text-blue-500" : return_requested.rejected ? "text-red-500" : return_requested.status ? "text-blue-500" : delivered.status ? "text-green-500" : out.status ? "text-gray-600" : confirmed.status ? "text-gray-600" : placed.status ? "text-yellow-500" : ''    
+        return canceled.status ? "text-red-500" : delivered.status ? "text-green-500" : out.status ? "text-gray-600" : confirmed.status ? "text-gray-600" : placed.status ? "text-yellow-500" : ''    
     }
 
     if(loading){return <LoadingSpinner/>}
@@ -66,8 +60,8 @@ const OrderPage = () => {
                 <div className="overflow-auto h-full w-full bg-white rounded-2xl border-2">
                     <table className="table table-zebra text-center ">
                         <thead>
-                            <tr className='text-sm bg-gray-600 text-white font-[arial] tracking-wide'>
-                            <th>S.No</th>
+                            <tr className='text-sm bg-gray-600 text-white'>
+                                <th>S.No</th>
                                 <th className='p-5'>Order ID</th>
                                 <th>Customer Name</th>
                                 <th>Order Status</th>

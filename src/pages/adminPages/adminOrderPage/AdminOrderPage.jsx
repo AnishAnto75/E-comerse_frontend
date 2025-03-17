@@ -37,11 +37,8 @@ const AdminOrderPage = () => {
         const confirmed = order_status.confirmed 
         const out = order_status.out
         const delivered = order_status.delivered 
-        const canceled = order_status.canceled 
-        const return_requested = order_status.return_requested 
-        const returned = order_status.returned
-        const refund = order_status.refund 
-        return canceled.status ? "Canceled" : refund.status ? "Refunded" : returned.rejected ? "Return canceled" : returned.status ? "Returned" : return_requested.rejected ? "Request Canceled" : return_requested.status ? "Return requested" : delivered.status ? "Delivered" : out.status ? "Out" : confirmed.status ? "Confirmed" : placed.status ? "Placed" : "NaN"    
+        const canceled = order_status.canceled  
+        return canceled.status ? "Canceled" : delivered.status ? "Delivered" : out.status ? "Out" : confirmed.status ? "Confirmed" : placed.status ? "Placed" : "NaN"    
     }  
 
     
@@ -51,10 +48,7 @@ const AdminOrderPage = () => {
         const out = order_status.out
         const delivered = order_status.delivered 
         const canceled = order_status.canceled 
-        const return_requested = order_status.return_requested 
-        const returned = order_status.returned
-        const refund = order_status.refund 
-        return canceled.status ? "text-red-500" : refund.status ? "text-blue-500" : returned.rejected ? "text-red-500" : returned.status ? "text-blue-500" : return_requested.rejected ? "text-red-500" : return_requested.status ? "text-blue-500" : delivered.status ? "text-green-500" : out.status ? "text-gray-600" : confirmed.status ? "text-gray-600" : placed.status ? "text-yellow-500" : ''    
+        return canceled.status ? "text-red-500" : delivered.status ? "text-green-500" : out.status ? "text-gray-600" : confirmed.status ? "text-gray-600" : placed.status ? "text-yellow-500" : ''    
     }
 
     if(loading){return <div className='hero'>Loading...</div>}
