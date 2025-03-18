@@ -9,6 +9,7 @@ import orderReducer from '../slices/clientSlice/OrderSlice.js'
 import adminProductReducer from '../slices/adminSlice/adminProductSlice.js'
 import adminStaffReducer from '../slices/adminSlice/adminStaffSlice.js' 
 import adminOrderReducer from '../slices/adminSlice/adminOrderSlice.js' 
+import adminBannerReducer from '../slices/adminSlice/adminBannerSlice.js' 
 
 export const store = configureStore({
     reducer : {
@@ -21,6 +22,7 @@ export const store = configureStore({
 
         adminProduct : adminProductReducer,
         adminStaff : adminStaffReducer,
-        adminOrder : adminOrderReducer
+        adminOrder : adminOrderReducer,
+        adminBanner: adminBannerReducer
     },
 })

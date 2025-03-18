@@ -52,6 +52,7 @@ import AdminEntryPage from "./pages/adminPages/AdminEntryPage.jsx";
 import AdminPurchaseEntryPage from "./pages/adminPages/adminPurchasePages/AdminPurchaseEntryPage.jsx";
 import AdminAllPurchasesPage from "./pages/adminPages/adminPurchasePages/AdminAllPurchasesPage.jsx";
 import AdminPurchaseViewPage from "./pages/adminPages/adminPurchasePages/AdminPurchaseViewPage.jsx";
+import AdminBannerPage from "./pages/adminPages/adminBannerPages/AdminBannerPage.jsx";
 
 function App() {
     const dispatch = useDispatch()
@@ -82,7 +83,7 @@ function App() {
     if(userStatus == 'loading'){ return <div>loading...</div> }
 
   return (
-    <>
+    <div>
     <ToastContainer />
     <Routes>
 
@@ -174,6 +175,10 @@ function App() {
                 </Route>
 
                 <Route path="payments" element={<div>payments</div>} />
+
+                <Route path="banners">
+                    <Route index element={<AdminBannerPage />}/>
+                </Route>
             </Route>
             }
 
@@ -183,7 +188,7 @@ function App() {
         </Route>
 
     </Routes>
-    </>
+    </div>
   )
 }
 

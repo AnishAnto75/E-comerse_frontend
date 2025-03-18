@@ -1,6 +1,5 @@
 import React from 'react'
 
-import AdminSideBar from '../../components/admin/AdminSideBar';
 
 const AdminHomePage = () => {
   return (

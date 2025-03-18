@@ -14,9 +14,9 @@ import { Link } from 'react-router-dom';
 const AdminSideBar = () => {
   return (
     <div className='hidden md:block'>
-    <div className='sticky top-3 border-r min-h-screen'>
-        <div className='bg-white md:min-w-52 md:max-w-52 '>
-            <ul className='p-2 pt-5 font-[arial] text-sm flex flex-col gap- text-gray-800 gap-2'>
+    <div className='sticky top-3 border-r'>
+        <div className='bg-white min-w-52 max-w-52 '>
+            <ul className='p-2 pt-5 text-sm text-gray-800 space-y-2'>
                 <Link to={'/admin'} className='flex p-3 px-5 hover:bg-gray-400 hover:text-white rounded-xl hover:px-5 transition-all delay-75'>
                     <IoHomeOutline className='mr-3 text-gray-300 text-xl'/> 
                     <span>Home</span>
@@ -60,6 +60,10 @@ const AdminSideBar = () => {
                 <Link to={'/admin/payments'} className='flex p-3 px-5 hover:bg-gray-400 hover:text-white rounded-xl hover:px-5 transition-all delay-75'>
                     <IoWalletOutline className='mr-3 text-gray-300 text-xl '/>
                     <span>Payments</span>
+                </Link>
+                <Link to={'/admin/banners'} className='flex p-3 px-5 hover:bg-gray-400 hover:text-white rounded-xl hover:px-5 transition-all delay-75'>
+                    <TfiLayoutMediaCenterAlt className='mr-3 text-gray-300 text-xl '/>
+                    <span>Banners</span>
                 </Link>
             </ul>
         </div>
