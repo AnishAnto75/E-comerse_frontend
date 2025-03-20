@@ -1,18 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import LoadingSpinner from '../../../components/LoadingSpinner'
-import axios from 'axios'
-import { Badge, Button, Typography } from '@material-tailwind/react'
+import { Button, Typography } from '@material-tailwind/react'
 import {Tabs, TabsHeader, TabsBody, Tab, TabPanel} from "@material-tailwind/react";
 import AdminViewBannerComponent from '../../../components/admin/AdminBannerComponents/AdminViewBannerComponent'
 import { useDispatch, useSelector } from 'react-redux'
 import { adminFetchBanners, getAdminFetchBannersError, getAdminFetchBannersStatus, selectAllAdminBanners } from '../../../slices/adminSlice/adminBannerSlice.js'
-import AdminCreateBannerComponent from '../../../components/admin/AdminBannerComponents/AdminCreateBannerComponent.jsx'
 
 const AdminBannerPage = () => {
 
-    const handleRef = useRef(true)
     const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const handleRef = useRef(true)
     
     const banners = useSelector(selectAllAdminBanners)
     const error = useSelector(getAdminFetchBannersError)
@@ -47,7 +46,9 @@ const AdminBannerPage = () => {
                 {banners?.map(( banner, index) => (
                     <TabPanel key={index} value={banner.banner_id}>
                         {!banner.status ? 
-                            <AdminCreateBannerComponent banner={banner}/>
+                            <div className='h-[calc(100vh-250px)] content-center text-center rounded-md'>
+                                <Button onClick={()=>navigate('/admin/banners/create-banner')} color='blue' variant="gradient" >Create Banner</Button>
+                            </div>
                             :
                             <AdminViewBannerComponent banner={banner}/>
                         }

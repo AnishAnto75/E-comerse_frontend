@@ -53,6 +53,7 @@ import AdminPurchaseEntryPage from "./pages/adminPages/adminPurchasePages/AdminP
 import AdminAllPurchasesPage from "./pages/adminPages/adminPurchasePages/AdminAllPurchasesPage.jsx";
 import AdminPurchaseViewPage from "./pages/adminPages/adminPurchasePages/AdminPurchaseViewPage.jsx";
 import AdminBannerPage from "./pages/adminPages/adminBannerPages/AdminBannerPage.jsx";
+import AdminCreateBannerPage from "./pages/adminPages/adminBannerPages/AdminCreateBannerPage.jsx";
 
 function App() {
     const dispatch = useDispatch()
@@ -178,6 +179,7 @@ function App() {
 
                 <Route path="banners">
                     <Route index element={<AdminBannerPage />}/>
+                    <Route path="create-banner" element={<AdminCreateBannerPage />}/>
                 </Route>
             </Route>
             }

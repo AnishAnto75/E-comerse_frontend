@@ -1,6 +1,6 @@
 import { Button, Chip, Tooltip, Typography } from '@material-tailwind/react'
 import React from 'react'
-import AdminBannerProductCardComponent from './AdminBannerCardComponent/AdminBannerProductCardComponent'
+import AdminBannerProductCardComponent from './AdminBannerProductCardComponent'
 
 const AdminCardBannerComponent = ({banner}) => {
   return (
@@ -16,7 +16,7 @@ const AdminCardBannerComponent = ({banner}) => {
         </div>
         <div className='my-5'>
             <div className='font-poppins pb-2'>Products</div>
-            <div className='flex py-1 overflow-x-auto gap-2 mx-auto border-y '>
+            <div className='flex py-1 overflow-x-auto gap-2 mx-auto'>
             {banner.card?.product_id?.map((product, index)=>(  
                 <AdminBannerProductCardComponent key={index} product={product}/>
             ))}

@@ -11,26 +11,25 @@ const AdminOrderPage = () => {
     const [orders , setOrders] = useState(null)
 
     useEffect(()=>{
+        const fetchAllOrder = async()=>{
+            try {
+                setLoading(true)
+                axios.defaults.withCredentials = true
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/order/all-order`)
+                console.log("fetchAllOrder Payload : " , res.data)
+                setOrders(res.data.data)
+            } catch (error) {
+                console.error("error in fetchAllOrder function",error)
+                setError(true)   
+            } finally {
+                setLoading(false)
+            }
+        }
         if(handleRef.current) {
             fetchAllOrder()
             handleRef.current = false
         }
     } , [])
-
-    const fetchAllOrder = async()=>{
-        setLoading(true)
-        try {
-            axios.defaults.withCredentials = true
-            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/all-order`)
-            console.log("fetchAllOrder Payload : " , res.data)
-            setOrders(res.data.data)
-        } catch (error) {
-            console.error("error in fetchAllOrder function",error)
-            setError(true)   
-        } finally {
-            setLoading(false)
-        }
-    }
 
     const findOrderStatus = (order_status)=> {
         const placed = order_status.placed

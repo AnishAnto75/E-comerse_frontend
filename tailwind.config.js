@@ -13,6 +13,7 @@ module.exports = withMT({
             fontFamily: {
                 inter: ['Inter', 'sans-serif'],
                 poppins: ['Poppins', 'sans-serif'],
+                roboto: ['roboto', 'sans-serif'],
               },
         },
     },

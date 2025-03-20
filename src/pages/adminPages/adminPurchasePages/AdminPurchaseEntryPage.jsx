@@ -376,7 +376,6 @@ const AdminPurchaseEntryPage = () => {
             <tbody>
                {products?.map((product, index)=>(
                 <tr key={index}>
-
                     <td>{index+1}</td>
                     <td>{product.product_barcode}</td>
                     <td>{product.product_name}</td>
