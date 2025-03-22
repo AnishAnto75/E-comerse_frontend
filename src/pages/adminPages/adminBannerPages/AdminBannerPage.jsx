@@ -21,6 +21,7 @@ const AdminBannerPage = () => {
         if(handleRef.current){
             dispatch(adminFetchBanners())
             handleRef.current = false
+
         }
     },[banners])
 

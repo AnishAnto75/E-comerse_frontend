@@ -1,5 +1,6 @@
 import {createAsyncThunk, createEntityAdapter, createSlice} from '@reduxjs/toolkit'
 import axios from 'axios'
+import { toast } from 'react-toastify'
 
 axios.defaults.withCredentials = true
 
@@ -19,8 +20,15 @@ export const adminDeleteBanner = createAsyncThunk('admin/adminDeleteBanner' , as
     return res.data
 })
 
+export const adminCreateBanner = createAsyncThunk('admin/adminCreateBanner' , async(data)=>{
+    const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/banner/create-banner`, {data}).catch((error)=>{
+        throw new Error(error.response.data.message)
+    })
+    return res.data
+})
+
 const adminBannerAdapter = createEntityAdapter({
-    selectId : (banner)=> banner.banner_id
+    selectId : (banner)=> banner._id
 })
 
 const initialState = adminBannerAdapter.getInitialState({
@@ -29,13 +37,20 @@ const initialState = adminBannerAdapter.getInitialState({
     adminFetchBannersError : null ,
 
     adminDeleteBannerStatus : "idle",
-    adminDeleteBannerError : null
+    adminDeleteBannerError : null,
+
+    adminCreateBannerStatus : "idle",
+    adminCreateBannerError : null
 })
 
 const adminBannerSlice = createSlice({
     name : 'adminBanner',
     initialState,
-    reducer:{},
+    reducers:{
+        changeCreateBannerStatus : (state)=>{
+            state.adminCreateBannerStatus = 'idle'
+        },
+    },
     extraReducers(builder){
         builder
         //fetchBanner
@@ -55,6 +70,7 @@ const adminBannerSlice = createSlice({
 
             console.log('adminFetchBanners payload : ',action.payload)
         })
+
         //deleteBanner
         .addCase(adminDeleteBanner.pending , (state , action)=>{
             state.adminDeleteBannerStatus = 'loading'
@@ -72,9 +88,26 @@ const adminBannerSlice = createSlice({
 
             console.log('adminDeleteBanner payload : ',action.payload)
         })
+
+        //createBanner
+        .addCase(adminCreateBanner.pending , (state , action)=>{
+            state.adminCreateBannerStatus = 'loading'
+        })
+        .addCase(adminCreateBanner.rejected , (state , action)=>{
+            state.adminCreateBannerStatus = 'failed'
+            state.adminCreateBannerError = action.error
+            toast.error(action.error.message)
+            console.error("adminCreateBanner error : " ,action.error)
+        })
+        .addCase(adminCreateBanner.fulfilled , (state , action)=>{
+            state.adminCreateBannerStatus = 'success'
+            state.adminCreateBannerError = null
+            adminBannerAdapter.upsertOne(state, action.payload.data)
+            toast.success(action.payload.message)
+            console.log('adminCreateBanner payload : ',action.payload)            
+        })
     }
 })
-
 
 export const {
     selectById : selectAdminBannerById,
@@ -83,10 +116,15 @@ export const {
     selectAll : selectAllAdminBanners
 } = adminBannerAdapter.getSelectors((state) => state.adminBanner)
 
+export const {changeCreateBannerStatus} = adminBannerSlice.actions
+
 export const getAdminFetchBannersStatus = (state)=> state.adminBanner.adminFetchBannersStatus
 export const getAdminFetchBannersError = (state)=> state.adminBanner.adminFetchBannersError
 
 export const getAdminDeleteBannerStatus = (state)=> state.adminBanner.adminDeleteBannerStatus
 export const getAdminDeleteBannerError = (state)=> state.adminBanner.adminDeleteBannerError
+
+export const getAdminCreateBannerStatus = (state)=> state.adminBanner.adminCreateBannerStatus
+export const getAdminCreateBannerError = (state)=> state.adminBanner.adminCreateBannerError
 
 export default adminBannerSlice.reducer

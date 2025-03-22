@@ -23,14 +23,14 @@ const AdminCreateBannerPage = () => {
             dispatch(adminFetchBanners())
             handleRef.current = false
         }
-    },[banners])
+    },[])
 
     const [banner_id, setBannerId] = useState('')
     const [banner_type, setBannerType] = useState('') 
 
     const [banner_id_error, setBannerIdError] = useState(false) 
     const [banner_type_error, setBannerTypeError] = useState(false)
-    
+
     const bannerLocations = banners?.filter(banner => !banner.status)
 
     if(loading == 'loading'){return <LoadingSpinner/>}
@@ -71,9 +71,9 @@ const AdminCreateBannerPage = () => {
         {banner_id && banner_type &&
             <div className='pt-3'>
                 {banner_type == "card" && <AdminCreateBannerCardComponent banner_id={banner_id} />}
-                {banner_type == "carousel" && <AdminCreateBannerCarouselComponent/>}
-                {banner_type == "category" && <AdminCreateBannerCategoryComponent/>}
-                {banner_type == "group" && <AdminCreateBannerGroupComponent/>}
+                {banner_type == "carousel" && <AdminCreateBannerCarouselComponent banner_id={banner_id}/>}
+                {banner_type == "category" && <AdminCreateBannerCategoryComponent banner_id={banner_id}/>}
+                {banner_type == "group" && <AdminCreateBannerGroupComponent banner_id={banner_id}/>}
             </div>
         }
     </div>

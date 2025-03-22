@@ -54,6 +54,7 @@ import AdminAllPurchasesPage from "./pages/adminPages/adminPurchasePages/AdminAl
 import AdminPurchaseViewPage from "./pages/adminPages/adminPurchasePages/AdminPurchaseViewPage.jsx";
 import AdminBannerPage from "./pages/adminPages/adminBannerPages/AdminBannerPage.jsx";
 import AdminCreateBannerPage from "./pages/adminPages/adminBannerPages/AdminCreateBannerPage.jsx";
+import { getAdminCreateBannerStatus } from "./slices/adminSlice/adminBannerSlice.js";
 
 function App() {
     const dispatch = useDispatch()
@@ -64,6 +65,7 @@ function App() {
     const isAdmin = useSelector(getAdmin)
     const user = useSelector(getUser)
     const userStatus = useSelector(getUserStatus)
+    const bannerStatus = useSelector(getAdminCreateBannerStatus)
 
     useEffect(()=>{
         if(handleRef.current){
@@ -82,6 +84,7 @@ function App() {
     )
 
     if(userStatus == 'loading'){ return <div>loading...</div> }
+
 
   return (
     <div>

@@ -1,12 +1,19 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {Button, Card, CardBody, CardHeader, Input} from '@material-tailwind/react'
 import { debounce } from 'lodash'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import LoadingSpinner from '../../../LoadingSpinner'
+import { adminCreateBanner, changeCreateBannerStatus, getAdminCreateBannerError, getAdminCreateBannerStatus } from '../../../../slices/adminSlice/adminBannerSlice'
 
 const AdminCreateBannerCardComponent = ({banner_id}) => {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+
+    const status = useSelector(getAdminCreateBannerStatus)
+    const error = useSelector(getAdminCreateBannerError)
 
     const [heading , setHeading] = useState('')
     const [product_id, setProductId] = useState([])
@@ -16,6 +23,13 @@ const AdminCreateBannerCardComponent = ({banner_id}) => {
     const [product_search_name, setProductSearchName] = useState('')
  
     const [searchedProducts , setSearchedProducts] = useState(null)
+
+    useEffect(()=>{
+        if(status == 'success'){
+            navigate('/admin/banners')
+            dispatch(changeCreateBannerStatus())
+        }
+    })
 
     const searchByBarcode = async(e)=>{
         if (e.key === "Enter" && product_search_barcode){
@@ -66,21 +80,15 @@ const AdminCreateBannerCardComponent = ({banner_id}) => {
         setProductId(newIds)
     }
 
-    // change to slice
     const createCardBanner = async()=>{
         if(banner_id && product_id.length && heading){
-            try {
-                const data = {banner_id , banner_type: "card", card:{ product_id, heading }}
-                const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/banner/create-banner`, {data})
-                console.log("createCardBanner response: " , res.data)
-                toast.success(res.data.message)
-                navigate('/admin/banners')
-            } catch (error) {
-                toast.error(error.response.data?.message)
-                console.error("error in requestProductByName :" , error)
-            }
+            const data = {banner_id , banner_type: "card", card:{ product_id, heading }}
+            dispatch(adminCreateBanner(data))
         }
     }
+
+    if(status === 'loading'){return <LoadingSpinner/>}
+    if(error){ return <div>Error occured please refresh the page</div>}
 
   return (
     <div>
@@ -92,7 +100,7 @@ const AdminCreateBannerCardComponent = ({banner_id}) => {
                 {searchedProducts?.length ? 
                     <div className='absolute bg-white w-full border mt-0.5 p-2 flex flex-col z-50 rounded-lg max-h-44 overflow-auto'>
                         {searchedProducts.map((product, index)=>(
-                            <div key={index} onClick={()=>clickName(product)} className="hover:bg-gray-100 cursor-pointer p-1 rounded-lg">{product.product_name}</div>
+                            <div key={index} onClick={()=>clickName(product)} className="hover:bg-gray-100 text-xs font-poppins text-gray-900 cursor-pointer p-1 rounded-lg">{product.product_name}</div>
                         ))}
                     </div>
                     :''
