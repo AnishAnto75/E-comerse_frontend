@@ -27,8 +27,16 @@ export const adminCreateBanner = createAsyncThunk('admin/adminCreateBanner' , as
     return res.data
 })
 
+export const adminEditBanner = createAsyncThunk('admin/adminEditBanner' , async(data)=>{
+    const res = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}admin/banner/edit-banner`, {data}).catch((error)=>{
+        throw new Error(error.response.data.message)
+    })
+    return res.data
+})
+
 const adminBannerAdapter = createEntityAdapter({
-    selectId : (banner)=> banner._id
+    selectId : (banner)=> banner._id,
+    sortComparer: (a, b) => a._id.localeCompare(b._id)
 })
 
 const initialState = adminBannerAdapter.getInitialState({
@@ -40,7 +48,10 @@ const initialState = adminBannerAdapter.getInitialState({
     adminDeleteBannerError : null,
 
     adminCreateBannerStatus : "idle",
-    adminCreateBannerError : null
+    adminCreateBannerError : null,
+
+    adminEditBannerStatus : "idle",
+    adminEditBannerError : null
 })
 
 const adminBannerSlice = createSlice({
@@ -49,6 +60,12 @@ const adminBannerSlice = createSlice({
     reducers:{
         changeCreateBannerStatus : (state)=>{
             state.adminCreateBannerStatus = 'idle'
+        },
+        changeDeleteBannerStatus : (state)=>{
+            state.adminDeleteBannerStatus = 'idle'
+        },
+        changeEditBannerStatus : (state)=>{
+            state.adminEditBannerStatus = 'idle'
         },
     },
     extraReducers(builder){
@@ -64,7 +81,7 @@ const adminBannerSlice = createSlice({
             console.error("adminFetchBanners error : " ,action.error)
         })
         .addCase(adminFetchBanners.fulfilled , (state , action)=>{
-            state.adminFetchBannersStatus = 'succeeded'
+            state.adminFetchBannersStatus = 'success'
             state.adminFetchBannersError = null
             adminBannerAdapter.addMany(state , action.payload.data)            
 
@@ -78,14 +95,14 @@ const adminBannerSlice = createSlice({
         .addCase(adminDeleteBanner.rejected , (state , action)=>{
             state.adminDeleteBannerStatus = 'failed'
             state.adminDeleteBannerError = action.error.message
-
+            toast.error(action.error.message)
             console.error("adminDeleteBanner error : " ,action.error)
         })
         .addCase(adminDeleteBanner.fulfilled , (state , action)=>{
-            state.adminDeleteBannerStatus = 'succeeded'
+            state.adminDeleteBannerStatus = 'success'
             state.adminDeleteBannerError = null
             adminBannerAdapter.upsertOne(state , action.payload.data)            
-
+            toast.success(action.payload.message)
             console.log('adminDeleteBanner payload : ',action.payload)
         })
 
@@ -106,6 +123,24 @@ const adminBannerSlice = createSlice({
             toast.success(action.payload.message)
             console.log('adminCreateBanner payload : ',action.payload)            
         })
+
+        //editBanner
+        .addCase(adminEditBanner.pending , (state , action)=>{
+            state.adminEditBannerStatus = 'loading'
+        })
+        .addCase(adminEditBanner.rejected , (state , action)=>{
+            state.adminEditBannerStatus = 'failed'
+            state.adminEditBannerError = action.error
+            toast.error(action.error.message)
+            console.error("adminEditBanner error : " ,action.error)
+        })
+        .addCase(adminEditBanner.fulfilled , (state , action)=>{
+            state.adminEditBannerStatus = 'success'
+            state.adminEditBannerError = null
+            adminBannerAdapter.upsertOne(state, action.payload.data)
+            toast.success(action.payload.message)
+            console.log('adminEditBanner payload : ',action.payload)            
+        })
     }
 })
 
@@ -116,7 +151,7 @@ export const {
     selectAll : selectAllAdminBanners
 } = adminBannerAdapter.getSelectors((state) => state.adminBanner)
 
-export const {changeCreateBannerStatus} = adminBannerSlice.actions
+export const {changeCreateBannerStatus, changeDeleteBannerStatus, changeEditBannerStatus} = adminBannerSlice.actions
 
 export const getAdminFetchBannersStatus = (state)=> state.adminBanner.adminFetchBannersStatus
 export const getAdminFetchBannersError = (state)=> state.adminBanner.adminFetchBannersError
@@ -126,5 +161,8 @@ export const getAdminDeleteBannerError = (state)=> state.adminBanner.adminDelete
 
 export const getAdminCreateBannerStatus = (state)=> state.adminBanner.adminCreateBannerStatus
 export const getAdminCreateBannerError = (state)=> state.adminBanner.adminCreateBannerError
+
+export const getAdminEditBannerStatus = (state)=> state.adminBanner.adminEditBannerStatus
+export const getAdminEditBannerError = (state)=> state.adminBanner.adminEditBannerError
 
 export default adminBannerSlice.reducer

@@ -1,4 +1,4 @@
-import { Button, Chip, Tooltip } from '@material-tailwind/react'
+import { Chip, Tooltip } from '@material-tailwind/react'
 import React from 'react'
 
 const AdminGroupBannerComponent = ({banner}) => {
@@ -6,7 +6,7 @@ const AdminGroupBannerComponent = ({banner}) => {
     <div>
         <div className='flex max-w-full gap-5'>
             <Tooltip content="Type" className='text-xs bg-transparent text-gray-600'>
-                <Chip size="md" variant="gradient" value="Group" className='w-20 text-center'/>
+                <Chip size="md" variant="gradient" value="Group" className='w-20 text-center tracking-wider'/>
             </Tooltip>
             <Tooltip content="Location" className='text-xs bg-transparent text-gray-600'>
                 {banner.banner_location && <Chip size="md" color='teal' variant="gradient" value={banner.banner_location} className='w-20 text-center tracking-wider'/>}
@@ -26,11 +26,10 @@ const AdminGroupBannerComponent = ({banner}) => {
                         <div className="h-full"><img src={ !category?.category_image ? category?.category_image : "/W1711CHOI_laundry Detergents_ps.webp"} alt={'sjnn'} className="h-full w-full object-cover rounded-lg "/></div>
                         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent rounded-b-lg"></div>
                         <div className='absolute text-green-50 font-poppins bottom-5 left-5'>{category.category_name}</div>
-                    </div>         
+                    </div>
                 ))}
             </div>
         </div>
-
     </div>
   )
 }

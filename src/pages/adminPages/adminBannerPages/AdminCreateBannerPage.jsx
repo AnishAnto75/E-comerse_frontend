@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { adminFetchBanners, getAdminFetchBannersError, getAdminFetchBannersStatus, selectAllAdminBanners } from '../../../slices/adminSlice/adminBannerSlice'
+import { adminFetchBanners, changeCreateBannerStatus, getAdminCreateBannerStatus, getAdminFetchBannersError, getAdminFetchBannersStatus, selectAllAdminBanners } from '../../../slices/adminSlice/adminBannerSlice'
 import { useNavigate } from 'react-router-dom'
 import LoadingSpinner from '../../../components/LoadingSpinner'
 import { Button, Option, Select } from '@material-tailwind/react'
@@ -14,6 +14,7 @@ const AdminCreateBannerPage = () => {
     const navigate = useNavigate()
     const handleRef = useRef(true)
     
+    const createBannerStatus = useSelector(getAdminCreateBannerStatus)
     const banners = useSelector(selectAllAdminBanners)
     const error = useSelector(getAdminFetchBannersError)
     const loading = useSelector(getAdminFetchBannersStatus)
@@ -23,7 +24,11 @@ const AdminCreateBannerPage = () => {
             dispatch(adminFetchBanners())
             handleRef.current = false
         }
-    },[])
+        if(createBannerStatus == 'success'){
+            navigate('/admin/banners')
+            dispatch(changeCreateBannerStatus())
+        }
+    },[createBannerStatus])
 
     const [banner_id, setBannerId] = useState('')
     const [banner_type, setBannerType] = useState('') 

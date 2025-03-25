@@ -1,22 +1,33 @@
-import React from 'react';
+import React from "react";
 
-const FadedEdgesImage = ({ imageUrl }) => {
+const DashedPlusIcon = ({ className = "" }) => {
   return (
-    <div className="relative w-full h-64 overflow-hidden">
-      {/* Image */}
-      <img
-        src={imageUrl}
-        alt="Faded Edges Image"
-        className="w-full h-full object-cover"
+    <svg
+      className={`w-96 h-96 ${className}`}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* Outer circle with double border */}
+      <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1" fill="none" />
+      
+      {/* Dashed plus sign */}
+      <path
+        d="M12 6V18"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeDasharray="2,2"
+        strokeLinecap="round"
       />
-
-      {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient from-transparent via-transparent to-black opacity-50">jhbkjn</div>
-      {/* <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-black opacity-50">kjnkkb</div>
-      <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-black opacity-50">kjknn</div>
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-black opacity-50">njojol</div> */}
-    </div>
+      <path
+        d="M6 12H18"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeDasharray="2,2"
+        strokeLinecap="round"
+      />
+    </svg>
   );
 };
 
-export default FadedEdgesImage;
+export default DashedPlusIcon;

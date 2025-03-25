@@ -2,14 +2,12 @@ import React, { useEffect, useRef, useState } from 'react'
 import {Button, Card, CardBody, CardHeader, Input} from '@material-tailwind/react'
 import { debounce } from 'lodash'
 import axios from 'axios'
-import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import LoadingSpinner from '../../../LoadingSpinner'
-import { adminCreateBanner, changeCreateBannerStatus, getAdminCreateBannerError, getAdminCreateBannerStatus } from '../../../../slices/adminSlice/adminBannerSlice'
+import { adminCreateBanner, getAdminCreateBannerError, getAdminCreateBannerStatus } from '../../../../slices/adminSlice/adminBannerSlice'
 
 const AdminCreateBannerCardComponent = ({banner_id}) => {
-    const navigate = useNavigate()
     const dispatch = useDispatch()
 
     const status = useSelector(getAdminCreateBannerStatus)
@@ -23,13 +21,6 @@ const AdminCreateBannerCardComponent = ({banner_id}) => {
     const [product_search_name, setProductSearchName] = useState('')
  
     const [searchedProducts , setSearchedProducts] = useState(null)
-
-    useEffect(()=>{
-        if(status == 'success'){
-            navigate('/admin/banners')
-            dispatch(changeCreateBannerStatus())
-        }
-    })
 
     const searchByBarcode = async(e)=>{
         if (e.key === "Enter" && product_search_barcode){

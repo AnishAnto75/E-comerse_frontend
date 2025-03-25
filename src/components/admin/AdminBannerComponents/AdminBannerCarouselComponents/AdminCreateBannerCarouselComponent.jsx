@@ -5,7 +5,7 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import LoadingSpinner from '../../../LoadingSpinner'
-import { adminCreateBanner, changeCreateBannerStatus, getAdminCreateBannerError, getAdminCreateBannerStatus } from '../../../../slices/adminSlice/adminBannerSlice'
+import { adminCreateBanner, getAdminCreateBannerError, getAdminCreateBannerStatus } from '../../../../slices/adminSlice/adminBannerSlice'
 import { toast } from 'react-toastify'
 
 const AdminCreateBannerCarouselComponent = ({banner_id}) => {
@@ -27,13 +27,6 @@ const AdminCreateBannerCarouselComponent = ({banner_id}) => {
     const [product_search_name, setProductSearchName] = useState('')
 
     const [searchedProducts , setSearchedProducts] = useState(null)
-
-    useEffect(()=>{
-        if(status == 'success'){
-            navigate('/admin/banners')
-            dispatch(changeCreateBannerStatus())
-        }
-    })
 
     const addProduct = ()=>{
         if(!image){toast.error("Image is required"); return}

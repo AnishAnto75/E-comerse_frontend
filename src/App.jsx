@@ -55,6 +55,7 @@ import AdminPurchaseViewPage from "./pages/adminPages/adminPurchasePages/AdminPu
 import AdminBannerPage from "./pages/adminPages/adminBannerPages/AdminBannerPage.jsx";
 import AdminCreateBannerPage from "./pages/adminPages/adminBannerPages/AdminCreateBannerPage.jsx";
 import { getAdminCreateBannerStatus } from "./slices/adminSlice/adminBannerSlice.js";
+import AdminEditBannerPage from "./pages/adminPages/adminBannerPages/AdminEditBannerPage.jsx";
 
 function App() {
     const dispatch = useDispatch()
@@ -83,8 +84,8 @@ function App() {
         }, [user]
     )
 
+    
     if(userStatus == 'loading'){ return <div>loading...</div> }
-
 
   return (
     <div>
@@ -183,6 +184,7 @@ function App() {
                 <Route path="banners">
                     <Route index element={<AdminBannerPage />}/>
                     <Route path="create-banner" element={<AdminCreateBannerPage />}/>
+                    <Route path="edit-banner/:id" element={<AdminEditBannerPage />}/>
                 </Route>
             </Route>
             }
