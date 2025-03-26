@@ -14,7 +14,7 @@ import { Link } from 'react-router-dom';
 const AdminSideBar = () => {
   return (
     <div className='hidden md:block'>
-    <div className='sticky top-3 border-r'>
+    <div className='sticky top-1 border-r'>
         <div className='bg-white min-w-52 max-w-52 '>
             <ul className='p-2 pt-5 text-sm text-gray-800 space-y-2'>
                 <Link to={'/admin'} className='flex p-3 px-5 hover:bg-gray-400 hover:text-white rounded-xl hover:px-5 transition-all delay-75'>

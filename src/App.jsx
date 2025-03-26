@@ -84,7 +84,6 @@ function App() {
         }, [user]
     )
 
-    
     if(userStatus == 'loading'){ return <div>loading...</div> }
 
   return (

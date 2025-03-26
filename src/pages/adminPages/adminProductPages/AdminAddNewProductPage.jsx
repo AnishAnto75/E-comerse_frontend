@@ -132,8 +132,6 @@ const AdminAddNewProductPage = () => {
         }
     }
 
-    const groupOptions = Groups?.map(group =>( <option key ={group._id} value={group._id} > {group.group_name} </option> ))
-
     const categories = []
     if(product_group){ Groups.map(group=> group._id == product_group && categories.push(group.category_id)) }
     const categoryOption = categories[0]?.map(category =>( <option key={category._id} value={category._id}>{category.category_name} </option> ))
@@ -141,64 +139,47 @@ const AdminAddNewProductPage = () => {
   if (loading || loading2) { return <div>Loading..</div>}
   if (error) { return <div>Error</div>}
   return (
-    <form onSubmit={(e)=>handleSubmit(e)} className="hero">
-        <div className="p-6 flex items-center justify-center hero bg-slate-200">
-            <div className="bg-gray-50 rounded-xl container max-w-screen-lg shadow-lg p-4 px-4 md:p-8 my-3 grid gap-4 gap-y-2 text-base">
-                <div className="lg:col-span-10 grid gap-3 gap-y-2 md:gap-5 md:gap-y-5 text-md grid-cols-1 md:grid-cols-10 text-gray-500 tracking-wide font-[arial]">
+    <form onSubmit={(e)=>handleSubmit(e)} className="w-full">
+        <div className="p-6 flex items-center justify-center hero bg-blue-gray-50 ">
+            <div className="bg-gray-50 rounded-xl container max-w-screen-xl shadow-lg p-4 px-4 md:p-8 my-3 gap-4 gap-y-2 text-base">
+                <div className=" gap-3 gap-y-2 md:gap-5 md:gap-y-5 text-md text-gray-700 md:grid md:grid-cols-10">
+                    <div className="col-span-10 text-lg text-light-blue-400 tracking-wider">Product Details</div>
 
-                    <div className="md:col-span-2">
-                        <label htmlFor="product_group">Group</label>
-                        <select name="product_group" required autoFocus value={product_group} onChange={(e)=> setGroup(e.target.value)} 
-                            className="select select-bordered w-full mt-1 ">
-                            <option disabled value=''  />
-                            {groupOptions}
+                    <div className="col-span-3">
+                        <label htmlFor="product_group" >Group<span className="text-red-500 pl-0.5">*</span></label>
+                        <select name="product_group" required autoFocus value={product_group} onChange={(e)=> setGroup(e.target.value)} className="w-full p-2 border border-gray-300 rounded-md text-sm cursor-pointer focus:border-2 focus:border-blue-500">
+                            <option disabled value='' />
+                            {Groups?.map(group =>( <option key= {group._id} value={group._id} className="text-sm"> {group.group_name} </option> ))}
                         </select>
                     </div>
 
-                    {categories.length ? 
-
                     <div className="md:col-span-2">
-                        <label htmlFor="product_category">Category</label>
-                        <select name="product_category" required value={product_category} onChange={(e)=> setCategory(e.target.value)} 
-                            className="select select-bordered w-full mt-1 ">
+                        <label htmlFor="product_category">Category<span className="text-red-500 pl-0.5">*</span></label>
+                        <select name="product_category" disabled = {!categories.length} required value={product_category} onChange={(e)=> setCategory(e.target.value)} className={`w-full p-2 border border-gray-300 rounded-md text-sm focus:border-2 focus:border-blue-500 ${!categories.length ? "cursor-not-allowed" : "cursor-pointer"}`}>
                             <option disabled value='' /> 
                             {categoryOption} 
                         </select>
                     </div>
-                    :
+
+                    <div className="md:col-span-3 ">
+                        <label htmlFor="product_barcode">Barcode<span className="text-red-500 pl-0.5">*</span></label>
+                        <input type="text" name="product_barcode" id="product_barcode" autoComplete="off" required value={product_barcode} onChange={(e)=>setBarcode((e.target.value).toUpperCase().trim())} ref={input2Ref} onKeyDown={(e) => handleKeyDown(e, input3Ref)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
+                    </div>
+
                     <div className="md:col-span-2">
-                        <label htmlFor="product_category">Category</label>
-                        <select name="product_category" disabled className="select select-bordered w-full mt-1 " />
-                    </div>
-                    }
-
-                    <div className="md:col-span-3 ">
-                        <label htmlFor="brand">Brand</label>
-                        <input type="text" name="brand" id="brand" autoComplete="off" required
-                            value={product_brand} onChange={(e)=>setBrand(e.target.value)}
-                            ref={input1Ref} onKeyDown={(e) => handleKeyDown(e, input2Ref)}
-                            className="input input-bordered w-full mt-1" />
+                        <label htmlFor="brand">Brand<span className="text-red-500 pl-0.5">*</span></label>
+                        <input type="text" name="brand" id="brand" autoComplete="off" required value={product_brand} onChange={(e)=>setBrand(e.target.value)} ref={input1Ref} onKeyDown={(e) => handleKeyDown(e, input2Ref)} className="border border-gray-300 text-sm p-1.5 w-full rounded-md" />
                     </div>
 
-                    <div className="md:col-span-3 ">
-                        <label htmlFor="product_barcode">Barcode</label>
-                        <input type="text" name="product_barcode" id="product_barcode" autoComplete="off" required
-                            value={product_barcode} onChange={(e)=>setBarcode((e.target.value).toUpperCase().trim())}
-                            ref={input2Ref} onKeyDown={(e) => handleKeyDown(e, input3Ref)}
-                            className="input input-bordered w-full mt-1" />
+                    <div className="md:col-span-9">
+                        <label htmlFor="name">Name<span className="text-red-500 pl-0.5">*</span></label>
+                        <input type="text" name="name" id="name" autoComplete="off" required value={product_name} onChange={(e)=>setName(e.target.value)} ref={input3Ref} onKeyDown={(e) => handleKeyDown(e, input4Ref)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
                     </div>
 
-                    <div className="md:col-span-10">
-                        <label htmlFor="name">Name</label>
-                        <input type="text" name="name" id="name" autoComplete="off" required
-                            value={product_name} onChange={(e)=>setName(e.target.value)}
-                            ref={input3Ref} onKeyDown={(e) => handleKeyDown(e, input4Ref)}
-                            className="input input-bordered w-full mt-1 p-2" />
-                    </div>
-
+                    <div className=" col-span-10 text-lg text-light-blue-400 tracking-wider mt-3">Quantity and Stock</div>
                     <div className="md:col-span-3">
                         <label htmlFor="product_UOM">Unit Of Measure</label>
-                        <select name="product_UOM" required value={product_UOM} onChange={(e)=> setUOM(e.target.value)} className="select select-bordered w-full mt-1 ">
+                        <select name="product_UOM" required value={product_UOM} onChange={(e)=> setUOM(e.target.value)} className="w-full p-2 border border-gray-300 rounded-md text-sm cursor-pointer focus:border-2 focus:border-blue-500">
                             <option disabled value='' />
                             <option value='gm'>Gram</option>
                             <option value='kg'>Kilo Gram</option>
@@ -208,47 +189,28 @@ const AdminAddNewProductPage = () => {
                             <option value='cap'>capacity</option>
                         </select>
                     </div>
-
-                    <div className="md:col-span-3">
+                    <div className="md:col-span-2">
                         <label htmlFor="product_net_unit">Net Unit</label>
-                        <input type="number" name="product_net_unit" id="product_net_unit"
-                            value={product_net_unit} onChange={(e)=>setNetUnit(e.target.value)}
-                            ref={input4Ref} onKeyDown={(e) => handleKeyDown(e, input5Ref)}
-                            className="input input-bordered w-full mt-1" />
+                        <input type="number" name="product_net_unit" id="product_net_unit" value={product_net_unit} onChange={(e)=>setNetUnit(e.target.value)} ref={input4Ref} onKeyDown={(e) => handleKeyDown(e, input5Ref)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
                     </div>
-
-                    <div className="md:col-span-4 ">
-                        <label htmlFor="product_min_order_quantity">Min OQ</label>
-                        <input type="number" name="product_min_order_quantity" id="product_min_order_quantity"
-                            value={product_min_order_quantity} onChange={(e)=>setMinOrderQuantity(e.target.value)}
-                            ref={input5Ref} onKeyDown={(e) => handleKeyDown(e, input6Ref)}
-                            className="input input-bordered w-full mt-1" />
-                    </div>
-
                     <div className="md:col-span-3 ">
+                        <label htmlFor="product_min_order_quantity">Min OQ</label>
+                        <input type="number" name="product_min_order_quantity" id="product_min_order_quantity" value={product_min_order_quantity} onChange={(e)=>setMinOrderQuantity(e.target.value)} ref={input5Ref} onKeyDown={(e) => handleKeyDown(e, input6Ref)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
+                    </div>
+                    <div className="md:col-span-2 ">
                         <label htmlFor="product_max_order_quantity">Max OQ</label>
-                        <input type="number" name="product_max_order_quantity" id="product_max_order_quantity"
-                            value={product_max_order_quantity} onChange={(e)=>setMaxOrderQuantity(e.target.value)}
-                            ref={input6Ref} onKeyDown={(e) => handleKeyDown(e, input7Ref)}
-                            className="input input-bordered w-full mt-1" />
+                        <input type="number" name="product_max_order_quantity" id="product_max_order_quantity" value={product_max_order_quantity} onChange={(e)=>setMaxOrderQuantity(e.target.value)} ref={input6Ref} onKeyDown={(e) => handleKeyDown(e, input7Ref)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
                     </div>
-
-                    <div className="md:col-span-3">
+                    <div className="md:col-span-2">
                         <label htmlFor="lowInStock">Low in stock</label>
-                        <input type="number" name="lowInStock" id="lowInStock" 
-                            value={product_low_in_stock} onChange={(e)=>setLowInStock(e.target.value)}
-                            ref={input7Ref} onKeyDown={(e) => handleKeyDown(e, input8Ref)}
-                            className="input input-bordered w-full mt-1" />
+                        <input type="number" name="lowInStock" id="lowInStock" value={product_low_in_stock} onChange={(e)=>setLowInStock(e.target.value)} ref={input7Ref} onKeyDown={(e) => handleKeyDown(e, input8Ref)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
                     </div>
-
-                    <div className="md:col-span-4">
+                    <div className="md:col-span-2">
                         <label htmlFor="product_hsn_code">HSN code</label>
-                        <input type="number" name="product_hsn_code" id="product_hsn_code"
-                            value={product_hsn_code} onChange={(e)=>setHsnCode(e.target.value)}
-                            ref={input8Ref} onKeyDown={(e) => handleKeyDown(e, input9Ref)}
-                            className="input input-bordered w-full mt-1" />
+                        <input type="number" name="product_hsn_code" id="product_hsn_code" value={product_hsn_code} onChange={(e)=>setHsnCode(e.target.value)} ref={input8Ref} onKeyDown={(e) => handleKeyDown(e, input9Ref)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
                     </div>
 
+                    <div className=" col-span-10 text-lg text-light-blue-400 tracking-wider mt-3">Additional Information</div>
                     <div className="md:col-span-5 ">
                         <label htmlFor="product_photos">Photo</label>
                         <input type="file" name="product_photos" id="product_photos"

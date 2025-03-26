@@ -7,6 +7,8 @@ import AdminEditCategoryBannerComponent from '../../../components/admin/AdminBan
 import { adminDeleteBanner, changeDeleteBannerStatus, changeEditBannerStatus, getAdminDeleteBannerStatus, getAdminEditBannerStatus } from '../../../slices/adminSlice/adminBannerSlice.js'
 import { useDispatch, useSelector } from 'react-redux'
 import AdminEditCardBannerComponent from '../../../components/admin/AdminBannerComponents/AdminBannerCardComponents/AdminEditCardBannerComponent.jsx'
+import AdminEditGroupComponent from '../../../components/admin/AdminBannerComponents/AdminBannerGroupComponents/AdminEditGroupComponent.jsx'
+import AdminEditCarouselBannerComponent from '../../../components/admin/AdminBannerComponents/AdminBannerCarouselComponents/AdminEditCarouselBannerComponent.jsx'
 
 const AdminEditBannerPage = () => {
 
@@ -74,9 +76,9 @@ const AdminEditBannerPage = () => {
         </div>
         <div className='p-5 pt-7'>
             {banner_type == "card" && <AdminEditCardBannerComponent banner={banner} />}
-            {/* {banner_type == "carousel" && <AdminCreateBannerCarouselComponent banner={banner}/>} */}
+            {banner_type == "carousel" && <AdminEditCarouselBannerComponent banner={banner}/>}
             {banner_type == "category" && <AdminEditCategoryBannerComponent banner={banner}/>}
-            {/* {banner_type == "group" && <AdminCreateBannerGroupComponent banner={banner}/>} */}
+            {banner_type == "group" && <AdminEditGroupComponent banner={banner}/>}
         </div>
     </div>
   )
