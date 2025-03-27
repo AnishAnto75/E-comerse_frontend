@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
-import { useDispatch } from 'react-redux'
 import axios from "axios"
 import { toast } from "react-toastify";
+import {Button} from '@material-tailwind/react'
 
 const AdminAddNewProductPage = () => {
 
@@ -10,6 +10,8 @@ const AdminAddNewProductPage = () => {
     const [error , setError ] = useState(false)
     const [Groups , setGroups] = useState([]) 
     const handleRef = useRef(true)
+
+    // Fetch Groups
     useEffect(()=>{
         const fetchGroups = async()=>{
             try {
@@ -37,8 +39,8 @@ const AdminAddNewProductPage = () => {
     const [product_min_order_quantity , setMinOrderQuantity ] = useState(1)
     const [product_max_order_quantity , setMaxOrderQuantity ] = useState(999)
     const [product_low_in_stock , setLowInStock] = useState(10)
-    const [product_photos , setPhotos] = useState('')
-    const [product_additional_photos , setAdditionalPhotos] = useState('')
+    const [product_photos , setPhotos] = useState(null)
+    const [product_additional_photos , setAdditionalPhotos] = useState(null)
     const [product_hsn_code , setHsnCode ] = useState('')
     const [product_description , setDescription ] = useState('')
     const [product_highlights , setProductHighlights] = useState([])
@@ -56,8 +58,8 @@ const AdminAddNewProductPage = () => {
         setMinOrderQuantity(1)
         setMaxOrderQuantity(999)
         setLowInStock(10)
-        setPhotos('')
-        setAdditionalPhotos('')
+        setPhotos(null)
+        setAdditionalPhotos(null)
         setHsnCode('')
         setDescription('')
         setProductHighlights([])
@@ -124,7 +126,6 @@ const AdminAddNewProductPage = () => {
     const input8Ref = useRef(null)
     const input9Ref = useRef(null)
     const input10Ref = useRef(null)
-    const input11Ref = useRef(null)
     const handleKeyDown = (e, nextInputRef) => {
         if (e.key === "Enter") {
             e.preventDefault()
@@ -136,11 +137,12 @@ const AdminAddNewProductPage = () => {
     if(product_group){ Groups.map(group=> group._id == product_group && categories.push(group.category_id)) }
     const categoryOption = categories[0]?.map(category =>( <option key={category._id} value={category._id}>{category.category_name} </option> ))
 
-  if (loading || loading2) { return <div>Loading..</div>}
+  if (loading) { return <div>Loading..</div>}
   if (error) { return <div>Error</div>}
   return (
     <form onSubmit={(e)=>handleSubmit(e)} className="w-full">
-        <div className="p-6 flex items-center justify-center hero bg-blue-gray-50 ">
+        <div className="p-6 items-center justify-center hero bg-blue-gray-50 ">
+            <div className="text-cyan-700">CREATE NEW PRODUCT</div>
             <div className="bg-gray-50 rounded-xl container max-w-screen-xl shadow-lg p-4 px-4 md:p-8 my-3 gap-4 gap-y-2 text-base">
                 <div className=" gap-3 gap-y-2 md:gap-5 md:gap-y-5 text-md text-gray-700 md:grid md:grid-cols-10">
                     <div className="col-span-10 text-lg text-light-blue-400 tracking-wider">Product Details</div>
@@ -163,12 +165,12 @@ const AdminAddNewProductPage = () => {
 
                     <div className="md:col-span-3 ">
                         <label htmlFor="product_barcode">Barcode<span className="text-red-500 pl-0.5">*</span></label>
-                        <input type="text" name="product_barcode" id="product_barcode" autoComplete="off" required value={product_barcode} onChange={(e)=>setBarcode((e.target.value).toUpperCase().trim())} ref={input2Ref} onKeyDown={(e) => handleKeyDown(e, input3Ref)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
+                        <input type="text" name="product_barcode" id="product_barcode" autoComplete="off" required value={product_barcode} onChange={(e)=>setBarcode((e.target.value).toUpperCase().trim())} ref={input1Ref} onKeyDown={(e) => handleKeyDown(e, input2Ref)} className="border border-gray-300 text-sm p-1.5 w-full rounded-md"/>
                     </div>
 
                     <div className="md:col-span-2">
                         <label htmlFor="brand">Brand<span className="text-red-500 pl-0.5">*</span></label>
-                        <input type="text" name="brand" id="brand" autoComplete="off" required value={product_brand} onChange={(e)=>setBrand(e.target.value)} ref={input1Ref} onKeyDown={(e) => handleKeyDown(e, input2Ref)} className="border border-gray-300 text-sm p-1.5 w-full rounded-md" />
+                        <input type="text" name="brand" id="brand" autoComplete="off" required value={product_brand} onChange={(e)=>setBrand(e.target.value)} ref={input2Ref} onKeyDown={(e) => handleKeyDown(e, input3Ref)} className="border border-gray-300 text-sm p-1.5 w-full rounded-md" />
                     </div>
 
                     <div className="md:col-span-9">
@@ -211,18 +213,44 @@ const AdminAddNewProductPage = () => {
                     </div>
 
                     <div className=" col-span-10 text-lg text-light-blue-400 tracking-wider mt-3">Additional Information</div>
-                    <div className="md:col-span-5 ">
-                        <label htmlFor="product_photos">Photo</label>
-                        <input type="file" name="product_photos" id="product_photos"
-                            accept="image/png, image/jpeg" onChange={(e)=>setPhotos(e.target.files[0])}
-                            className="file-input file-input-bordered w-full mt-1 " />
+                    <div className="md:col-span-5 grid grid-cols-5">
+                        <label htmlFor="product_photos" className=" col-span-5">Photo</label>
+                        <label htmlFor="product_photos" className=" col-span-2 py-2 hero cursor-pointer bg-white content-center px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Choose image
+                            <input id="product_photos" name="product_photos" type="file" className="sr-only" accept="image/png, image/jpeg" onChange={(e)=>setPhotos(e.target.files[0])}/>
+                        </label>
+                        {product_photos ?
+                            <div className="ml-4 mt-1 flex items-center col-span-3 content-center">
+                                <span className="text-sm text-gray-500 mr-2 line-clamp-1">{product_photos.name}</span>
+                                <button onClick={()=>setPhotos(null)} className="text-red-500 hover:text-red-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"clipRule="evenodd"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            :
+                            <span className="col-span-3 content-center ml-4 text-sm text-gray-500">No file selected</span>
+                        }
                     </div>
-                    
-                    <div className="md:col-span-5 ">
-                        <label htmlFor="product_additional_photos">Additional Photos</label>
-                        <input type="file" name="product_additional_photos" id="product_additional_photos"
-                            accept="image/png, image/jpeg" onChange={(e)=>setAdditionalPhotos(e.target.files[0])}
-                            className="file-input file-input-bordered w-full mt-1 " />
+
+                    <div className="md:col-span-5 grid grid-cols-5">
+                        <label htmlFor="additional_photos" className=" col-span-5">Additional Photos</label>
+                        <label htmlFor="product_additional_photos" className="col-span-2 py-2 hero cursor-pointer bg-white content-center px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Choose images
+                            <input id="product_additional_photos" name="product_additional_photos" type="file" className="sr-only" accept="image/png, image/jpeg" onChange={(e)=>setAdditionalPhotos(e.target.files[0])}/>
+                        </label>
+                        {product_additional_photos ?
+                            <div className="ml-4 flex items-center col-span-3 content-center">
+                                <span className="text-sm text-gray-500 mr-2 line-clamp-1">{product_additional_photos.name}</span>
+                                <button onClick={()=>setAdditionalPhotos(null)} className="text-red-500 hover:text-red-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"clipRule="evenodd"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            :
+                            <span className=" col-span-3 content-center ml-4 text-sm text-gray-500">No file selected</span>
+                        }
                     </div>
 
                     <div className="md:col-span-10">
@@ -230,7 +258,7 @@ const AdminAddNewProductPage = () => {
                         <textarea name="description" id="description"
                             value={product_description} onChange={(e)=>setDescription(e.target.value)}
                             ref={input9Ref} onKeyDown={(e) => handleKeyDown(e, input10Ref)}
-                            className="textarea textarea-bordered h-full w-full mt-1 resize-none"/>
+                            className="h-full mt-1 resize-none border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
                     </div>
 
                     <div className="md:col-span-10 mt-7">
@@ -238,24 +266,27 @@ const AdminAddNewProductPage = () => {
                         <input type="text" name="highlights" id="highlights"
                             value={highlight} onChange={(e)=>setHightLight(e.target.value)}
                             onKeyPress={(e) => e.key == 'Enter' && handleHighlight(e)}
-                            ref={input10Ref}
-                            className="input input-bordered w-full mt-1" />
-
-                        <div className="flex flex-col bg-white mt-3 ">
-                            {product_highlights?.map((highlight , index)=>(
-                                <div key={index} className="flex items-center justify-between px-5 py-3 hover:bg-slate-50">
-                                    <li >{highlight}</li>
-                                    <button onClick={(e) => handleDeleteValue(e , index)} className="text-red-500 hover:text-red-700">Delete</button>
-                                </div>
-                            ))}
-                        </div>
+                            ref={input10Ref} className="border text-sm border-gray-300 p-1.5 w-full rounded-md" />
+                        {product_highlights.length ?
+                            <div className="flex flex-col bg-white mt-3 gap-3 border-2 rounded-lg py-2 ">
+                                {product_highlights?.map((highlight , index)=>(
+                                    <div key={index} className="flex items-center justify-between px-5 hover:bg-slate-50">
+                                        <li >{highlight}</li>
+                                        <button onClick={(e) => handleDeleteValue(e , index)} className="text-red-500 hover:bg-gray-300 rounded-full p-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"clipRule="evenodd"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                            :''
+                        }
                     </div>
 
-                    <div className="md:col-span-10 mt-10 flex gap-1">
-                        <div type='reset' onClick={()=>reset()} className="bg-red-500 hero hover:bg-red-400 text-white font-bold py-2 px-4 rounded-md w-full" >
-                            Reset</div>
-                        <button type='submit' disabled={loading2} className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded-md w-full" >
-                            Submit</button> 
+                    <div className="md:col-span-10 mt-5 grid grid-cols-5 gap-5">
+                        <Button onClick={()=>reset()} variant="text" color="red" className=" col-span-2" >Reset</Button>
+                        <Button type='submit' loading={loading2} variant="gradient" color="blue" className=" col-span-3" >Submit</Button> 
                     </div>
                 </div>
             </div>
