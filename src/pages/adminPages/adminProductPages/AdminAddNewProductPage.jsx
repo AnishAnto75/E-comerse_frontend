@@ -141,8 +141,9 @@ const AdminAddNewProductPage = () => {
   if (error) { return <div>Error</div>}
   return (
     <form onSubmit={(e)=>handleSubmit(e)} className="w-full">
-        <div className="p-6 items-center justify-center hero bg-blue-gray-50 ">
-            <div className="text-cyan-700">CREATE NEW PRODUCT</div>
+        <div className="p-6 place-items-center w-full bg-blue-gray-50 ">
+            <div>
+            <div className="text-light-blue-700 w-full">CREATE NEW PRODUCT</div>
             <div className="bg-gray-50 rounded-xl container max-w-screen-xl shadow-lg p-4 px-4 md:p-8 my-3 gap-4 gap-y-2 text-base">
                 <div className=" gap-3 gap-y-2 md:gap-5 md:gap-y-5 text-md text-gray-700 md:grid md:grid-cols-10">
                     <div className="col-span-10 text-lg text-light-blue-400 tracking-wider">Product Details</div>
@@ -289,6 +290,7 @@ const AdminAddNewProductPage = () => {
                         <Button type='submit' loading={loading2} variant="gradient" color="blue" className=" col-span-3" >Submit</Button> 
                     </div>
                 </div>
+            </div>
             </div>
         </div>
     </form>

@@ -56,6 +56,7 @@ import AdminBannerPage from "./pages/adminPages/adminBannerPages/AdminBannerPage
 import AdminCreateBannerPage from "./pages/adminPages/adminBannerPages/AdminCreateBannerPage.jsx";
 import { getAdminCreateBannerStatus } from "./slices/adminSlice/adminBannerSlice.js";
 import AdminEditBannerPage from "./pages/adminPages/adminBannerPages/AdminEditBannerPage.jsx";
+import AdminLowInStockPage from "./pages/adminPages/adminProductPages/AdminLowInStockPage.jsx";
 
 function App() {
     const dispatch = useDispatch()
@@ -146,6 +147,7 @@ function App() {
                     <Route index element={<AdminProductPage />}/>
                     <Route path="new-product" element={<AdminAddNewProductPage />}/>
                     <Route path="all-product" element={<AdminAllProductPage />}/>
+                    <Route path="low-in-stock" element={<AdminLowInStockPage />}/>
                     <Route path=":id" element={<AdminProductViewPage />}/>
                 </Route>
 
