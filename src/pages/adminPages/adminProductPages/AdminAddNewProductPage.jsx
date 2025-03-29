@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react"
 import axios from "axios"
 import { toast } from "react-toastify";
 import {Button} from '@material-tailwind/react'
+import LoadingSpinner from "../../../components/LoadingSpinner";
+import ErrorComponent from "../../../components/ErrorComponent";
 
 const AdminAddNewProductPage = () => {
 
@@ -137,13 +139,13 @@ const AdminAddNewProductPage = () => {
     if(product_group){ Groups.map(group=> group._id == product_group && categories.push(group.category_id)) }
     const categoryOption = categories[0]?.map(category =>( <option key={category._id} value={category._id}>{category.category_name} </option> ))
 
-  if (loading) { return <div>Loading..</div>}
-  if (error) { return <div>Error</div>}
+  if (loading) { return <LoadingSpinner/>}
+  if (error) { return <ErrorComponent/>}
   return (
     <form onSubmit={(e)=>handleSubmit(e)} className="w-full">
-        <div className="p-6 place-items-center w-full bg-blue-gray-50 ">
+        <div className="p-6 place-items-center w-full ">
             <div>
-            <div className="text-light-blue-700 w-full">CREATE NEW PRODUCT</div>
+            <div className="text-light-blue-500 w-full">CREATE NEW PRODUCT</div>
             <div className="bg-gray-50 rounded-xl container max-w-screen-xl shadow-lg p-4 px-4 md:p-8 my-3 gap-4 gap-y-2 text-base">
                 <div className=" gap-3 gap-y-2 md:gap-5 md:gap-y-5 text-md text-gray-700 md:grid md:grid-cols-10">
                     <div className="col-span-10 text-lg text-light-blue-400 tracking-wider">Product Details</div>

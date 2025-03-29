@@ -3,11 +3,12 @@ import React ,{ useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from "react-toastify";
 import PageNotFoundPage from "../../PageNotFoundPage";
+import LoadingSpinner from "../../../components/LoadingSpinner";
+import ErrorComponent from "../../../components/ErrorComponent";
 
 const AdminProductViewPage = () => {
     const {id} = useParams()
 
-    const navigate = useNavigate()
     const [loading , setLoading] = useState(false)
     const [product , setProduct ] = useState()
     const [error , setError] = useState(false)
@@ -32,13 +33,12 @@ const AdminProductViewPage = () => {
         }
     } , [])
 
-    if(loading){return <div>loading...</div>}
-    if(error){return <div>Error Occured Kindly refresh the page</div>}
+    if (loading) { return <LoadingSpinner/>}
+    if (error) { return <ErrorComponent/>}
     if(!product){return <div className="w-full"> <PageNotFoundPage/> </div>}
 
   return (
     <div className="bg-slate-100 w-full p-2 min-h-screen">
-        {/* photos */}
         <div className="bg-white h-44"></div>
         <div>
             <div className="py-3 text-2xl">PRODUCT DETAILS</div>

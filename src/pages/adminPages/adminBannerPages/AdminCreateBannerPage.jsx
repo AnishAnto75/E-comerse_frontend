@@ -8,6 +8,7 @@ import AdminCreateBannerCardComponent from '../../../components/admin/AdminBanne
 import AdminCreateBannerCarouselComponent from '../../../components/admin/AdminBannerComponents/AdminBannerCarouselComponents/AdminCreateBannerCarouselComponent'
 import AdminCreateBannerCategoryComponent from '../../../components/admin/AdminBannerComponents/AdminBannerCategoryComponents/AdminCreateBannerCategoryComponent'
 import AdminCreateBannerGroupComponent from '../../../components/admin/AdminBannerComponents/AdminBannerGroupComponents/AdminCreateBannerGroupComponent'
+import ErrorComponent from '../../../components/ErrorComponent'
 
 const AdminCreateBannerPage = () => {
     const dispatch = useDispatch()
@@ -39,8 +40,8 @@ const AdminCreateBannerPage = () => {
     const bannerLocations = banners?.filter(banner => !banner.status)
 
     if(loading == 'loading'){return <LoadingSpinner/>}
-    if(error){ return <div>Error occured please refresh the page</div>}
-    if(!banners){ return <div>Error occured please refresh the page</div>}
+    if(error){ return <ErrorComponent/>}
+    if(!banners){ return <ErrorComponent/>}
 
     if(!bannerLocations.length){
         return <div className='w-full h-[calc(100vh-90px)] content-center text-center'>

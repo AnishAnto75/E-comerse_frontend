@@ -6,6 +6,7 @@ import {Tabs, TabsHeader, TabsBody, Tab, TabPanel} from "@material-tailwind/reac
 import AdminViewBannerComponent from '../../../components/admin/AdminBannerComponents/AdminViewBannerComponent'
 import { useDispatch, useSelector } from 'react-redux'
 import { adminFetchBanners, getAdminFetchBannersError, getAdminFetchBannersStatus, selectAllAdminBanners } from '../../../slices/adminSlice/adminBannerSlice.js'
+import ErrorComponent from '../../../components/ErrorComponent.jsx';
 
 const AdminBannerPage = () => {
 
@@ -26,7 +27,7 @@ const AdminBannerPage = () => {
     },[banners])
 
     if(loading == 'loading'){return <LoadingSpinner/>}
-    if(error){ return <div>Error occured please refresh the page</div>}
+    if (error) { return <ErrorComponent/>}
     if(!banners){ return <div>Error occured please refresh the page</div>}
 
   return (

@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import AdminEditCardBannerComponent from '../../../components/admin/AdminBannerComponents/AdminBannerCardComponents/AdminEditCardBannerComponent.jsx'
 import AdminEditGroupComponent from '../../../components/admin/AdminBannerComponents/AdminBannerGroupComponents/AdminEditGroupComponent.jsx'
 import AdminEditCarouselBannerComponent from '../../../components/admin/AdminBannerComponents/AdminBannerCarouselComponents/AdminEditCarouselBannerComponent.jsx'
+import ErrorComponent from '../../../components/ErrorComponent.jsx'
 
 const AdminEditBannerPage = () => {
 
@@ -57,9 +58,9 @@ const AdminEditBannerPage = () => {
         }
     },[deleteBannerStatus, editBannerStatus])
 
-    if(loading){return <LoadingSpinner/>}
-    if(error){ return <div>Error occured please refresh the page</div>}
-    if(!banner || !banner.status){return <div>Banner not created yet</div>}
+    if (loading) { return <LoadingSpinner/>}
+    if (error) { return <ErrorComponent/>}
+    if(!banner || !banner.status){return <ErrorComponent/>}
 
   return (
     <div className='w-full'>

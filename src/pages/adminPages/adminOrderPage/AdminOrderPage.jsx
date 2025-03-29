@@ -1,6 +1,8 @@
 import axios from 'axios'
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import LoadingSpinner from '../../../components/LoadingSpinner'
+import ErrorComponent from '../../../components/ErrorComponent'
 
 const AdminOrderPage = () => {
 
@@ -40,7 +42,6 @@ const AdminOrderPage = () => {
         return canceled.status ? "Canceled" : delivered.status ? "Delivered" : out.status ? "Out" : confirmed.status ? "Confirmed" : placed.status ? "Placed" : "NaN"    
     }  
 
-    
     const getStatusColor = (order_status)=>{
         const placed = order_status.placed
         const confirmed = order_status.confirmed 
@@ -50,42 +51,25 @@ const AdminOrderPage = () => {
         return canceled.status ? "text-red-500" : delivered.status ? "text-green-500" : out.status ? "text-gray-600" : confirmed.status ? "text-gray-600" : placed.status ? "text-yellow-500" : ''    
     }
 
-    if(loading){return <div className='hero'>Loading...</div>}
-    if(error){return <div className='hero bg-gray-100 min-h-screen'>Error Occured Please refresh the page</div>}
-    if(!orders){return <div className='hero bg-gray-100 min-h-screen'>No Orders Found</div>}
+    if(loading){return <LoadingSpinner/>}
+    if(error){return <ErrorComponent/>}
+    if(!orders){return <div className='text-center content-center min-h-screen w-full'>No Orders Found</div>}
 
   return (
-    <div className='bg-gray-100 flex w-full'>
-        <div className='container p-5 items-center justify-center mb-10 '>
-            <div className='font-[arial] mb-5'>Assigned Orders</div>
-            <div className="bg-white border-2">
-                <table className="table-zebra text-center w-full text-sm">
-                    <thead>
-                        <tr className='bg-gray-600 text-white font-[arial] tracking-wide'>
-                            <th>S.No</th>
-                            <th className='p-5'>Order ID</th>
-                            <th>Customer Name</th>
-                            <th>Order Status</th>
-                            <th>No of Prod</th>
-                            <th>View</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {orders?.map((order , index) =>
-                        <tr key={order._id}>
-                            <th className='border-r'>{index+1}</th>
-                            <td>{order.order_id}</td>
-                            <td>{order.delivery_address.name}</td>
-                            <td className={`${getStatusColor(order?.order_status)}`}>{findOrderStatus(order?.order_status)}</td>
-                            <td>{order.total_no_of_product ? order.total_no_of_product : "Nil"}</td>
-                            <td className='rounded-xl flex p-0 '>
-                                <button onClick={()=>navigate(`/admin/orders/${order.order_id}`)} className='bg-slate-500 text-white font-[arial]  rounded-xl hero m-1  p-2'>view</button>
-                            </td>
-                        </tr>
-                    )}
-                    </tbody>
-                </table>
+    <div className='p-2 bg-white w-full'>
+        <div className=' col-span-8 grid grid-cols-3 gap-5 w-full px-3 pt-3 text-gray-800'>
+            <div className='col-span-1 bg-blue-gray-50/50 min-h-44 rounded-2xl p-10 flex flex-col '>
+                <span>Total Orders</span>
+                <span className='text-5xl w-full px-5 h-full items-center flex'>{orders.length ? orders.length : "NaN"}</span>
             </div>
+            <div className='col-span-1 bg-blue-gray-50/50 min-h-44 rounded-2xl p-10 flex flex-col '>
+                <span className=''>Pending Orders</span>
+                {/* <span className='text-5xl w-full px-5 h-full items-center flex line-clamp-1'>{response?.low_in_stock ? response.low_in_stock : "NaN"}</span> */}
+            </div>     
+            <div className='col-span-1 bg-blue-gray-50/50 min-h-44 rounded-2xl p-10 flex flex-col '>
+                <span>Total Stock</span>
+                {/* <span className='text-4xl w-full px-5 h-full items-center flex line-clamp-1'>{response?.total_stock ? response.total_stock : "NaN"}</span> */}
+            </div>         
         </div>
     </div>
   )

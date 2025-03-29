@@ -3,15 +3,20 @@ import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { Card, CardHeader, Input, Typography, Button, CardBody, Chip, CardFooter, Tabs, TabsHeader, Tab, Avatar, IconButton, Tooltip,} from "@material-tailwind/react";
-// import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-// import { PencilIcon, UserPlusIcon } from "@heroicons/react/24/solid";
+import { debounce } from 'lodash';
+import LoadingSpinner from '../../../components/LoadingSpinner';
+import ErrorComponent from '../../../components/ErrorComponent';
 
 const AdminProductPage = () => {
     
+    const navigate = useNavigate()
     const [loading , setLoading] = useState(false)
     const [error , setError] = useState(false)
     const [response, setResponse] = useState(null)
+    const [products, setProducts] = useState(null)
     const handleRef = useRef(true) 
+
+    const [search_products_name, setSearchProductsName] = useState('')
 
     useEffect(()=>{
         const fetchHighSellingProducts = async()=>{
@@ -19,7 +24,8 @@ const AdminProductPage = () => {
                 setLoading(true)
                 const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product/high-selling-products`)
                 console.log("adminFetchHighSellingProducts payload : " , res.data)        
-                setResponse(res.data.data)
+                setResponse(res.data?.data)
+                setProducts(res.data?.data?.products)
             } catch (error) {
                 setError(true)
                 toast.error(error.response?.data?.message)
@@ -33,164 +39,107 @@ const AdminProductPage = () => {
         }
     } , [])
 
-    
-const TABS = [
-    {
-      label: "All",
-      value: "all",
-    },
-    {
-      label: "Monitored",
-      value: "monitored",
-    },
-    {
-      label: "Unmonitored",
-      value: "unmonitored",
-    },
-  ];
-   
-  const TABLE_HEAD = ["Member", "Function", "Status", "Employed", ""];
- 
-  const TABLE_ROWS = [
-    {
-      img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-3.jpg",
-      name: "John Michael",
-      email: "john@creative-tim.com",
-      job: "Manager",
-      org: "Organization",
-      online: true,
-      date: "23/04/18",
-    },
-    {
-      img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-2.jpg",
-      name: "Alexa Liras",
-      email: "alexa@creative-tim.com",
-      job: "Programator",
-      org: "Developer",
-      online: false,
-      date: "23/04/18",
-    },
-    {
-      img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-1.jpg",
-      name: "Laurent Perrier",
-      email: "laurent@creative-tim.com",
-      job: "Executive",
-      org: "Projects",
-      online: false,
-      date: "19/09/17",
-    },
-    {
-      img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-4.jpg",
-      name: "Michael Levi",
-      email: "michael@creative-tim.com",
-      job: "Programator",
-      org: "Developer",
-      online: true,
-      date: "24/12/08",
-    },
-    {
-      img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-5.jpg",
-      name: "Richard Gran",
-      email: "richard@creative-tim.com",
-      job: "Manager",
-      org: "Executive",
-      online: false,
-      date: "04/10/21",
-    },
-  ];
+    const requestProductsByName = debounce(async (term) => {
+        if(term.length > 1){
+            try {
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product/search?name=${term}`)
+                // console.log("requestProductsByName: ",res.data)
+                setProducts(res.data.data) 
+            } catch (error) {
+                console.error("error in requestProductsByName :" , error)
+            }
+        }
+    },500)
 
-    if(loading){return <div>loading...</div>}
-    if(error){return <div>Error Occured Kindly refresh the page</div>}
-    if(!response){return <div>Reload the page</div>}
+    const handleSearchProducts = (e) => {
+        const term = e.target.value;
+        setSearchProductsName(term)
+        if(term?.length > 1){requestProductsByName(term)}
+        else{setProducts(response.products)}
+    }
+
+    if(loading){return <LoadingSpinner/>}
+    if(error){return <ErrorComponent/>}
+    if(!response){return <ErrorComponent/>}
 
   return (
     <div className='p-2 w-full bg-white'>
-        <div className=' col-span-8 grid grid-cols-3 gap-5 w-full px-5 pt-5 text-gray-800'>
-            <div className='col-span-1 bg-gray-200 min-h-44 rounded-2xl p-10 flex flex-col'>
+        <div className=' col-span-8 grid grid-cols-3 gap-5 w-full px-3 pt-3 text-gray-800'>
+            <div onClick={()=> navigate('/admin/products/all-products')} className='col-span-1 bg-blue-gray-50/50 min-h-44 rounded-2xl p-10 flex flex-col cursor-pointer'>
                 <span>Total Products</span>
-                <span className='text-5xl text-center w-full px-5 h-full items-center flex'>{response?.total_products ? response.total_products : "NaN"}</span>
+                <span className='text-5xl w-full px-5 h-full items-center flex'>{response?.total_products ? response.total_products : "NaN"}</span>
             </div>            
-            <div className='relative col-span-1 bg-gray-200 min-h-44 rounded-2xl p-10 flex flex-col'>
-                <span className=''>Low In Stock</span>
-                <span className='text-5xl text-center w-full px-5 h-full items-center line-clamp-1 flex'>{response?.low_in_stock ? response.low_in_stock : "NaN"} <span className='text-lg pl-2'> Products</span></span>
-                <Link to={'/admin/products/low-in-stock'} className='absolute flex bottom-3 right-4 text-sm items-center cursor-pointer hover:text-gray-500 '>View<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4"><path strokeLinecap="round" strokeLinejoin="round" d="m5 4 7 7-7 7 m6 7 7 7"/></svg></Link>
+            <div onClick={()=> navigate('/admin/products/low-in-stock')} className='col-span-1 bg-blue-gray-50/50 min-h-44 rounded-2xl p-10 flex flex-col cursor-pointer'>
+                <span className=''>Low Stock Products</span>
+                <span className='text-5xl w-full px-5 h-full items-center flex line-clamp-1'>{response?.low_in_stock ? response.low_in_stock : "NaN"}</span>
             </div>     
-            <div className='col-span-1 bg-gray-200 min-h-44 rounded-2xl p-10 flex flex-col'>
+            <div onClick={()=>navigate('/admin/stock')} className='col-span-1 bg-blue-gray-50/50 min-h-44 rounded-2xl p-10 flex flex-col cursor-pointer'>
                 <span>Total Stock</span>
-                <span className='text-4xl text-center w-full px-5 h-full items-center flex line-clamp-1'>{response?.total_stock ? response.total_stock : "NaN"}</span>
+                <span className='text-4xl w-full px-5 h-full items-center flex line-clamp-1'>{response?.total_stock ? response.total_stock : "NaN"}</span>
             </div>         
         </div>
-        <Card className="w-full">
-            <CardHeader floated={false} shadow={false} className="rounded-none">
-                <div className="flex  justify-between gap-4 ">
-                    <div className="w-full md:w-72 pt-2">
-                        <Input label="Search" className='h-5 w-5' icon={<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6"><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>}/>
+        <div className="w-full p-2">
+            <div className="rounded-none p-4">
+                <div className="flex justify-between gap-4 ">
+                    <div className="items-center md:w-72 relative">
+                        <input type='text' value={search_products_name} onChange={(e)=>handleSearchProducts(e)} placeholder='Search' className='border-2 border-blue-200 py-2 px-2 pr-9 w-full rounded-lg text-sm placeholder:text-blue-300/75 font-poppins focus:outline-none'/>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.3} stroke="currentColor" className="size-6 absolute top-2 right-2 text-blue-400 cursor-pointer"><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
                     </div>
-                    <div className="flex shrink-0 items-center gap-2 ">
-                        <Button variant="outlined" size="sm">view all</Button>
-                        <Button size="sm">Add Product</Button>
+                    <div className="flex shrink-0 items-center gap-2">
+                        <Button onClick={()=>navigate(`/admin/products/all-products`)} variant="outlined" color='blue' size="sm">view all</Button>
+                        <Button onClick={()=>navigate(`/admin/products/new-product`)} size="sm" color='blue' variant='gradient'>Add Product</Button>
                     </div>
                 </div>
-            </CardHeader>
-            <CardBody className="overflow-scroll px-0">
-                <table className="w-full min-w-max table-auto text-left">
+            </div>
+            <div className="pt-2 px-0">
+                <table className="w-full min-w-max table-auto text-left ">
                     <thead>
-                        <tr>
-                        {TABLE_HEAD.map((head) => (
-                            <th key={head} className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4">
-                                <Typography variant="small" color="blue-gray" className="font-normal leading-none opacity-70">{head}</Typography>
+                        <tr className='border-y border-blue-gray-100 text-center'>
+                            <th className="bg-blue-gray-50/50 p-4 text-start">
+                                <div className="font-normal text-sm  text-gray-600 tracking-wider leading-none pl-5">Particulars</div>
                             </th>
-                        ))}
+                            <th className="bg-blue-gray-50/50 p-4">
+                                <div className="font-normal text-sm text-gray-600 tracking-wider leading-none">Brand</div>
+                            </th>
+                            <th className="bg-blue-gray-50/50 p-4">
+                                <div className="font-normal text-sm text-gray-600 tracking-wider leading-none">Stock</div>
+                            </th>
+                            <th className="bg-blue-gray-50/50 p-4">
+                                <div className="font-normal text-sm text-gray-600 tracking-wider leading-none">Units Sold</div>
+                            </th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {TABLE_ROWS.map(({ img, name, email, job, org, online, date }, index) => {
-                            const isLast = index === TABLE_ROWS.length - 1;
+                    <tbody className=''>
+                        {products?.map(({ product_photos, product_name, product_barcode, product_brand, product_total_stock, product_total_unit_sold }, index) => {
+                            const isLast = index === products?.length - 1;
                             const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
                             return (
-                            <tr key={name}>
-                                <td className={classes}>
-                                    <div className="flex items-center gap-3">
-                                        <Avatar src={img} alt={name} size="sm" />
-                                        <div className="flex flex-col">
-                                            <Typography variant="small" color="blue-gray" className="font-normal">{name}</Typography>
-                                            <Typography variant="small" color="blue-gray" className="font-normal opacity-70">{email}</Typography>
+                            <tr key={index} className='hover:bg-gray-50 text-center' onClick={()=>navigate(`/admin/products/${product_barcode}`)}>
+                                <td className={`${classes}`}>
+                                    <div className="flex items-center text-start gap-3">
+                                        <Avatar src={product_photos ? product_photos : '/3-08.webp'} alt={product_brand} size="sm" />
+                                        <div className="flex flex-col text-sm">
+                                            <div className="font-normal text-blue-gray-700 line-clamp-1">{product_name}</div>
+                                            <div className="font-normal text-blue-gray-700 opacity-70">{product_barcode}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td className={classes}>
-                                    <div className="flex flex-col">
-                                        <Typography variant="small" color="blue-gray" className="font-normal">{job}</Typography> 
-                                        <Typography variant="small" color="blue-gray" className="font-normal opacity-70">{org}</Typography>
-                                    </div>
+                                    <div className="text-sm text-blue-gray-800 line-clamp-1">{product_brand}</div>
                                 </td>
                                 <td className={classes}>
-                                    <div className="w-max">
-                                        <Chip variant="ghost" size="sm"value={online ? "online" : "offline"}color={online ? "green" : "blue-gray"} />
-                                    </div>
+                                    <div className="text-sm text-blue-gray-800 line-clamp-1">{product_total_stock}</div>
                                 </td>
                                 <td className={classes}>
-                                    <Typography variant="small" color="blue-gray" className="font-normal">{date}</Typography>
-                                </td>
-                                <td className={classes}>
-                                    <Tooltip content="Edit User">
-                                        <IconButton variant="text"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">  <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" /></svg></IconButton>
-                                    </Tooltip>
+                                    <div className="text-sm text-blue-gray-800 line-clamp-1">{product_total_unit_sold}</div>
                                 </td>
                             </tr>
                             );
                         })}
                     </tbody>
                 </table>
-            </CardBody>
-            <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-                <Typography variant="small" color="blue-gray" className="font-normal">Page 1 of 10</Typography>
-                <div className="flex gap-2">
-                    <Button variant="outlined" size="sm">Previous</Button>
-                    <Button variant="outlined" size="sm">Next</Button>
-                </div>
-            </CardFooter>
-        </Card>
+            </div>
+        </div>
     </div>
   )
 }
