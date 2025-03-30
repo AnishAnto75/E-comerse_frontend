@@ -32,12 +32,11 @@ const AdminEditBannerPage = () => {
     const fetchBanner = async()=>{
         try {
             setLoading(true)
-            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/banner/${id}`)
+            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/banner/banner_id/${id}`)
             setBanner(res.data.data)
             setBannerType(res.data.data.banner_type)
             console.log("fetchBanner response : ",res.data)
         } catch (error) {
-            if(error.response.status == 404){ navigate('/404')}
             setError(true)
             console.error("error in fetchBanner function :",error)
         } finally { setLoading(false) }

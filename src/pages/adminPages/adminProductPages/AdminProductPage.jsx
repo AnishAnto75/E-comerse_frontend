@@ -22,7 +22,7 @@ const AdminProductPage = () => {
         const fetchHighSellingProducts = async()=>{
             try {
                 setLoading(true)
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product/high-selling-products`)
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product/product-page`)
                 console.log("adminFetchHighSellingProducts payload : " , res.data)        
                 setResponse(res.data?.data)
                 setProducts(res.data?.data?.products)

@@ -58,6 +58,7 @@ import { getAdminCreateBannerStatus } from "./slices/adminSlice/adminBannerSlice
 import AdminEditBannerPage from "./pages/adminPages/adminBannerPages/AdminEditBannerPage.jsx";
 import AdminLowInStockPage from "./pages/adminPages/adminProductPages/AdminLowInStockPage.jsx";
 import AdminEditProductPage from "./pages/adminPages/adminProductPages/AdminEditProductPage.jsx";
+import AdminAllOrderPage from "./pages/adminPages/adminOrderPage/AdminAllOrderPage.jsx";
 
 function App() {
     const dispatch = useDispatch()
@@ -68,7 +69,6 @@ function App() {
     const isAdmin = useSelector(getAdmin)
     const user = useSelector(getUser)
     const userStatus = useSelector(getUserStatus)
-    const bannerStatus = useSelector(getAdminCreateBannerStatus)
 
     useEffect(()=>{
         if(handleRef.current){
@@ -141,7 +141,8 @@ function App() {
 
                 <Route path="orders">
                     <Route index element={<AdminOrderPage />}/>
-                    <Route path=":id" element={<AdminOrderViewPage/> } />
+                    <Route path="all" element={<AdminAllOrderPage/> } />
+                    <Route path="order_id/:id" element={<AdminOrderViewPage/> } />
                 </Route>
 
                 <Route path="products">

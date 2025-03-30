@@ -76,9 +76,9 @@ const AdminEditGroupComponent = ({banner}) => {
                 <div className='pt-5 pb-1 pl-2 flex justify-end px-10'>
                     <Button variant='text' size='sm' color='blue' onClick={()=>setAddGroupModal(true)}>Change</Button>
                 </div>
-                <div className='border grid grid-cols-12 rounded-md p-5 bg-gradient-to-br from-green-50 via-green-200 to-green-300 min-h-[470px]'>
-                    <div className='col-span-3 p-10'>
-                        <div className='text-3xl font-bold font-poppins text-green-400'>{group?.group_name}</div>
+                <div className='grid grid-cols-12 rounded-md p-5 bg-gradient-to-br from-light-blue-50 via-light-blue-200 to-light-blue-50 min-h-[470px] mt-5'>
+                <div className='col-span-3 p-10'>
+                        <div className='text-3xl font-bold font-poppins text-light-blue-700'>{group?.group_name}</div>
                     </div>
                     <div className='col-span-9 grid md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4'>
                         {group?.category_id?.map((category, index)=>(

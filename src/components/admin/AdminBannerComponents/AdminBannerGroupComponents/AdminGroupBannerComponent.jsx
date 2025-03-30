@@ -16,9 +16,9 @@ const AdminGroupBannerComponent = ({banner}) => {
         <div className='pt-5 pb-3 pl-2 '>
             <div className='font-poppins pb-2'>{banner.group?.heading}</div>
         </div>
-        <div className='border grid grid-cols-12 rounded-md p-5 bg-gradient-to-br from-green-50 via-green-200 to-green-300 min-h-[470px]'>
+        <div className='grid grid-cols-12 rounded-md p-5 bg-gradient-to-br from-light-blue-50 via-light-blue-200 to-light-blue-50 min-h-[470px] mt-5'>
             <div className='col-span-3 p-10'>
-                <div className='text-3xl font-bold font-poppins text-green-400'>{banner.group?.group_id?.group_name}</div>
+                <div className='text-3xl font-bold font-poppins text-light-blue-700'>{banner.group?.group_id?.group_name}</div>
             </div>
             <div className='col-span-9 grid md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4'>
                 {banner.group?.group_id?.category_id?.map((category, index)=>(
