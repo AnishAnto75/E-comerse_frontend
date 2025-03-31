@@ -52,7 +52,7 @@ const AdminCreateBannerPage = () => {
         </div>
     }
   return (
-    <div className='w-full p-5 md:max-w-[calc(100%-210px)]'>
+    <div className='w-full p-5'>
         <div className='col-span-1 m-5'>
             <div className='text-green-400 font-roboto font-medium tracking-wider text-lg'>Create Banner</div>
             <div className='mt-3 text-gray-500 tracking-wider'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Banners are crucial for capturing attention, promoting products, and driving sales by highlighting deals, new arrivals, or special offers. They enhance user experience and guide customers toward key actions, boosting conversions and engagement</div>

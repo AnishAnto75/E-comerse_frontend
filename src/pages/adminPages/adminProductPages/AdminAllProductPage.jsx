@@ -6,6 +6,7 @@ import { Avatar, Button, Card, CardBody, CardHeader, Chip } from '@material-tail
 import { debounce } from 'lodash';
 import LoadingSpinner from '../../../components/LoadingSpinner';
 import ErrorComponent from '../../../components/ErrorComponent';
+import AdminSideBar from '../../../components/admin/AdminSideBar';
 
 const AdminAllProductPage = () => {
 
@@ -63,6 +64,8 @@ const AdminAllProductPage = () => {
     if (error) { return <ErrorComponent/>}
 
   return (
+    <div className='flex'>
+    <AdminSideBar />
     <div className="w-full p-2">
         <div className="rounded-none p-4  ">
             <div className="flex justify-between gap-4 ">
@@ -134,6 +137,7 @@ const AdminAllProductPage = () => {
                 </tbody>
             </table>
         </div>
+    </div>
     </div>
   )
 }

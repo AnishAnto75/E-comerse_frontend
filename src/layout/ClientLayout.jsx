@@ -5,11 +5,11 @@ import ClientHeader from '../components/clientComponents/ClientHeader';
 const ClientLayout = () => {
 
   return (
-    <div>
+    <>
         <ClientHeader />
 
         <Outlet />
-    </div>
+    </>
   )
 }
 

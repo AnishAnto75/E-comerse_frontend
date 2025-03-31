@@ -6,6 +6,7 @@ import ErrorComponent from '../../../components/ErrorComponent'
 import { debounce } from 'lodash'
 import { Button, Chip } from '@material-tailwind/react'
 import { format } from 'date-fns'
+import AdminSideBar from '../../../components/admin/AdminSideBar'
 
 const AdminOrderPage = () => {
 
@@ -76,6 +77,8 @@ const AdminOrderPage = () => {
     if(error){return <ErrorComponent/>}
 
   return (
+    <div className='flex'>
+    <AdminSideBar />
     <div className='p-2 bg-white w-full'>
         <div onClick={()=>navigate('/admin/orders/all')} className=' col-span-8 grid grid-cols-3 gap-5 w-full px-3 pt-3 text-gray-800 cursor-pointer'>
             <div className='col-span-1 bg-blue-gray-50/50 min-h-44 rounded-2xl p-10 flex flex-col '>
@@ -106,7 +109,7 @@ const AdminOrderPage = () => {
             <thead>
                 <tr className='p-5 text-center border-y border-blue-gray-100 bg-blue-gray-50/50 text-sm text-gray-600 tracking-wider'>
                     <th className="font-normal p-4"></th>
-                    <th className="text-start font-normal p-4">OI</th>
+                    <th className="text-start font-normal p-4">Order Id</th>
                     <th className='p-4 font-normal'>User</th>
                     <th className='p-4 font-normal'>Products</th>
                     <th className='p-4 font-normal'>Status</th>
@@ -118,7 +121,7 @@ const AdminOrderPage = () => {
                     const status = findOrderStatus(order_status)
                     const classes = index === orders?.length - 1 ? "p-4" : "p-4 border-b border-blue-gray-50";
                     return (
-                    <tr key={index} className='hover:bg-blue-gray-50/50 text-center text-sm text-blue-gray-800' onClick={()=>navigate(`/admin/orders/order_id/${order_id}`)}>
+                        <tr key={index} className='hover:bg-blue-gray-50/50 text-center text-sm text-blue-gray-800' onClick={()=>navigate(`/admin/orders/order_id/${order_id}`)}>
                         <td className={`${classes} text-start w-5 border-r border-blue-gray-50 border-b-0 `}>{index+1}</td>
                         <td className={`${classes} text-start hero`}><div className='tracking-wider'>{order_id}</div><div className="text-blue-gray-500">{status?.date}</div></td>
                         <td className={classes}>{user_id?.name}</td>
@@ -130,6 +133,7 @@ const AdminOrderPage = () => {
                 })}
             </tbody>
         </table>
+    </div>
     </div>
   )
 }

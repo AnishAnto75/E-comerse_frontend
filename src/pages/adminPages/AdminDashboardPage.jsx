@@ -4,7 +4,8 @@ import AdminSideBar from '../../components/admin/AdminSideBar';
 
 const AdminDashboardPage = () => {
   return (
-    <div className='w-full'>
+    <div className='w-full flex'>
+        <AdminSideBar />
         <div className='bg-gray-100 h-screen flex items-cnter justify-center w-full'>
             <div className='container p-10 items-center justify-center  '>
                 <div className='font-[arial] mb-5'>Assigned Orders</div>

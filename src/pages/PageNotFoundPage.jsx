@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 
 const PageNotFoundPage = () => {
   return (
-    <main className="grid min-h-full place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
+    <div className="fixed inset-0 bg-white overflow-y-auto z-50 ">
+        <div className="flex transform min-h-screen items-center justify-center ">
         <div className="text-center">
             <p className="text-2xl font-semibold text-indigo-600">404</p>
             <h1 className="mt-4 text-5xl font-semibold tracking-tight text-balance text-gray-900 sm:text-7xl">Page not found</h1>
@@ -13,8 +14,9 @@ const PageNotFoundPage = () => {
                     Go back home
                 </Link>
             </div>
+            </div>
         </div>
-    </main>
+    </div>
   )
 }
 

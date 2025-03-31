@@ -8,15 +8,15 @@ import {store} from './app/store.js'
 import { ThemeProvider } from "@material-tailwind/react";
 
 createRoot(document.getElementById('root')).render(
-    <div className='font-[arial] tracking-wide'>
-        <StrictMode>
-            <ThemeProvider>
-                <BrowserRouter>
-                    <Provider store={store}>
+    <StrictMode>
+        <ThemeProvider>
+            <BrowserRouter>
+                <Provider store={store}>
+                    <div className='font-[arial] tracking-wide'>
                         <App />
-                    </Provider>
-                </BrowserRouter>
-            </ThemeProvider>
-        </StrictMode>,
-    </div>
+                    </div>
+                </Provider>
+            </BrowserRouter>
+        </ThemeProvider>
+    </StrictMode>
 )

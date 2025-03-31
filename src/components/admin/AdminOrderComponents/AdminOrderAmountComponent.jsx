@@ -2,7 +2,7 @@ import React from 'react'
 
 const AdminOrderAmountComponent = ({order}) => {
   return (
-    <div className='p-4 col-span-1 bg-white'>
+    <div className='p-4 border'>
         <h2 className='text-xl text-content underline underline-offset-2 mb-2'>Price details</h2>                
 
         <div className='text-content'>

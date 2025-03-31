@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
-import { Link, useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import { Avatar, Button, Card, CardBody, CardHeader, Chip } from '@material-tailwind/react';
-import { debounce } from 'lodash';
+import {useNavigate } from 'react-router-dom'
+import { Chip } from '@material-tailwind/react';
 import LoadingSpinner from '../../../components/LoadingSpinner';
 import ErrorComponent from '../../../components/ErrorComponent';
 import { format } from 'date-fns';
+import AdminSideBar from '../../../components/admin/AdminSideBar';
 
 const AdminAllOrderPage = () => {
 
@@ -77,6 +76,8 @@ const AdminAllOrderPage = () => {
     if(error){return <ErrorComponent/>}
 
   return (
+    <div className='flex'>
+    <AdminSideBar />        
     <div className="w-full p-2">
         <div className="p-1">
             <div className="items-center md:w-72 relative">
@@ -114,6 +115,7 @@ const AdminAllOrderPage = () => {
                 </tbody>
             </table>
         </div>
+    </div>
     </div>
   )
 }

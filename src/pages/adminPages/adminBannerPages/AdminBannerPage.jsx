@@ -7,6 +7,7 @@ import AdminViewBannerComponent from '../../../components/admin/AdminBannerCompo
 import { useDispatch, useSelector } from 'react-redux'
 import { adminFetchBanners, getAdminFetchBannersError, getAdminFetchBannersStatus, selectAllAdminBanners } from '../../../slices/adminSlice/adminBannerSlice.js'
 import ErrorComponent from '../../../components/ErrorComponent.jsx';
+import AdminSideBar from '../../../components/admin/AdminSideBar.jsx';
 
 const AdminBannerPage = () => {
 
@@ -31,6 +32,8 @@ const AdminBannerPage = () => {
     if(!banners){ return <div>Error occured please refresh the page</div>}
 
   return (
+    <div className='flex'>
+    <AdminSideBar />
     <div className='w-full p-3 md:max-w-[calc(100%-210px)]'>
         <Typography variant='h6' color='gray' className='text-center font-bold font-poppins'>Banners</Typography>
         <Tabs value="html" className='mt-3'>
@@ -40,7 +43,7 @@ const AdminBannerPage = () => {
                         <span className='text-sm'>{banner.banner_location}</span>
                         { !banner.status && 
                         <span className='pl-1 text-red-500'>!</span>
-                        }
+                    }
                     </Tab>
                 ))}
             </TabsHeader>
@@ -58,6 +61,7 @@ const AdminBannerPage = () => {
                 ))}
             </TabsBody>
         </Tabs>
+    </div>
     </div>
   )
 }

@@ -35,10 +35,12 @@ const AllProductPages = () => {
     if(!products.length){return <div>No Products</div>}
 
   return (
-    <div className='grid gap-1 2xl:grid-cols-6 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 m-3 overflow-auto min-w-80'>
-        {products?.map((product, index) => 
-            <ProductCard key={index} product= {product}/>
-        )}
+    <div className='min-h-screen'>
+        <div className='grid gap-1 2xl:grid-cols-6 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 p-3 overflow-auto min-w-80'>
+            {products?.map((product, index) => 
+                <ProductCard key={index} product= {product}/>
+            )}
+        </div>
     </div>
   )
 }

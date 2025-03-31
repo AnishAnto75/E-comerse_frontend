@@ -89,7 +89,7 @@ function App() {
     if(userStatus == 'loading'){ return <div>loading...</div> }
 
   return (
-    <div>
+    <>
     <ToastContainer />
     <Routes>
 
@@ -199,7 +199,7 @@ function App() {
         </Route>
 
     </Routes>
-    </div>
+    </>
   )
 }
 

@@ -6,6 +6,7 @@ import { Card, CardHeader, Input, Typography, Button, CardBody, Chip, CardFooter
 import { debounce } from 'lodash';
 import LoadingSpinner from '../../../components/LoadingSpinner';
 import ErrorComponent from '../../../components/ErrorComponent';
+import AdminSideBar from '../../../components/admin/AdminSideBar';
 
 const AdminProductPage = () => {
     
@@ -63,6 +64,8 @@ const AdminProductPage = () => {
     if(!response){return <ErrorComponent/>}
 
   return (
+    <div className='flex'>
+    <AdminSideBar />
     <div className='p-2 w-full bg-white'>
         <div className=' col-span-8 grid grid-cols-3 gap-5 w-full px-3 pt-3 text-gray-800'>
             <div onClick={()=> navigate('/admin/products/all-products')} className='col-span-1 bg-blue-gray-50/50 min-h-44 rounded-2xl p-10 flex flex-col cursor-pointer'>
@@ -114,7 +117,7 @@ const AdminProductPage = () => {
                             const isLast = index === products?.length - 1;
                             const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
                             return (
-                            <tr key={index} className='hover:bg-gray-50 text-center' onClick={()=>navigate(`/admin/products/${product_barcode}`)}>
+                                <tr key={index} className='hover:bg-gray-50 text-center' onClick={()=>navigate(`/admin/products/${product_barcode}`)}>
                                 <td className={`${classes}`}>
                                     <div className="flex items-center text-start gap-3">
                                         <Avatar src={product_photos ? product_photos : '/3-08.webp'} alt={product_brand} size="sm" />
@@ -140,6 +143,7 @@ const AdminProductPage = () => {
                 </table>
             </div>
         </div>
+    </div>
     </div>
   )
 }

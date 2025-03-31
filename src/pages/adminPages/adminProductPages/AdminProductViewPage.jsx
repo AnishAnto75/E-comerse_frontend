@@ -18,7 +18,7 @@ const AdminProductViewPage = () => {
         const fetch = async()=>{
             try {
                 setLoading(true)
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product/${id}`)
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product/product_id/${id}`)
                 console.log("adminFetchProduct payload : " , res.data)
                 setProduct(res.data.data)
             } catch (error){

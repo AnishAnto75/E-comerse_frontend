@@ -175,10 +175,10 @@ const AdminOrderStatusComponent = ({order}) => {
 
     if(loading) return <LoadingSpinner/>
     return (
-        <>
+        <div className='w-full'>
         <div className='relative'>
             <div className=' md:text-center px-2 md:pt-5 md:pb-8 text-gray-800 '>Order Status</div>
-            { !delivered.status && !canceled.status && <div className='absolute top-1 right-2'> <Button onClick={()=> setCancelModal(true)} size='sm' variant='text' color='red'>Cancel</Button></div>}
+            { !delivered.status && !canceled.status && <div className='absolute top-2 right-2'> <Button onClick={()=> setCancelModal(true)} size='sm' variant='text' color='red'>Cancel</Button></div>}
 
             {/* Cancel Modal */}
             {isCancelModal && !delivered.status && (
@@ -329,12 +329,12 @@ const AdminOrderStatusComponent = ({order}) => {
         {isAllUpdates &&
 
         <div className='border-t p-2 mx-5 relative'>
-            <button onClick={()=>setAllUpdates(false)} className='absolute top-1 right-1 hover:bg-gray-200 rounded-full p-1'><svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/></svg></button>
-            <div className='text-blue-gray-800 pt-5'>All Updates</div>
+            <button onClick={()=>setAllUpdates(false)} className='absolute top-2 right-1 hover:bg-gray-200 rounded-full p-1'><svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/></svg></button>
+            <div className='text-blue-gray-800 pt-3'>All Updates</div>
             <AdminOrderSeeAllUpdateComponent order_status={order_status}/>
         </div>
         }
-        </>
+        </div>
     )
 }
 

@@ -8,10 +8,7 @@ const AdminLayout = () => {
   return (
     <div>
         <AdminHeader />
-        <div className='flex'>
-            <AdminSideBar />
-            <Outlet />
-        </div>
+        <Outlet />
     </div>
   )
 }
