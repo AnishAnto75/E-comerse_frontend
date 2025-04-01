@@ -10,6 +10,7 @@ import PageNotFoundPage from '../../PageNotFoundPage'
 import ErrorComponent from '../../../components/ErrorComponent'
 import { Avatar, Chip } from '@material-tailwind/react'
 import AdminSideBar from '../../../components/admin/AdminSideBar'
+import AdminOrderUserComponent from '../../../components/admin/AdminOrderComponents/AdminOrderUserComponent'
 
 const AdminOrderViewPage = () => {
 
@@ -43,32 +44,34 @@ const AdminOrderViewPage = () => {
     if(error){ return <ErrorComponent/>}
     if(!order){return <PageNotFoundPage/>}
 
+    const delivery_address = order?.delivery_address
+
+    const discount = order?.total_mrp - order?.total_price
+
   return (
     <div className='flex'>
     <AdminSideBar/>
     <div className='w-full md:max-w-[calc(100%-208px)] min-h-screen flex'>
         <div className='w-full p-2'>
             <div className='text-sm tracking-wider font-roboto border border-gray-400 w-40 p-1 text-center rounded text-gray-700 '>{order?.order_id}</div>
-            <div className='p-1 border-b mt-2'>
-                <div className='h-36 flex gap-1 overflow-x-auto '>
-                    {order?.product_details?.map((product , index)=>(
-                        <img key={index} src={"https://images.unsplash.com/photo-1600185365483-26d7a4cc7519"} alt={product.product_name} className=' object-contain py-1 h-full w-32'/>
-                    ))}
-                </div>
-                <div className='py-2 px-5 border-t'>&#x20B9;{order?.total_amount}</div>
+
+            <div className='h-36 p-2 mt-3 flex gap-1 overflow-scroll overflow-x-auto border '>
+                {order?.product_details?.map((product , index)=>(
+                    <img key={index} src={"https://images.unsplash.com/photo-1600185365483-26d7a4cc7519"} alt={product.product_name} className=' object-contain  h-full w-32'/>
+                ))}
             </div>
 
             <div className='mt-5 p-2 bg-gray-50 '>
                 <AdminOrderStatusComponent order={order} />
             </div>
-
-            <div className='mt-3 '>   
-                <AdminOrderProductCard products={order?.product_details}/>
+            
+            <div className='mt-3 '>
+                <AdminOrderProductCard order={order} />
             </div>
-
-            <div className='my-3 grid grid-cols-1 md:grid-cols-2 gap-2'>
+            <div className='mt-5 mb-10 flex gap-3 '>
                 <AdminOrderAmountComponent order={order} />
                 <AdminOrderDeliveryAddressComponent delivery_address={order?.delivery_address} />
+                <AdminOrderUserComponent user={order.user_id}/>
             </div>
         </div>
     </div>

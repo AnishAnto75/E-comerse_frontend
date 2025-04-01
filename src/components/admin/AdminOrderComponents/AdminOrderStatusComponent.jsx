@@ -174,6 +174,7 @@ const AdminOrderStatusComponent = ({order}) => {
     }
 
     if(loading) return <LoadingSpinner/>
+
     return (
         <div className='w-full'>
         <div className='relative'>
@@ -254,11 +255,11 @@ const AdminOrderStatusComponent = ({order}) => {
                             <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative ">
                                 <button onClick={() => {setOutModal(false); setTakenBy(''); setTakenByName(''); setTakenByid('')}} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"><svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/></svg></button>
                                 <h2 className="text-lg font-poppins mb-4 tracking-wider">OUT FOR DELIVERY</h2>
-                                <p className="text-gray-700 mb-1 tracking-wider text-[15px]">Delivery Staff Id</p>
+                                <p className="text-gray-800 p-1 tracking-[1px] text-sm">Delivery staff Id</p>
                                 <form onSubmit={(e)=>searchDeliverBoyById(e)}>
                                     <input type="text" name='staff_id' id='staff_id' autoComplete='off' ref={input2Ref} value={taken_by_id} onChange={(e)=>setTakenByid(e.target.value)} className='border border-gray-300 text-gray-800 outline-none focus:border-blue-500 rounded-md p-2 w-full text-sm'/>
                                 </form>
-                                <p className="text-gray-700 mb-1 tracking-wider text-[15px]">Delivery Staff Name</p>
+                                <p className="text-gray-800 p-1 mt-2 tracking-[1px] text-sm">Delivery staff name</p>
                                 <div className='relative'>
                                     <input type="text" name='reason_for_cancel' id='reason_for_cancel' autoComplete='off' value={taken_by_name} onChange={(e)=>handleDeliverStaffName(e)} className='border border-gray-300 text-gray-800 outline-none focus:border-blue-500 rounded-md p-2 w-full text-sm'/>
                                     <div className={`absolute w-full rounded bg-white z-50 border p-2 flex flex-col ${!searchedDeliveryStaff || !searchedDeliveryStaff.length ? "hidden" : '' } `}>
