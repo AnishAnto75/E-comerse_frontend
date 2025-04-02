@@ -101,12 +101,12 @@ const AdminAllProductPage = () => {
                     </tr>
                 </thead>
                 <tbody className=''>
-                    {products?.map(({ product_photos, product_name, product_barcode, product_brand, product_total_stock, product_total_unit_sold, product_low_in_stock , hidden}, index) => {
+                    {products?.map(({ product_photos, product_name, product_barcode, product_brand, product_total_stock, product_low_in_stock , hidden}, index) => {
                         const isLast = index === products?.length - 1;
                         const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
                         const low_in_stock = product_low_in_stock > product_total_stock;
                         return (
-                        <tr key={index} className='hover:bg-gray-50 text-center' onClick={()=>navigate(`/admin/products/${product_barcode}`)}>
+                        <tr key={index} className='hover:bg-gray-50 text-center' onClick={()=>navigate(`/admin/products/product_id/${product_barcode}`)}>
                             <td className={classes}>
                                 <div className="flex items-center gap-3">
                                     <Avatar src={product_photos ? product_photos : '/3-08.webp'} alt={product_brand} size="sm" />

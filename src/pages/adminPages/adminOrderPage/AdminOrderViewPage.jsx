@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import AdminOrderStatusComponent from '../../../components/admin/AdminOrderComponents/AdminOrderStatusComponent'
@@ -8,7 +8,6 @@ import AdminOrderProductCard from '../../../components/admin/AdminOrderComponent
 import LoadingSpinner from '../../../components/LoadingSpinner'
 import PageNotFoundPage from '../../PageNotFoundPage'
 import ErrorComponent from '../../../components/ErrorComponent'
-import { Avatar, Chip } from '@material-tailwind/react'
 import AdminSideBar from '../../../components/admin/AdminSideBar'
 import AdminOrderUserComponent from '../../../components/admin/AdminOrderComponents/AdminOrderUserComponent'
 
@@ -44,10 +43,6 @@ const AdminOrderViewPage = () => {
     if(error){ return <ErrorComponent/>}
     if(!order){return <PageNotFoundPage/>}
 
-    const delivery_address = order?.delivery_address
-
-    const discount = order?.total_mrp - order?.total_price
-
   return (
     <div className='flex'>
     <AdminSideBar/>
@@ -64,7 +59,7 @@ const AdminOrderViewPage = () => {
             <div className='mt-5 p-2 bg-gray-50 '>
                 <AdminOrderStatusComponent order={order} />
             </div>
-            
+
             <div className='mt-3 '>
                 <AdminOrderProductCard order={order} />
             </div>

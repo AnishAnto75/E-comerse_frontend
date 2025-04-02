@@ -20,22 +20,22 @@ const AdminProductPage = () => {
     const [search_products_name, setSearchProductsName] = useState('')
 
     useEffect(()=>{
-        const fetchHighSellingProducts = async()=>{
+        const fetchForProductPage = async()=>{
             try {
                 setLoading(true)
                 const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product/product-page`)
-                console.log("adminFetchHighSellingProducts payload : " , res.data)        
+                console.log("fetchForProductPage payload : " , res.data)        
                 setResponse(res.data?.data)
                 setProducts(res.data?.data?.products)
             } catch (error) {
                 setError(true)
                 toast.error(error.response?.data?.message)
-                console.log("error in adminFetchHighSellingProducts :" , error)
+                console.log("error in fetchForProductPage :" , error)
             } finally { setLoading(false) }
         }
         
         if(handleRef.current) {
-            fetchHighSellingProducts()
+            fetchForProductPage()
             handleRef.current = false
         }
     } , [])
@@ -117,7 +117,7 @@ const AdminProductPage = () => {
                             const isLast = index === products?.length - 1;
                             const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
                             return (
-                                <tr key={index} className='hover:bg-gray-50 text-center' onClick={()=>navigate(`/admin/products/${product_barcode}`)}>
+                                <tr key={index} className='hover:bg-gray-50 text-center' onClick={()=>navigate(`/admin/products/product_id/${product_barcode}`)}>
                                 <td className={`${classes}`}>
                                     <div className="flex items-center text-start gap-3">
                                         <Avatar src={product_photos ? product_photos : '/3-08.webp'} alt={product_brand} size="sm" />

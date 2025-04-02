@@ -24,7 +24,7 @@ const AdminOrderUserComponent = ({user}) => {
             </tr>
             <tr>
                 <td>User Id</td>
-                <td>: <span onClick={()=>navigate(`/admin/customers/${user?.user_id}`)} className='underline underline-offset-2 cursor-pointer hover:text-blue-500'>{user?.user_id}</span></td>
+                <td>: <span onClick={()=>navigate(`/admin/customer/customer_id/${user?.user_id}`)} className='underline underline-offset-2 cursor-pointer hover:text-blue-500'>{user?.user_id}</span></td>
             </tr>
         </tbody>
     </table>  

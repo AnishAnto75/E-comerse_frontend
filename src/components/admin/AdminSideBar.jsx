@@ -41,7 +41,7 @@ const AdminSideBar = () => {
                     <TfiLayoutMediaCenterAlt className='mr-3 text-gray-300 text-xl '/>
                     <span>Entry</span>
                 </Link>
-                <Link to={'/admin/customers'} className='flex p-3 px-5 hover:bg-gray-400 hover:text-white rounded-xl hover:px-5 transition-all delay-75'>
+                <Link to={'/admin/customer'} className='flex p-3 px-5 hover:bg-gray-400 hover:text-white rounded-xl hover:px-5 transition-all delay-75'>
                     <GoPerson className='mr-3 text-gray-300 text-xl '/>
                     <span>Customers</span>
                 </Link>

@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import LoadingSpinner from '../../../components/LoadingSpinner'
 import ErrorComponent from '../../../components/ErrorComponent'
-import { debounce } from 'lodash'
 import { Button, Chip } from '@material-tailwind/react'
 import { format } from 'date-fns'
 import AdminSideBar from '../../../components/admin/AdminSideBar'
@@ -46,7 +45,7 @@ const AdminOrderPage = () => {
             try {
                 const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/order/order-page/search/${search_order_id}`)
                 console.log("requestOrderById: ",res.data)
-                setOrders(res.data.data) 
+                setOrders(res.data?.data ? [res.data.data] : null) 
             } catch (error) {
                 console.error("error in requestOrderById :" , error)
             }
@@ -80,8 +79,8 @@ const AdminOrderPage = () => {
     <div className='flex'>
     <AdminSideBar />
     <div className='p-2 bg-white w-full'>
-        <div onClick={()=>navigate('/admin/orders/all')} className=' col-span-8 grid grid-cols-3 gap-5 w-full px-3 pt-3 text-gray-800 cursor-pointer'>
-            <div className='col-span-1 bg-blue-gray-50/50 min-h-44 rounded-2xl p-10 flex flex-col '>
+        <div className=' col-span-8 grid grid-cols-3 gap-5 w-full px-3 pt-3 text-gray-800 '>
+            <div onClick={()=>navigate('/admin/orders/all')} className='col-span-1 bg-blue-gray-50/50 min-h-44 rounded-2xl p-10 flex flex-col cursor-pointer'>
                 <span>Total Orders</span>
                 <span className='text-5xl w-full px-5 h-full items-center flex'>{response?.total_orders ? response.total_orders : "NaN"}</span>
             </div>
@@ -91,7 +90,7 @@ const AdminOrderPage = () => {
             </div>     
             <div className='col-span-1 bg-blue-gray-50/50 min-h-44 rounded-2xl p-10 flex flex-col '>
                 <span>Today's Order</span>
-                <span className='text-5xl w-full px-5 h-full items-center flex'>{response?.todays_order ? response.todays_order : "NaN"}</span>
+                <span className='text-5xl w-full px-5 h-full items-center flex'>{response?.todays_order ? response.todays_order : response?.todays_order == 0 ? 0 : "NaN"}</span>
             </div>         
         </div>
          <div className="w-full p-2">
@@ -117,7 +116,8 @@ const AdminOrderPage = () => {
                 </tr>
             </thead>
             <tbody className=''>
-                {orders?.map(({ order_id, user_id, total_no_of_product, order_status, total_amount }, index) => {
+                {orders?.length &&
+                orders?.map(({ order_id, user_id, total_no_of_product, order_status, total_amount }, index) => {
                     const status = findOrderStatus(order_status)
                     const classes = index === orders?.length - 1 ? "p-4" : "p-4 border-b border-blue-gray-50";
                     return (
@@ -139,4 +139,6 @@ const AdminOrderPage = () => {
 }
 
 export default AdminOrderPage
+
+
 

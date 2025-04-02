@@ -59,6 +59,7 @@ import AdminEditBannerPage from "./pages/adminPages/adminBannerPages/AdminEditBa
 import AdminLowInStockPage from "./pages/adminPages/adminProductPages/AdminLowInStockPage.jsx";
 import AdminEditProductPage from "./pages/adminPages/adminProductPages/AdminEditProductPage.jsx";
 import AdminAllOrderPage from "./pages/adminPages/adminOrderPage/AdminAllOrderPage.jsx";
+import AdminViewCustomerPage from "./pages/adminPages/adminCustomerPages/AdminViewCustomerPage.jsx";
 
 function App() {
     const dispatch = useDispatch()
@@ -151,12 +152,13 @@ function App() {
                     <Route path="edit/:id" element={<AdminEditProductPage />}/>
                     <Route path="all-products" element={<AdminAllProductPage />}/>
                     <Route path="low-in-stock" element={<AdminLowInStockPage />}/>
-                    <Route path=":id" element={<AdminProductViewPage />}/>
+                    <Route path="product_id/:id" element={<AdminProductViewPage />}/>
                 </Route>
 
-                <Route path="customers">
-                    <Route index element={<AdminAllCustomerPage />}/>
-                    <Route path=":id" element={<AdminCustomerPage /> } />
+                <Route path="customer">
+                    <Route index element={<AdminCustomerPage />}/>
+                    <Route path="all-customer" element={<AdminAllCustomerPage />}/>
+                    <Route path="customer_id/:id" element={<AdminViewCustomerPage /> } />
                 </Route>
 
                 <Route path="entry">

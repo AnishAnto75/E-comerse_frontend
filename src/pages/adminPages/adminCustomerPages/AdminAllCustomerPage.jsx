@@ -1,96 +1,101 @@
+import axios from 'axios'
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import LoadingSpinner from '../../../components/LoadingSpinner'
+import ErrorComponent from '../../../components/ErrorComponent'
+import AdminSideBar from '../../../components/admin/AdminSideBar'
 
 const AdminAllCustomerPage = () => {
 
+    const handleRef = useRef(true)
     const navigate = useNavigate()
     const [loading , setLoading] = useState(false)
-    const [error , setError] = useState(false)
-    const [users , setUsers ] = useState([])
-    const handleRef = useRef(true) 
+    const [error , setError ] = useState(false)
+    const [response, setResponse] = useState(null) 
+    const [customers , setCustomers] = useState(null)
+
+    const [search_customer_id, setSearchCustomerId] = useState('')
 
     useEffect(()=>{
+        const fetchCustomer = async()=>{
+            try {
+                setLoading(true)
+                axios.defaults.withCredentials = true
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/customer/customer-page`)
+                console.log("fetchCustomer Payload : " , res.data)
+                setResponse(res.data?.data)
+                setCustomers(res.data?.data?.customers)
+            } catch (error) {
+                console.error("error in fetchCustomer function",error)
+                setError(true)   
+            } finally {
+                setLoading(false)
+            }
+        }
         if(handleRef.current) {
-            fetch()
+            fetchCustomer()
             handleRef.current = false
         }
     } , [])
 
-    const fetch = async()=>{
-        setLoading(true)
-
-        axios.defaults.withCredentials = true
-        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/allUser`).catch((error)=>{
-            console.error("fetchAll User",error)
-            setError(true)
-            setLoading(false)
-            return
-        })
-        console.log("User : " , res.data.data)
-
-        const users = res.data.data
-        setUsers(users)
-
-        setLoading(false)
+    const requestCustomerById = async () => {
+        if(search_customer_id.length > 10){
+            try {
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/customer/customer-page/search/${search_customer_id}`)
+                console.log("requestCustomerById: ",res.data)
+                setCustomers(res.data?.data ? [res.data.data] : null  ) 
+            } catch (error) {
+                console.error("error in requestCustomerById :" , error)
+            }
+        }
     }
 
-    let content = <div>loading...</div>
-
-    if(error){
-        content = <div>Error</div>
-    } else if (loading) {
-        content = <div>Loading ...</div>
-    } else {
-        content = <div className='w-full min-h-screen border-l border-gray-400'>
-            <div className='font-[arial] p-4 hero text-xl font-semibold text-gray-700'>All USER</div>
-            <div className='md:mx-5'> 
-                <div className="overflow-auto h-screen w-full bg-white rounded-2xl border-2">
-                    <table className="table table-zebra text-center ">
-                        <thead className='sticky top-0'>
-                            <tr className='text-sm bg-gray-600 text-white font-[arial] tracking-wide'>
-                                <th></th>
-                                <th>ID</th>
-                                <th>NAME</th>
-                                <th>EMAIL</th>
-                                <th>PHONE NUMBER</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-
-                        {users?.map((user , index) =>
-                            <tr 
-                                key={user._id}
-                                >
-                                <th className='border-r'>{index+1}</th>
-                                <td>{user._id}</td>
-                                <td>{user.name}</td>
-                                <td>{user.email}</td>
-                                <td>{user.phoneNumber ? user.phoneNumber : "Nil"}</td>
-                                <td className='rounded-xl flex p-0 '>
-                                    <button
-                                        onClick={()=>navigate(user._id)}
-                                        className='bg-slate-500 text-white font-[arial]  rounded-xl hero m-1  p-2'>view</button>
-                                </td>
-                            </tr>
-                        )}
-
-                        </tbody>
-                    </table>
-                    {
-                        users.length==0 &&
-                        <div className='w-full tex-lg font-semibold hero pb-10 h-full'>No products created yet</div>
-                    }
-                </div>
-            </div>
-        </div>
+    const handleSearchCustomerId = (e)=>{
+        const term = e.target.value
+        setSearchCustomerId(term)
+        if(term.length == 0){ setCustomers(response.customers)}
     }
+
+    if(loading){return <LoadingSpinner/>}
+    if(error){return <ErrorComponent/>}
 
   return (
-    <div className='w-full'>
-        { content } 
+    <div className='flex'>
+    <AdminSideBar />
+    <div className='p-2 w-full'>
+         <div className="pb-3 p-2">
+            <div className="items-center md:w-72 relative">
+                <input type='text' value={search_customer_id} onChange={(e)=>handleSearchCustomerId(e)} onKeyDown={e => e.key == 'Enter' && requestCustomerById()} placeholder='Search' className='border-2 border-blue-200 py-2 px-2 pr-9 w-full rounded-lg text-sm placeholder:text-blue-300/75 font-poppins focus:outline-none'/>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.3} stroke="currentColor" className="size-6 absolute top-2 right-2 text-blue-400 cursor-pointer"><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+            </div>
+        </div>
+        <table className="w-full min-w-max table-auto text-left ">
+            <thead>
+                <tr className='p-5 text-center border-y border-blue-gray-100 bg-blue-gray-50/50 text-sm text-gray-600 tracking-wider'>
+                    <th className="font-normal p-4"></th>
+                    <th className="text-start font-normal p-4">Customer Id</th>
+                    <th className='p-4 font-normal'>Name</th>
+                    <th className='p-4 font-normal'>Email</th>
+                    <th className='p-4 font-normal'>Phone No</th>
+                </tr>
+            </thead>
+            <tbody className=''>
+                {customers?.length &&
+                customers?.map(({ user_id, name, email, phoneNumber }, index) => {
+                     const classes = index === customers?.length - 1 ? "p-4" : "p-4 border-b border-blue-gray-50";
+                     return (
+                        <tr key={index} className='hover:bg-blue-gray-50/50 text-center text-sm text-blue-gray-800' onClick={()=>navigate(`/admin/customer/customer_id/${user_id}`)}>
+                            <td className={`${classes} text-start w-5 border-r border-blue-gray-50 border-b-0 `}>{index+1}</td>
+                            <td className={`${classes} text-start`}>{user_id ? user_id  : '---'}</td>
+                            <td className={`${classes}`}>{name ? name : "---"}</td>
+                            <td className={`${classes}`}>{email ? email : "---"}</td>
+                            <td className={`${classes}`}>{phoneNumber ? phoneNumber : "---"}</td>
+                        </tr>
+                     );
+                })}
+            </tbody>
+        </table>
+    </div>
     </div>
   )
 }
