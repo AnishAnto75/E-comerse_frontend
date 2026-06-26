@@ -14,7 +14,7 @@ const HomePage = () => {
             <div className='btn' onClick={()=>navigate('/admin')}>admin</div>
             <div className='btn' onClick={()=>navigate('/auth/login')}>Login</div>
             <div className='btn' onClick={()=>navigate('/auth/signup')}>Sign Up</div>
-            <div className='btn' onClick={()=>navigate('/product')}>Products</div>
+            <div className='btn' onClick={()=>navigate('/products')}>Products</div>
             <div className='btn' onClick={()=>navigate('/cart')}>Cart</div>
             <div className='btn' onClick={()=>navigate('/order')}>Order</div>
             <div className='btn' onClick={()=>navigate('/testing')}>testing</div>    

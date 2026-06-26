@@ -24,12 +24,7 @@ const UserProfilePage = () => {
 
     const handleSubmit = (e)=>{
         e.preventDefault()
-
-        const data = {
-            name ,
-            phoneNumber,
-        }    
-        console.log(data)
+        const data = {name, phoneNumber}    
         return
     }
 
@@ -50,40 +45,19 @@ const UserProfilePage = () => {
 
                                 <div className="md:col-span-3">
                                     <label htmlFor="email">Email Address</label>
-                                    <input 
-                                        type="email" 
-                                        name="email" 
-                                        id="email" 
-                                        autoComplete="off"
-                                        placeholder={email}
-                                        disabled
+                                    <input type="email" name="email" id="email" autoComplete="off" placeholder={email} disabled 
                                         className="h-10 border mt-1 rounded px-4 w-full bg-white placeholder:text-black" />
                                 </div>
 
                                 <div className="md:col-span-2">
                                     <label htmlFor="name">Full Name</label>
-                                    <input 
-                                        type="text" 
-                                        required 
-                                        autoComplete="off" 
-                                        name="name" 
-                                        id="name" 
-                                        value={name} 
-                                        onChange={(e)=>setName(e.target.value)} 
-                                        onKeyPress={(e) => { e.key === 'Enter' && e.preventDefault(); }}
+                                    <input type="text" required autoComplete="off" name="name" id="name" value={name} onChange={(e)=>setName(e.target.value)} onKeyPress={(e) => { e.key === 'Enter' && e.preventDefault(); }}
                                         className="h-10 border mt-1 rounded px-4 w-full bg-white" />
                                 </div>
 
                                 <div className="md:col-span-2">
                                     <label htmlFor="phoneNumber">Phone Number</label>
-                                    <input 
-                                        type="number" 
-                                        name="phoneNumber" 
-                                        id="phoneNumber"
-                                        required
-                                        value={phoneNumber} 
-                                        onChange={(e)=>setPhoneNumber(e.target.value)}
-                                        onKeyPress={(e) => { e.key === 'Enter' && e.preventDefault(); }}
+                                    <input type="number" name="phoneNumber" id="phoneNumber" required value={phoneNumber} onChange={(e)=>setPhoneNumber(e.target.value)} onKeyPress={(e) => { e.key === 'Enter' && e.preventDefault(); }}
                                         className="h-10 border mt-1 rounded px-4 w-full bg-white hide-arrow" />
                                 </div>
                             </div>

@@ -6,6 +6,8 @@ import ErrorComponent from '../../../components/ErrorComponent'
 import { Button, Chip } from '@material-tailwind/react'
 import { format } from 'date-fns'
 import AdminSideBar from '../../../components/admin/AdminSideBar'
+import { FaEye } from 'react-icons/fa'
+import { MdEdit } from 'react-icons/md'
 
 const AdminCustomerPage = () => {
 
@@ -67,13 +69,9 @@ const AdminCustomerPage = () => {
     <div className='p-2 bg-white w-full'>
         <div className=' col-span-8 grid grid-cols-2 xl:grid-cols-3 gap-5 w-full px-3 pt-3 text-gray-800'>
             <div onClick={()=> navigate('/admin/customer/all-customer')} className='col-span-1 bg-blue-gray-50/50 min-h-44 rounded-2xl p-10 flex flex-col cursor-pointer'>
-                 <span>Total Customer</span>
-                 <span className='text-5xl w-full px-5 h-full items-center flex'>{response?.total_customers ? response.total_customers : response?.total_customers == 0 ? 0 : "NaN"}</span>
-             </div>            
-             <div onClick={()=> navigate('/admin/customer/blocked')} className='col-span-1 bg-blue-gray-50/50 min-h-44 rounded-2xl p-10 flex flex-col cursor-pointer'>
-                 <span className=''>Blocked</span>
-                 <span className='text-5xl w-full px-5 h-full items-center flex'>{response?.blocked_customer ? response.blocked_customer : response?.blocked_customer == 0 ? 0 : "NaN"}</span>
-             </div>              
+                <span>Total Customer</span>
+                <span className='text-5xl w-full px-5 h-full items-center flex'>{response?.total_customers ? response.total_customers : response?.total_customers == 0 ? 0 : "NaN"}</span>
+            </div>   
          </div>
          <div className="w-full p-2">
             <div className="rounded-none p-4">
@@ -88,28 +86,26 @@ const AdminCustomerPage = () => {
         </div>
         <table className="w-full min-w-max table-auto text-left ">
             <thead>
-                <tr className='p-5 text-center border-y border-blue-gray-100 bg-blue-gray-50/50 text-sm text-gray-600 tracking-wider'>
-                    <th className="font-normal p-4"></th>
-                    <th className="text-start font-normal p-4">Customer Id</th>
-                    <th className='p-4 font-normal'>Name</th>
-                    <th className='p-4 font-normal'>Email</th>
-                    <th className='p-4 font-normal'>Phone No</th>
+                <tr className='p-5 text-center border-y border-blue-gray-100 bg-blue-gray-50/50 text-sm text-gray-600 tracking-wider font-normal'>
+                    <th className="p-4"></th>
+                    <th className="text-start p-4">Customer Id</th>
+                    <th className='p-4 '>Name</th>
+                    <th className='p-4 '>Email</th>
+                    <th className='p-4 '>Phone No</th>
+                    <th className='p-4 '>Gender</th>
                 </tr>
             </thead>
             <tbody className=''>
-                {customers?.length &&
-                customers?.map(({ user_id, name, email, phoneNumber }, index) => {
-                     const classes = index === customers?.length - 1 ? "p-4" : "p-4 border-b border-blue-gray-50";
-                     return (
-                        <tr key={index} className='hover:bg-blue-gray-50/50 text-center text-sm text-blue-gray-800' onClick={()=>navigate(`/admin/customer/customer_id/${user_id}`)}>
-                            <td className={`${classes} text-start w-5 border-r border-blue-gray-50 border-b-0 `}>{index+1}</td>
-                            <td className={`${classes} text-start`}>{user_id ? user_id  : '---'}</td>
-                            <td className={`${classes}`}>{name ? name : "---"}</td>
-                            <td className={`${classes}`}>{email ? email : "---"}</td>
-                            <td className={`${classes}`}>{phoneNumber ? phoneNumber : "---"}</td>
-                        </tr>
-                     );
-                })}
+                {customers?.map(({ user_id, name, email, phoneNumber, gender }, index) => (
+                    <tr key={index} className='hover:bg-blue-gray-50/50 text-center text-md text-blue-gray-900' onClick={()=>navigate(`customer_id/${user_id}`)}>
+                        <td className="p-4 text-start w-5 border-r border-blue-gray-50 border-b-0">{index+1}</td>
+                        <td className="p-4 text-start">{user_id ? user_id  : '---'}</td>
+                        <td className="p-4">{name ? name : "---"}</td>
+                        <td className="p-4">{email ? email : "---"}</td>
+                        <td className="p-4">{phoneNumber ? phoneNumber : "---"}</td>
+                        <td className="p-4">{gender ? gender : "---"}</td>
+                    </tr>
+                ))}
             </tbody>
         </table>
     </div>

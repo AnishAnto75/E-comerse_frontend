@@ -23,6 +23,7 @@ const AddNewAddressComponent = () => {
         const data = {name, phoneNo, alternatePhoneNo, pincode, houseNo, landMark, city, district, state, addressType }
         dispatch(addNewAddress(data))
         reset()
+        setNewAddress(false)
     }
 
     const reset = ()=>{
@@ -40,7 +41,7 @@ const AddNewAddressComponent = () => {
 
   return (
     <>
-    <div onClick={()=> setNewAddress(true)} className={`border-2 p-2 hero btn btn-neutral mb-5 ${newAddress && "hidden"}`}>Add New Address</div>
+    <div onClick={()=> setNewAddress(true)} className={`border p-3 bg-white text-blue-gray-500 text-center font-inter mb-5 rounded-xl cursor-pointer hover:text-blue-gray-200 ${newAddress && "hidden"}`}>Add New Address</div>
     <form onSubmit={(e)=>handleSubmit(e)} className={!newAddress ? "hidden" : "block"}>
         <div className="bg-gray-50 rounded border-2 p-6 mb-6">
             <div className="grid gap-4 gap-y-4 text-sm grid-cols-1 md:grid-cols-9">
@@ -115,14 +116,9 @@ const AddNewAddressComponent = () => {
                 </div>
 
                 <div className="md:col-span-9 flex gap-5 mt-5">
-                    <button type='submit'className="font-bold bg-cyan-500 text-white py-2 px-4 rounded-md w-full" >
-                        Submit
-                    </button>
+                    <button type='submit'className="font-bold bg-cyan-500 text-white py-2 px-4 rounded-md w-full" >Submit</button>
                     <button className='font-bold bg-gray-700 text-white py-2 px-4 rounded-md w-full'
-                        onClick={()=>{ 
-                            setNewAddress(false) 
-                            reset()
-                        }} >cancel</button>
+                        onClick={()=>{ setNewAddress(false); reset()}} >cancel</button>
                 </div>
             </div>
         </div>

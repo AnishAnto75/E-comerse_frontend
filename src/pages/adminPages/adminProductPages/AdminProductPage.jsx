@@ -7,6 +7,8 @@ import { debounce } from 'lodash';
 import LoadingSpinner from '../../../components/LoadingSpinner';
 import ErrorComponent from '../../../components/ErrorComponent';
 import AdminSideBar from '../../../components/admin/AdminSideBar';
+import { FaEye } from 'react-icons/fa';
+import { MdEdit } from 'react-icons/md';
 
 const AdminProductPage = () => {
     
@@ -24,7 +26,7 @@ const AdminProductPage = () => {
             try {
                 setLoading(true)
                 const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product/product-page`)
-                console.log("fetchForProductPage payload : " , res.data)        
+                console.log("fetchForProductPage payload : " , res.data)
                 setResponse(res.data?.data)
                 setProducts(res.data?.data?.products)
             } catch (error) {
@@ -33,7 +35,6 @@ const AdminProductPage = () => {
                 console.log("error in fetchForProductPage :" , error)
             } finally { setLoading(false) }
         }
-        
         if(handleRef.current) {
             fetchForProductPage()
             handleRef.current = false
@@ -44,7 +45,6 @@ const AdminProductPage = () => {
         if(term.length > 1){
             try {
                 const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product/search?name=${term}`)
-                // console.log("requestProductsByName: ",res.data)
                 setProducts(res.data.data) 
             } catch (error) {
                 console.error("error in requestProductsByName :" , error)
@@ -90,6 +90,8 @@ const AdminProductPage = () => {
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
                         <Button onClick={()=>navigate(`/admin/products/all-products`)} variant="outlined" color='blue' size="sm">view all</Button>
+                        <Button onClick={()=>navigate(`/admin/brands`)} size="sm" color='blue' variant='gradient'>Brands</Button>
+                        <Button onClick={()=>navigate(`/admin/groups-categories`)} size="sm" color='blue' variant='gradient'>Groups & Categories</Button>
                         <Button onClick={()=>navigate(`/admin/products/new-product`)} size="sm" color='blue' variant='gradient'>Add Product</Button>
                     </div>
                 </div>
@@ -108,33 +110,36 @@ const AdminProductPage = () => {
                                 <div className="font-normal text-sm text-gray-600 tracking-wider leading-none">Stock</div>
                             </th>
                             <th className="bg-blue-gray-50/50 p-4">
-                                <div className="font-normal text-sm text-gray-600 tracking-wider leading-none">Units Sold</div>
+                                <div className="font-normal text-sm text-gray-600 tracking-wider leading-none">Actions</div>
                             </th>
                         </tr>
                     </thead>
                     <tbody className=''>
-                        {products?.map(({ product_photos, product_name, product_barcode, product_brand, product_total_stock, product_total_unit_sold }, index) => {
+                        {products?.map((product, index) => {
                             const isLast = index === products?.length - 1;
                             const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
                             return (
-                                <tr key={index} className='hover:bg-gray-50 text-center' onClick={()=>navigate(`/admin/products/product_id/${product_barcode}`)}>
+                                <tr key={index} className='hover:bg-gray-50 text-center'>
                                 <td className={`${classes}`}>
                                     <div className="flex items-center text-start gap-3">
-                                        <Avatar src={product_photos ? product_photos : '/3-08.webp'} alt={product_brand} size="sm" />
+                                        <Avatar src={product.product_photos ? product.product_photos : '/3-08.webp'} alt={product.product_brand} size="md" />
                                         <div className="flex flex-col text-sm">
-                                            <div className="font-normal text-blue-gray-700 line-clamp-1">{product_name}</div>
-                                            <div className="font-normal text-blue-gray-700 opacity-70">{product_barcode}</div>
+                                            <div className="font-normal text-blue-gray-700 line-clamp-1">{product.product_name}</div>
+                                            <div className="font-normal text-blue-gray-700 opacity-70">{product.product_barcode}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td className={classes}>
-                                    <div className="text-sm text-blue-gray-800 line-clamp-1">{product_brand}</div>
+                                    <div className="text-sm text-blue-gray-800 line-clamp-1">{product?.product_brand?.Brand_name}</div>
                                 </td>
                                 <td className={classes}>
-                                    <div className="text-sm text-blue-gray-800 line-clamp-1">{product_total_stock}</div>
+                                    <div className="text-sm text-blue-gray-800 line-clamp-1">{product?.product_inventory_id?.product_total_stock}</div>
                                 </td>
                                 <td className={classes}>
-                                    <div className="text-sm text-blue-gray-800 line-clamp-1">{product_total_unit_sold}</div>
+                                    <div className='flex justify-center gap-2 h-full w-full text-gray-700'>
+                                        <FaEye onClick={()=>navigate(`product_id/${product.product_barcode}`)} className='text-2xl cursor-pointer h-10 w-7'/>
+                                        <MdEdit onClick={()=>navigate(`edit/${product.product_barcode}`)} className='text-2xl cursor-pointer h-10 w-7' />
+                                    </div>
                                 </td>
                             </tr>
                             );

@@ -1,41 +1,108 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { addToCart, getAddToCartStatus, getCart, getCartDiscount, getCartNoOfProductsInCart, getCartTotalMrp, getCartTotalSellingPrice, removeFromCart} from '../../../slices/clientSlice/CartSlice'
+import { addCartProduct, addToCart, getAddToCartStatus, getCartNoOfProductsInCart, removeFromCart} from '../../../slices/clientSlice/CartSlice'
 import { useNavigate } from 'react-router-dom'
 import LoadingSpinner from '../../../components/LoadingSpinner'
+import { useEffect } from 'react'
+import { toast } from 'react-toastify'
+import { useRef } from 'react'
+import { useState } from 'react'
+import axios from 'axios'
 
 const CartPage = () => {
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    const cart = useSelector(getCart)
-    const mrp = useSelector(getCartTotalMrp)
-    const price = useSelector(getCartTotalSellingPrice)
-    const discount = useSelector(getCartDiscount)
-    const no = useSelector(getCartNoOfProductsInCart)
+    const [loading, setLoading] = useState(false)
+    const [error , setError] = useState(false)
+
+    const [cart , setCart] = useState([])
+
+    const handleRef = useRef(true)
+
+    useEffect(()=>{
+        const fetchCart = async()=>{
+            try {
+                setLoading(true)
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}cart/fetch-cart`)
+                console.log("fetchCart payload : " , res.data)
+                setCart(res.data?.data?.cart)
+            } catch (error) {
+                setError(true)
+                toast.error(error.response?.data?.message)
+                console.log("error in fetchCart :" , error)
+            } finally { setLoading(false) }
+        }
+        if(handleRef.current) {
+            fetchCart()
+            handleRef.current = false
+        }
+    } , [])
+
+    let mrp = 0
+    let price = 0
+    let no = useSelector(getCartNoOfProductsInCart)
 
     const cartStatus = useSelector(getAddToCartStatus)
+    
 
-    const addCart = (product)=>{
-        if(!product){return}
-        const data = {product_barcode : product.product_id.product_barcode , quantity : product.quantity+1 }
-        dispatch(addToCart(data))
+    if(cart.length){
+        cart?.map?.((product, index)=>{
+            mrp += (product?.product_id?.product_inventory_id?.product_stock[0]?.mrp * product.quantity) 
+            price += (product?.product_id?.product_inventory_id?.product_stock[0]?.price * product.quantity) 
+        })
+    }
+
+    const addProductCart = async(product)=>{
+        try {
+            if(!product){return}
+            const data = {product_barcode : product.product_id.product_barcode , quantity : product.quantity + 1 }
+            setLoading(true) 
+            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}cart/alter-product-cart` , {data})
+            console.log("addProductCart response", res.data)
+            setCart(res.data?.data?.data1)
+            dispatch(addCartProduct(res.data?.data?.data2))
+        } catch (error) {
+            toast.error(error.response?.data?.message)
+            console.log("error in addProductCart :" , error)
+        } finally { setLoading(false) }
     } 
 
-    const minusToCart = (product)=>{
-        if(!product){return}
-        if(product.quantity == 1){ return }
-        const data = {product_barcode : product.product_id.product_barcode , quantity : product.quantity-1 }
-        dispatch(addToCart(data))
+    const minusProductCart = async(product)=>{
+        try {
+            if(!product){return}
+            if(product.quantity == 1){ return }
+            const data = {product_barcode : product.product_id.product_barcode , quantity : product.quantity - 1 }
+            setLoading(true)
+            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}cart/alter-product-cart` , {data})
+            console.log("addProductCart response", res.data)
+            setCart(res.data?.data?.data1)
+            dispatch(addCartProduct(res.data?.data?.data2))
+        } catch (error) {
+            toast.error(error.response?.data?.message)
+            console.log("error in addProductCart :" , error)
+        } finally { setLoading(false) }
+    }
+    
+    const removeProductFromCart = async(id)=>{
+        try {
+            setLoading(true)
+            const res = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}cart/remove-product-from-cart` , {data : id})
+            console.log("removeProductFromCart response", res.data)
+            setCart(res.data?.data?.data1)
+            dispatch(addCartProduct(res.data?.data?.data2))
+        } catch (error) {
+            toast.error(error.response?.data?.message)
+            console.log("error in removeProductFromCart :" , error)
+        } finally { setLoading(false) }
+        
     }
 
-    const removeProductFromCart = (product_barcode)=>{
-        dispatch(removeFromCart({product_barcode}))
-    }
+    if(cartStatus == 'loading' || loading ){return <LoadingSpinner />}
+    if(error){return <div>Error Occured Kindly refresh the page</div>}
 
-    if(cartStatus == 'loading' ){return <LoadingSpinner />}
-    if(!cart || !cart[0]){
+    if(!cart?.length){
         return(
             <div className='min-h-screen flex'> 
                 <button className='btn btn-neutral m-3' onClick={()=>navigate('/')}>back</button>
@@ -48,52 +115,48 @@ const CartPage = () => {
     }
 
   return (
-    <div className='overflow-x-auto m-3'>
+    <div className='overflow-x-auto m-3 font-inter'>
         <div className='text-3xl font-medium text-center mx-2 mb-5'>Cart</div>
-        <table className='table table-zebra'>
+        <table className='w-full'>
             <thead>
-                <tr className='text-center'>
-                    <th>INDEX</th>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>MRP</th>
-                    <th>PRICE</th>
-                    <th>OPTIONS</th>
-                    <th>DELETE</th>
+                <tr className='text-center bg-blue-400 text-white text-sm w-full'>
+                    <th className='p-4'>INDEX</th>
+                    <th className='p-4'>Brand</th>
+                    <th className='p-4'>Name</th>
+                    <th className='p-4'>MRP</th>
+                    <th className='p-4'>PRICE</th>
+                    <th className='p-4'>OPTIONS</th>
+                    <th className='p-4'>DELETE</th>
                 </tr>
             </thead>
             <tbody>
             {cart?.map((product , index) => 
-                <tr key={index} className='text-center'>
-                    <th>{index+1}</th>
-                    <td>{product?.product_id?.product_barcode}</td>
-                    <td>{product?.product_id?.product_name}</td>
-                    <td>{product?.product_id?.product_stock.mrp}</td>
-                    <td>{product?.product_id?.product_stock.price}</td>
-                    <td className='hero' >
-                        <div className='border flex max-w-28 '>
-                            <button onClick={()=>minusToCart(product)} className="hero bg-slate-900 max-w-8 px-2 p-1 text-white hover:bg-gray-700">-</button>
-                            <input type="text" placeholder={product.quantity} className='p-1  w-full text-center placeholder:text-center placeholder:text-slate-950' />             
-                            <button onClick={()=>addCart(product)} className="hero bg-slate-900 max-w-8 px-2 p-1 text-white hover:bg-gray-700">+</button>
+                <tr key={index} className='text-center border-b border-blue-100'>
+                    <td className='p-3'>{index+1}</td>
+                    <td className='p-3'>{product?.product_id?.product_brand?.Brand_name}</td>
+                    <td className='p-3'>{product?.product_id?.product_name}</td>
+                    <td className='p-3'>{product?.product_id?.product_inventory_id?.product_stock[0]?.mrp}</td>
+                    <td className='p-3'>{product?.product_id?.product_inventory_id?.product_stock[0]?.price}</td>
+                    <td >
+                        <div className='border-2 border-blue-600 rounded-lg flex max-w-28'>
+                            <button onClick={()=>minusProductCart(product)} className="bg-blue-600 rounded-tl-md rounded-bl-md max-w-8 px-3 p-1 text-white hover:bg-gray-700">-</button>
+                            <div className='p-1 w-full'>{product.quantity}</div>             
+                            <button onClick={()=>addProductCart(product)} className="hero bg-blue-600 rounded-tr-md rounded-br-md max-w-8 px-3 p-1 text-white hover:bg-gray-700">+</button>
                         </div>
                     </td>
-                    <td>
-                        <button onClick={()=> removeProductFromCart(product?.product_id?.product_barcode)} className="w-full hero rounded-md bg-red-500 text-sm font-medium text-white hover:bg-gray-700">
-                            Delete
-                        </button>              
-                    </td>
+                    <td><button onClick={()=> removeProductFromCart(product?.product_id?._id)} className="rounded-xl bg-red-500 text-sm text-white p-2 px-4 hover:bg-red-700">Delete</button></td>
                 </tr>            
             )}  
             </tbody>
         </table>
         <div className='text-xl flex justify-between mx-10 my-5'>
-            <p>Total Price : {mrp}</p>
-            <p>Discount : {discount}</p>
+            <p>Total Price : {mrp}</p> 
+            <p>Discount : {mrp-price}</p>
             <p>Price : {price}</p>
             <p>No of Products : {no}</p>
         </div>
-        <div className='hero'>
-            <button onClick={()=>navigate('/checkout')} className='text-2xl text-white bg-slate-900 hero rounded-full p-2'>Checkout</button>
+        <div>
+            <button onClick={()=>navigate('/checkout')} className='text-2xl text-white bg-green-500 px-4 rounded-2xl p-2 hover:bg-green-600'>Checkout</button>
         </div>
     </div>
   )

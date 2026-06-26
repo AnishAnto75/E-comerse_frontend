@@ -22,7 +22,7 @@ export const fetchUser = createAsyncThunk('auth/fetchUser' , async()=>{
         return res.data
     } catch (error) {
         console.error(error)
-        throw new Error(error.response.data.message)
+        throw new Error(error.response?.data.message)
     }
 })
 

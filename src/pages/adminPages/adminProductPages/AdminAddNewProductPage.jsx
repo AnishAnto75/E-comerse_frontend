@@ -4,32 +4,52 @@ import { toast } from "react-toastify";
 import {Button} from '@material-tailwind/react'
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import ErrorComponent from "../../../components/ErrorComponent";
+import { useNavigate } from "react-router-dom";
 
 const AdminAddNewProductPage = () => {
 
+    const navigate = useNavigate()
     const [loading , setLoading] = useState(false)
     const [loading2 , setLoading2] = useState(false)
     const [error , setError ] = useState(false)
     const [Groups , setGroups] = useState([]) 
+    const [Brands , setBrands] = useState([])
+    const [Categories , setCategories] = useState([])
     const handleRef = useRef(true)
 
     // Fetch Groups
     useEffect(()=>{
-        const fetchGroups = async()=>{
+        const fetchAllGroupsAndBrands = async()=>{
             try {
                 setLoading(true) 
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product-group/all-groups`)
-                setGroups(res.data.data)
+                const groupRes = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product-group/all-groups`)
+                const brandRes = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/brand/all-brand`)
+                setGroups(groupRes.data.data)
+                setBrands(brandRes.data.data)
             } catch (error) {
                 setError(true)
-                console.log("error in fetchGroups :" , error)
+                console.log("error in fetchAllGroupsAndBrands :" , error)
             } finally { setLoading(false) }
         }
+
         if(handleRef.current){
-            fetchGroups()
+            fetchAllGroupsAndBrands()
             handleRef.current = false
         }
     },[])
+
+    const fetchCategoriesByGroup = async(id)=>{
+        try {
+            setLoading(true)
+            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product-category/group-id/${id}`)
+            console.log("fetchCategoriesByGroup payload : " , res.data)        
+            setCategories(res.data?.data)
+        } catch (error) {
+            setError(true)
+            toast.error(error.response?.data?.message)
+            console.log("error in fetchCategoriesByGroup :" , error)
+        } finally { setLoading(false) }
+    }
 
     const [product_group , setGroup ] = useState('')
     const [product_category , setCategory ] = useState('')
@@ -48,6 +68,12 @@ const AdminAddNewProductPage = () => {
     const [product_highlights , setProductHighlights] = useState([])
 
     const [highlight , setHightLight] = useState('')
+
+    const handleGroup = (e)=>{
+        setGroup(e.target.value)
+        setCategory('')
+        fetchCategoriesByGroup(e.target.value)
+    }
 
     const reset = ()=>{
         setGroup('')
@@ -96,6 +122,7 @@ const AdminAddNewProductPage = () => {
             console.log("addNewProduct response",res.data)
             toast.success(res.data?.message)
             reset()
+            navigate('/admin/products')
         } catch (error) {
             toast.error(error.response?.data?.message)
             console.log("error in addNewProduct :" , error)
@@ -117,29 +144,7 @@ const AdminAddNewProductPage = () => {
         setProductHighlights(newArray);
     };
 
-    // Enter Key handle
-    const input1Ref = useRef(null)
-    const input2Ref = useRef(null)
-    const input3Ref = useRef(null)
-    const input4Ref = useRef(null)
-    const input5Ref = useRef(null)
-    const input6Ref = useRef(null)
-    const input7Ref = useRef(null)
-    const input8Ref = useRef(null)
-    const input9Ref = useRef(null)
-    const input10Ref = useRef(null)
-    const handleKeyDown = (e, nextInputRef) => {
-        if (e.key === "Enter") {
-            e.preventDefault()
-            nextInputRef.current.focus()
-        }
-    }
-
-    const categories = []
-    if(product_group){ Groups.map(group=> group._id == product_group && categories.push(group.category_id)) }
-    const categoryOption = categories[0]?.map(category =>( <option key={category._id} value={category._id}>{category.category_name} </option> ))
-
-  if (loading) { return <LoadingSpinner/>}
+  if (loading || loading2) { return <LoadingSpinner/>}
   if (error) { return <ErrorComponent/>}
   return (
     <form onSubmit={(e)=>handleSubmit(e)} className="w-full">
@@ -152,38 +157,41 @@ const AdminAddNewProductPage = () => {
 
                     <div className="col-span-3">
                         <label htmlFor="product_group" >Group<span className="text-red-500 pl-0.5">*</span></label>
-                        <select name="product_group" required autoFocus value={product_group} onChange={(e)=> setGroup(e.target.value)} className="w-full p-2 border border-gray-300 rounded-md text-sm cursor-pointer focus:border-2 focus:border-blue-500">
+                        <select name="product_group" required autoFocus value={product_group} onChange={(e)=> handleGroup(e)} className="w-full p-2 border border-gray-300 rounded-md text-sm cursor-pointer focus:border-2 focus:border-blue-500">
                             <option disabled value='' />
                             {Groups?.map(group =>( <option key= {group._id} value={group._id} className="text-sm"> {group.group_name} </option> ))}
                         </select>
                     </div>
+                    
+                    <div className="col-span-4">
+                        <label htmlFor="product_category" >Category<span className="text-red-500 pl-0.5">*</span></label>
+                        <select name="product_category" required disabled= {!Categories.length} value={product_category} onChange={(e)=> setCategory(e.target.value)} className={`w-full p-2 border border-gray-300 rounded-md text-sm focus:border-2 focus:border-blue-500 ${!Categories.length ? 'cursor-not-allowed' : "cursor-pointer"}`}>
+                            <option disabled value='' />
+                            {Categories?.map(category =>( <option key= {category._id} value={category._id} className="text-sm"> {category.category_name} </option> ))}
+                        </select>
+                    </div>
 
-                    <div className="md:col-span-2">
-                        <label htmlFor="product_category">Category<span className="text-red-500 pl-0.5">*</span></label>
-                        <select name="product_category" disabled = {!categories.length} required value={product_category} onChange={(e)=> setCategory(e.target.value)} className={`w-full p-2 border border-gray-300 rounded-md text-sm focus:border-2 focus:border-blue-500 ${!categories.length ? "cursor-not-allowed" : "cursor-pointer"}`}>
-                            <option disabled value='' /> 
-                            {categoryOption} 
+                    <div className="col-span-3">
+                        <label htmlFor="product_brand" >Brand<span className="text-red-500 pl-0.5">*</span></label>
+                        <select name="product_brand" required autoFocus value={product_brand} onChange={(e)=> setBrand(e.target.value)} className="w-full p-2 border border-gray-300 rounded-md text-sm cursor-pointer focus:border-2 focus:border-blue-500">
+                            <option disabled value='' />
+                            {Brands?.map(brand =>( <option key= {brand._id} value={brand._id} className="text-sm"> {brand.Brand_name} </option> ))}
                         </select>
                     </div>
 
                     <div className="md:col-span-3 ">
                         <label htmlFor="product_barcode">Barcode<span className="text-red-500 pl-0.5">*</span></label>
-                        <input type="text" name="product_barcode" id="product_barcode" autoComplete="off" required value={product_barcode} onChange={(e)=>setBarcode((e.target.value).toUpperCase().trim())} ref={input1Ref} onKeyDown={(e) => handleKeyDown(e, input2Ref)} className="border border-gray-300 text-sm p-1.5 w-full rounded-md"/>
+                        <input type="text" name="product_barcode" id="product_barcode" autoComplete="off" required value={product_barcode} onChange={(e)=>setBarcode((e.target.value).toUpperCase().trim())} className="border border-gray-300 text-sm p-1.5 w-full rounded-md"/>
                     </div>
 
-                    <div className="md:col-span-2">
-                        <label htmlFor="brand">Brand<span className="text-red-500 pl-0.5">*</span></label>
-                        <input type="text" name="brand" id="brand" autoComplete="off" required value={product_brand} onChange={(e)=>setBrand(e.target.value)} ref={input2Ref} onKeyDown={(e) => handleKeyDown(e, input3Ref)} className="border border-gray-300 text-sm p-1.5 w-full rounded-md" />
-                    </div>
-
-                    <div className="md:col-span-9">
+                    <div className="md:col-span-7">
                         <label htmlFor="name">Name<span className="text-red-500 pl-0.5">*</span></label>
-                        <input type="text" name="name" id="name" autoComplete="off" required value={product_name} onChange={(e)=>setName(e.target.value)} ref={input3Ref} onKeyDown={(e) => handleKeyDown(e, input4Ref)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
+                        <input type="text" name="name" id="name" autoComplete="off" required value={product_name} onChange={(e)=>setName(e.target.value)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
                     </div>
 
-                    <div className=" col-span-10 text-lg text-light-blue-400 tracking-wider mt-3">Quantity and Stock</div>
+                    <div className=" col-span-10 text-lg text-light-blue-400 tracking-wider mt-3">Quantity and Stock Details</div>
                     <div className="md:col-span-3">
-                        <label htmlFor="product_UOM">Unit Of Measure</label>
+                        <label htmlFor="product_UOM">Unit Of Measure<span className="text-red-500 pl-0.5">*</span></label>
                         <select name="product_UOM" required value={product_UOM} onChange={(e)=> setUOM(e.target.value)} className="w-full p-2 border border-gray-300 rounded-md text-sm cursor-pointer focus:border-2 focus:border-blue-500">
                             <option disabled value='' />
                             <option value='gm'>Gram</option>
@@ -196,23 +204,23 @@ const AdminAddNewProductPage = () => {
                     </div>
                     <div className="md:col-span-2">
                         <label htmlFor="product_net_unit">Net Unit</label>
-                        <input type="number" name="product_net_unit" id="product_net_unit" value={product_net_unit} onChange={(e)=>setNetUnit(e.target.value)} ref={input4Ref} onKeyDown={(e) => handleKeyDown(e, input5Ref)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
+                        <input type="number" name="product_net_unit" id="product_net_unit" value={product_net_unit} onChange={(e)=>setNetUnit(e.target.value)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
                     </div>
                     <div className="md:col-span-3 ">
                         <label htmlFor="product_min_order_quantity">Min OQ</label>
-                        <input type="number" name="product_min_order_quantity" id="product_min_order_quantity" value={product_min_order_quantity} onChange={(e)=>setMinOrderQuantity(e.target.value)} ref={input5Ref} onKeyDown={(e) => handleKeyDown(e, input6Ref)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
+                        <input type="number" name="product_min_order_quantity" id="product_min_order_quantity" value={product_min_order_quantity} onChange={(e)=>setMinOrderQuantity(e.target.value)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
                     </div>
                     <div className="md:col-span-2 ">
                         <label htmlFor="product_max_order_quantity">Max OQ</label>
-                        <input type="number" name="product_max_order_quantity" id="product_max_order_quantity" value={product_max_order_quantity} onChange={(e)=>setMaxOrderQuantity(e.target.value)} ref={input6Ref} onKeyDown={(e) => handleKeyDown(e, input7Ref)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
+                        <input type="number" name="product_max_order_quantity" id="product_max_order_quantity" value={product_max_order_quantity} onChange={(e)=>setMaxOrderQuantity(e.target.value)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
                     </div>
                     <div className="md:col-span-2">
                         <label htmlFor="lowInStock">Low in stock</label>
-                        <input type="number" name="lowInStock" id="lowInStock" value={product_low_in_stock} onChange={(e)=>setLowInStock(e.target.value)} ref={input7Ref} onKeyDown={(e) => handleKeyDown(e, input8Ref)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
+                        <input type="number" name="lowInStock" id="lowInStock" value={product_low_in_stock} onChange={(e)=>setLowInStock(e.target.value)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
                     </div>
                     <div className="md:col-span-2">
                         <label htmlFor="product_hsn_code">HSN code</label>
-                        <input type="number" name="product_hsn_code" id="product_hsn_code" value={product_hsn_code} onChange={(e)=>setHsnCode(e.target.value)} ref={input8Ref} onKeyDown={(e) => handleKeyDown(e, input9Ref)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
+                        <input type="number" name="product_hsn_code" id="product_hsn_code" value={product_hsn_code} onChange={(e)=>setHsnCode(e.target.value)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
                     </div>
 
                     <div className=" col-span-10 text-lg text-light-blue-400 tracking-wider mt-3">Additional Information</div>
@@ -260,7 +268,6 @@ const AdminAddNewProductPage = () => {
                         <label htmlFor="description">Description</label>
                         <textarea name="description" id="description"
                             value={product_description} onChange={(e)=>setDescription(e.target.value)}
-                            ref={input9Ref} onKeyDown={(e) => handleKeyDown(e, input10Ref)}
                             className="h-full mt-1 resize-none border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
                     </div>
 
@@ -268,8 +275,7 @@ const AdminAddNewProductPage = () => {
                         <label htmlFor="highlights">Highlights</label>
                         <input type="text" name="highlights" id="highlights"
                             value={highlight} onChange={(e)=>setHightLight(e.target.value)}
-                            onKeyPress={(e) => e.key == 'Enter' && handleHighlight(e)}
-                            ref={input10Ref} className="border text-sm border-gray-300 p-1.5 w-full rounded-md" />
+                            className="border text-sm border-gray-300 p-1.5 w-full rounded-md" />
                         {product_highlights.length ?
                             <div className="flex flex-col bg-white mt-3 gap-3 border-2 rounded-lg py-2 ">
                                 {product_highlights?.map((highlight , index)=>(

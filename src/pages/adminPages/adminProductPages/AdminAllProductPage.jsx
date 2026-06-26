@@ -35,7 +35,7 @@ const AdminAllProductPage = () => {
                 console.log("error in adminFetchAllProduct :" , error)
             } finally { setLoading(false) }
         }
-        
+
         if(handleRef.current) {
             fetch()
             handleRef.current = false

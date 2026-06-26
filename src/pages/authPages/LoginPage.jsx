@@ -15,7 +15,9 @@ const LoginPage = () => {
         e.preventDefault()
         try {
             const data = {email, password }
+            console.log(`${import.meta.env.VITE_BACKEND_URL}auth/login`)
             const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}auth/login` , {data})
+            console.log(res)
             if (res.status == 200){
                 toast.success(res.data.message)
                 navigate('/')

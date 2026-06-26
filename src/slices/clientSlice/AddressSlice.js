@@ -1,5 +1,6 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import axios from 'axios'
+import { toast } from 'react-toastify'
 
 const ADDRESS_URL = `${import.meta.env.VITE_BACKEND_URL}address/`
 
@@ -48,9 +49,7 @@ const AddressSlice = createSlice({
     reducers:{
         addAllAddress : (state , action)=>{
             const address = action.payload.address
-            if(!address){
-                return
-            }
+            if(!address){return}
             state.address = address
             return 
         },
@@ -68,17 +67,21 @@ const AddressSlice = createSlice({
             state.addNewAddressStatus = 'failed'
             state.addNewAddressError = action.error.message
 
+            toast.error(action.error.message)
             console.error("addNewAddress error : " ,action.error)
         })
         .addCase(addNewAddress.fulfilled , (state , action)=>{
+            
             state.addNewAddressStatus = 'suceeded'
             state.addNewAddressError = null
-            
-            console.log("addNewAddress payload : " ,action.payload)
-
             state.address = action.payload.data.address
+
+            toast.success(action.payload.message)
+            console.log("addNewAddress payload : " ,action.payload)
+            
         })
-        
+
+
         .addCase(deleteAddress.pending , (state , action)=>{
             state.deleteAddressStatus = 'loading'
         })
@@ -86,17 +89,19 @@ const AddressSlice = createSlice({
             state.deleteAddressStatus = 'failed'
             state.deleteAddressError = action.error.message
 
+            toast.error(action.error.message)
             console.error("deleteAddress error : " ,action.error)
         })
         .addCase(deleteAddress.fulfilled , (state , action)=>{
             state.deleteAddressStatus = 'suceeded'
             state.deleteAddressError = null
-
-            console.log("deleteAddress payload : " ,action.payload)
-            
             state.address = action.payload.data.address
+
+            toast.success(action.payload.message)
+            console.log("deleteAddress payload : " ,action.payload)
         })
         
+
         .addCase(editAddress.pending , (state , action)=>{
             state.editAddressStatus = 'loading'
         })
@@ -104,15 +109,16 @@ const AddressSlice = createSlice({
             state.editAddressStatus = 'failed'
             state.editAddressError = action.error.message
 
+            toast.error(action.error.message)
             console.error("editAddress error : " ,action.error)
         })
         .addCase(editAddress.fulfilled , (state , action)=>{
             state.editAddressStatus = 'suceeded'
             state.editAddressError = null
-
-            console.log("editAddress payload : " ,action.payload)
-            
             state.address = action.payload.data.address
+
+            toast.success(action.payload.message)
+            console.log("editAddress payload : " ,action.payload)
         })
     }
 })

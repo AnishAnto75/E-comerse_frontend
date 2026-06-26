@@ -20,22 +20,13 @@ export const removeFromCart = createAsyncThunk('cart/removeFromCart' , async(dat
 
 const processCart = async(state , products)=>{
 
-    let totalMrp = 0
-    let totalSellingPrice = 0
     let no_of_products_in_cart = 0
 
     products.map(product=>{
-        const stock = product.product_id.product_stock
-        totalMrp += stock.mrp * product.quantity
-        totalSellingPrice += stock.price * product.quantity
         no_of_products_in_cart += product.quantity
     })
 
     state.cart = products
-    state.totalMrp = totalMrp
-    state.totalSellingPrice = totalSellingPrice
-    state.discount = totalMrp - totalSellingPrice
-    state.totalAmount = state.deliveryCharge + totalSellingPrice
     state.no_of_products_in_cart = no_of_products_in_cart
 }
 
@@ -49,10 +40,10 @@ const cartSlice = createSlice({
         discount : 0,
         deliveryCharge : 50,
         totalAmount : 0 ,
-    
+
         addToCartStatus : 'idle' ,
         addToCartError : null,
-        
+
         removeFromCartStatus : 'idle' ,
         removeFromCartError : null
     },
@@ -121,12 +112,8 @@ const cartSlice = createSlice({
 export const {addCartProduct, emptyCart} = cartSlice.actions
 
 export const getCart = (state)=> state.cart.cart
-export const getCartTotalMrp = (state)=> state.cart.totalMrp
-export const getCartTotalSellingPrice = (state)=> state.cart.totalSellingPrice
-export const getCartDiscount = (state)=> state.cart.discount
 export const getCartNoOfProductsInCart = (state)=> state.cart.no_of_products_in_cart
 export const getCartDeliveryCharge = (state)=> state.cart.deliveryCharge
-export const getCartTotalAmount = (state)=> state.cart.totalAmount
 
 export const getAddToCartStatus = (state)=> state.cart.addToCartStatus
 export const getAddToCartError = (state)=> state.cart.addToCartError

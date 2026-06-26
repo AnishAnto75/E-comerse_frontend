@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from "react"
 import axios from "axios"
 import { toast } from "react-toastify";
 import { debounce } from 'lodash';
+import { useNavigate } from "react-router-dom";
 
 const AdminPurchaseEntryPage = () => {
 
+    const navigate = useNavigate()
     const handleRef = useRef(true)
 
     const [loading , setLoading] = useState(false)
@@ -12,15 +14,14 @@ const AdminPurchaseEntryPage = () => {
 
     const [supplier_id , setSupplierId ] = useState('')
     const [invoice_no , setInvoiceNo ] = useState('')
-    const [payment_done , setPaymentDone ] = useState(false)
     const [products , setProducts ] = useState([])
-    const [total_purchase_amount , setTotalAmount ] = useState(0)
+    const [total_purchase_amount , setTotalPurchaseAmount ] = useState(0)
 
     const [product_barcode , setProductBarcode ] = useState('')
-    const [product_name , setProductName ] = useState('')
+    const [product_name, setProductName] = useState('')
     const [batch_no , setBatchNo ] = useState('')
     const [quantity_recieved , setQuantityRecieved ] = useState('')
-    const [quantity , setQuantity ] = useState('')
+    const [size , setSize ] = useState('')
     const [manufacture_date , setManufactureDate ] = useState('')
     const [expire_date , setExpireDate ] = useState('')
     const [best_before , setBestBefore ] = useState('')
@@ -30,7 +31,9 @@ const AdminPurchaseEntryPage = () => {
     const [other_expences , setOtherExpences ] = useState(0)
     const [price , setPrice ] = useState('')
 
+
     const [suppliers , setSuppliers ] = useState([])
+
     const [searchedProducts , setSearchedProducts] = useState(null)
 
     useEffect(()=>{
@@ -56,7 +59,7 @@ const AdminPurchaseEntryPage = () => {
         setProductName('')
         setBatchNo('')
         setQuantityRecieved('')
-        setQuantity('')
+        setSize('')
         setManufactureDate('')
         setExpireDate('')
         setBestBefore('')
@@ -94,43 +97,34 @@ const AdminPurchaseEntryPage = () => {
     const searchBarcode = async(e)=>{
         if (e.key === "Enter" && product_barcode){
             e.preventDefault()
-            let valid = true
-            products.map(product => { if(product.product_barcode == product_barcode){valid = false}})
-            if(!valid){return}
+
+            let existingProductBarcode = []
+            products?.map(product=> existingProductBarcode = [...existingProductBarcode, product.product_barcode])
+            if( existingProductBarcode.includes(product_barcode)) { toast.warn("Product Already Added"); return }
+
             try {
+                setLoading(true)
                 const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/product/barcode/${product_barcode}`)
                 console.log("search barcode payload", res.data)
                 if(res.data?.data){
+                    setProductBarcode(res.data.data.product_barcode)
                     setProductName(res.data.data.product_name)
-                    const stock = res.data.data?.product_stock[res.data.data?.product_stock?.length-1]
-                    setQuantity(stock?.quantity ? stock.quantity : '')
-                    setManufactureDate('')
-                    setExpireDate('')
-                    setBatchNo('')
-                    setQuantityRecieved('')
-                    setBestBefore(stock?.best_before ? stock.best_before : '')
-                    setMrp(stock?.mrp ? stock.mrp : '')
-                    setPurchaseCost(stock?.purchase_cost ? stock.purchase_cost : '')
-                    setGst(stock?.gst ? stock.gst : '')
-                    setOtherExpences(stock?.other_expences ? stock.other_expences : 0)
-                    setPrice(stock?.price ? stock.price : '')
-                    input3Ref.current.focus()
-                } else{
-                    setProductName(''); setBatchNo(''); setQuantityRecieved(''); setQuantity(''); setManufactureDate(''); setExpireDate(''); setBestBefore(''); setMrp(''); setPurchaseCost(''); setGst(''); setOtherExpences(0); setPrice('')
-                }
+                } 
             } catch (error) {
-                toast.error(error.response.data?.message)
+                toast.error(error.response?.data?.message)
                 console.error("error in searchBarcode :" , error)
-            } 
+            }  finally {
+                setLoading(false)
+            }
         }
     }
 
-    const searchName = debounce(async (term) => {
+    const searchProductByName = debounce(async (term) => {
         if(term.length){
             try {
                 const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/product/name/${term}`)
-                setSearchedProducts(res.data.data) 
-                console.log({searchedProductss : res.data.data})
+                setSearchedProducts(res?.data?.data) 
+                console.log({searchedProducts : res?.data?.data})
             } catch (error) {
                 console.error("error in searchName :" , error)
             }
@@ -140,28 +134,38 @@ const AdminPurchaseEntryPage = () => {
     const handleProductName = (e) => {
         const term = e.target.value;
         setProductName(term)
-        if(term.length){searchName(term)}
+        if(term.length > 2){searchProductByName(term)}
         else{setSearchedProducts(null)}
     }
 
-    const clickName = (product)=>{
-        console.log(product)
-        setProductBarcode(product.product_barcode)
-        setProductName(product.product_name)
-        const stock = product?.product_stock[product?.product_stock?.length-1]
-        setQuantity(stock?.quantity ? stock.quantity : '')
-        setManufactureDate('')
-        setExpireDate('')
-        setBatchNo('')
-        setQuantityRecieved('')
-        setBestBefore(stock?.best_before ? stock.best_before : '')
-        setMrp(stock?.mrp ? stock.mrp : '')
-        setPurchaseCost(stock?.purchase_cost ? stock.purchase_cost : '')
-        setGst(stock?.gst ? stock.gst : '')
-        setOtherExpences(stock?.other_expences ? stock.other_expences : 0)
-        setPrice(stock?.price ? stock.price : '')
-        input3Ref.current.focus()
+    const clickSearchedProductByName = (product)=>{
+        setProductBarcode(product?.product_barcode)
+        setProductName(product?.product_name)
         setSearchedProducts(null)
+    }
+
+    const handleAddRow = async(e)=>{
+        e.preventDefault()
+
+        if(Number(mrp) < Number(price)){ toast.warn("PRICE Should Be Less Than MRP"); return }
+
+        let existingProductBarcode = []
+        products?.map(product=> existingProductBarcode = [...existingProductBarcode, product.product_barcode])
+        if(existingProductBarcode.includes(product_barcode)){ toast.warn("Product Already Added"); return }
+        
+        try {
+            setLoading(true)
+            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/product/barcode/${product_barcode}`)
+            console.log("Validating Product Payload", res.data)
+        } catch (error) {
+            toast.error("Product Not Found")
+            return
+        } finally { setLoading(false)}
+
+        setTotalPurchaseAmount(( purchase_cost * quantity_recieved ) + total_purchase_amount)
+        const data = {product_barcode, product_name, batch_no, quantity_recieved, size, manufacture_date, expire_date, best_before, mrp, purchase_cost, gst, other_expences, price}
+        setProducts([...products , data])
+        reset()
     }
 
     const handleDeleteProduct = (e , index) => {
@@ -172,17 +176,9 @@ const AdminPurchaseEntryPage = () => {
         setProducts(newArray);
     }
 
-    const handleAddRow = (e)=>{
-        e.preventDefault()
-        setTotalAmount((purchase_cost*quantity_recieved)+total_purchase_amount)
-        const data = {product_barcode, product_name, batch_no, quantity_recieved, quantity, manufacture_date, expire_date, best_before, mrp, purchase_cost, gst, other_expences, price}
-        setProducts([...products , data])
-        reset()
-        input1Ref.current.focus()
-    }
-
     const handleCreatePurchase = async()=>{
-        const data = {supplier_id, invoice_no, payment_done, products, total_purchase_amount}
+        const data = {supplier_id, invoice_no, products, total_purchase_amount}
+        console.log(data)
         if(!supplier_id){inputaRef.current.focus(); return}
         if(!invoice_no){inputbRef.current.focus(); return}
         if(!products.length){input1Ref.current.focus(); return}
@@ -191,30 +187,31 @@ const AdminPurchaseEntryPage = () => {
                 setLoading(true)
                 const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/create-purchase`, {data})
                 console.log("CreatePurchase payload", res.data)
-                toast.success(res.data.message)
+                toast.success(res.data?.message)
                 reset()
                 setSupplierId('')
                 setInvoiceNo('')
                 setProducts([]) 
+                navigate('/admin/entry')
             } catch (error) {
                 toast.error(error.response.data?.message)
                 console.error("error in CreatePurchase :" , error)
             } finally { setLoading(false) }
-            console.log({data})
         }
     }
 
     if (loading) {return <div>Loading..</div>}
     if (error) {return <div>Error</div>}
   return (
-    <div className="bg-slate-50 min-h-screen w-full">
+    <div className="min-h-screen w-full">
         <div className="tracking-wide font-[arial] bg-gray-200 p-5 flex justify-between">
             <div className="flex gap-5 ">
                 <div>
                     <label htmlFor="supplier_id">Supplier</label>
                     <select name="supplier_id" required autoFocus value={supplier_id} onChange={(e)=> setSupplierId(e.target.value)} 
                         ref={inputaRef}
-                        className="select select-bordered w-full mt-1 ">
+                        className="w-full mt-1 p-[11px] border   border-gray-400 rounded-md cursor-pointer "> 
+                        
                         <option disabled value=''  />
                         {suppliers?.map((supplier, index) =>( 
                             <option key ={index} value={supplier._id}>{supplier.supplier_name}</option> ))
@@ -227,20 +224,20 @@ const AdminPurchaseEntryPage = () => {
                     <input type="text" name="Invoice No" id="Invoice No" autoComplete="off" required
                         value={invoice_no} onChange={(e)=>setInvoiceNo(e.target.value)}
                         ref={inputbRef} onKeyDown={(e) => handleKeyDown(e, input1Ref)}
-                        className="input input-bordered w-full mt-1 p-2" />
+                        className="w-full mt-1 p-2 border border-gray-400 rounded-md " />
                 </div>
             </div>
             <div className="pt-4">Total Amount : {total_purchase_amount}</div>
         </div>
 
-        <form onSubmit={(e)=>handleAddRow(e)} className="grid md:grid-cols-12 p-5 gap-2 gap">
+        <form onSubmit={(e)=>handleAddRow(e)} className="grid md:grid-cols-12 p-5 gap-2 gap-x-4">
 
             <div className="col-span-2">
                 <label htmlFor="product_barcode">Barcode</label>
                 <input type="text" name="product_barcode" id="product_barcode" autoComplete="off" required
                     value={product_barcode} onChange={(e)=>setProductBarcode(e.target.value)}
                     ref={input1Ref} onKeyDown={(e) => searchBarcode(e)}
-                    className="input input-bordered w-full mt-1 p-2" />
+                    className="w-full mt-1 p-2 border border-gray-400 rounded-md" />
             </div>
 
             <div className="col-span-4 relative">
@@ -248,15 +245,16 @@ const AdminPurchaseEntryPage = () => {
                 <input type="text" name="Name" id="Name" autoComplete="off" required
                     value={product_name} onChange={(e)=>handleProductName(e)}
                     ref={input2Ref} onKeyDown={(e) => handleKeyDown(e, input3Ref)}
-                    className="input input-bordered w-full mt-1 p-2" />
+                    className="w-full mt-1 p-2 border border-gray-400 rounded-md " />
 
-                {searchedProducts?.length ? 
-                <div className='absolute bg-white w-full border p-2 flex flex-col'>
-                    {searchedProducts.map((product, index)=>(
-                        <div key={index} onClick={()=>clickName(product)} className="hover:bg-gray-100 cursor-pointer p-1">{product.product_name}</div>
+                {searchedProducts?.length && product_name ? 
+                <div className='absolute bg-blue-gray-50 w-full border flex flex-col'>
+                    {searchedProducts?.map((product, index)=>(
+                        <div key={index} onClick={()=>clickSearchedProductByName(product)} className="hover:bg-gray-100 cursor-pointer p-2">{product.product_name}</div>
                     ))}
                 </div>
-                :<div/>}
+                : <div />
+                }
             </div>
 
             <div className="col-span-2">
@@ -264,47 +262,47 @@ const AdminPurchaseEntryPage = () => {
                 <input type="text" name="batch_no" id="batch_no" autoComplete="off" required
                     value={batch_no} onChange={(e)=>setBatchNo(e.target.value)}
                     ref={input3Ref} onKeyDown={(e) => handleKeyDown(e, input4Ref)}
-                    className="input input-bordered w-full mt-1 p-2" />
+                    className="w-full mt-1 p-2 border border-gray-400 rounded-md " />
             </div>
 
             <div className="col-span-2">
                 <label htmlFor="QR">Qty Received</label>
                 <input type="number" name="QR" id="QR" autoComplete="off" required
-                     value={quantity_recieved} onChange={(e)=>setQuantityRecieved(e.target.value)}
-                     ref={input4Ref} onKeyDown={(e) => handleKeyDown(e, input5Ref)}
-                    className="input input-bordered w-full mt-1 p-2" />
+                    value={quantity_recieved} onChange={(e)=>setQuantityRecieved(e.target.value)}
+                    ref={input4Ref} onKeyDown={(e) => handleKeyDown(e, input5Ref)}
+                    className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
             </div>
 
             <div className="col-span-2">
-                <label htmlFor="Quantity">Quantity</label>
-                <input type="text" name="Quantity" id="Quantity" autoComplete="off" required
-                    value={quantity} onChange={(e)=>setQuantity(e.target.value)}
+                <label htmlFor="size">Size</label>
+                <input type="text" name="size" id="size" autoComplete="off" required
+                    value={size} onChange={(e)=>setSize(e.target.value)}
                     ref={input5Ref} onKeyDown={(e) => handleKeyDown(e, input6Ref)}
-                    className="input input-bordered w-full mt-1 p-2" />
+                    className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
             </div>
 
             <div className="col-span-2">
                 <label htmlFor="manufacture_date">MFD</label>
-                <input type="date" name="manufacture_date" id="manufacture_date" autoComplete="off" required
-                     value={manufacture_date} onChange={(e)=>setManufactureDate(e.target.value)}
-                     ref={input6Ref} onKeyDown={(e) => handleKeyDown(e, input7Ref)}
-                    className="input input-bordered w-full mt-1 p-2" />
+                <input type="date" name="manufacture_date" id="manufacture_date" autoComplete="off"
+                    value={manufacture_date} onChange={(e)=>setManufactureDate(e.target.value)}
+                    ref={input6Ref} onKeyDown={(e) => handleKeyDown(e, input7Ref)}
+                    className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
             </div>
 
             <div className="col-span-2">
                 <label htmlFor="expire_date">EXD</label>
-                <input type="date" name="expire_date" id="expire_date" autoComplete="off" required
+                <input type="date" name="expire_date" id="expire_date" autoComplete="off"
                     value={expire_date} onChange={(e)=>setExpireDate(e.target.value)}
                     ref={input7Ref} onKeyDown={(e) => handleKeyDown(e, input8Ref)}
-                    className="input input-bordered w-full mt-1 p-2" />
+                    className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
             </div>
 
             <div className="col-span-2">
                 <label htmlFor="Best Before">Best Before</label>
-                <input type="number" name="Best Before" id="Best Before" autoComplete="off" required
+                <input type="number" name="Best Before" id="Best Before" autoComplete="off"
                     value={best_before} onChange={(e)=>setBestBefore(e.target.value)}
                     ref={input8Ref} onKeyDown={(e) => handleKeyDown(e, input9Ref)}
-                    className="input input-bordered w-full mt-1 p-2" />
+                        className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
             </div>
 
             <div className="col-span-2">
@@ -312,7 +310,7 @@ const AdminPurchaseEntryPage = () => {
                 <input type="number" name="mrp" id="mrp" autoComplete="off" required
                 value={mrp} onChange={(e)=>setMrp(e.target.value)}
                 ref={input9Ref} onKeyDown={(e) => handleKeyDown(e, input10Ref)}
-                    className="input input-bordered w-full mt-1 p-2" />
+                        className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
             </div>
 
             <div className="col-span-2">
@@ -320,7 +318,7 @@ const AdminPurchaseEntryPage = () => {
                 <input type="number" name="purchase_cost" id="purchase_cost" autoComplete="off" required
                    value={purchase_cost} onChange={(e)=>setPurchaseCost(e.target.value)}
                    ref={input10Ref} onKeyDown={(e) => handleKeyDown(e, input11Ref)}
-                    className="input input-bordered w-full mt-1 p-2" />
+                        className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
             </div>
 
             <div className="col-span-2">
@@ -328,7 +326,7 @@ const AdminPurchaseEntryPage = () => {
                 <input type="number" name="gst" id="gst" autoComplete="off" required
                      value={gst} onChange={(e)=>setGst(e.target.value)}
                      ref={input11Ref} onKeyDown={(e) => handleKeyDown(e, input12Ref)}
-                    className="input input-bordered w-full mt-1 p-2" />
+                        className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
             </div>
 
             <div className="col-span-2">
@@ -336,76 +334,68 @@ const AdminPurchaseEntryPage = () => {
                 <input type="number" name="other_expences" id="other_expences" autoComplete="off" required
                     value={other_expences} onChange={(e)=>setOtherExpences(e.target.value)}
                     ref={input12Ref} onKeyDown={(e) => handleKeyDown(e, input13Ref)}
-                    className="input input-bordered w-full mt-1 p-2" />
+                        className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
             </div>
 
             <div className="col-span-2">
                 <label htmlFor="price">Price</label>
                 <input type="number" name="price" id="price" autoComplete="off" required
                     value={price} onChange={(e)=>setPrice(e.target.value)}
-                    ref={input13Ref}
-                    className="input input-bordered w-full mt-1 p-2" />
+                    ref={input13Ref} 
+                    className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
             </div>
            
             <div className="col-span-2 ">
-                <button type="submit" className="btn btn-neutral mt-7">add</button>
+                <button type="submit" className="bg-blue-900 text-white py-2 px-5 rounded-xl mt-7">add</button>
             </div>
         </form>
-        <div className="divider m-0 px-5"/>
-        <table className="table table-zebra text-center border-b ">
+        <div className="border-b-2 mb-5 px-5"/>
+        <table className="text-center border-b w-full ">
             <thead className='sticky top-0'>
-                <tr className='text-sm bg-gray-600 text-white font-[arial] tracking-wide'>
-                    <th></th>
-                    <th>BARCODE</th>
-                    <th>NAME</th>
-                    <th>BATCH</th>
-                    <th>QTY REC</th>
-                    <th>QTY</th>
-                    <th>MFD</th>
-                    <th>EXD</th>
-                    <th>BB</th>
-                    <th>MRP</th>
-                    <th>PUR COST</th>
-                    <th>GST</th>
-                    <th>OTHER EXP</th>
-                    <th>PRICE</th>
-                    <th></th>
+                <tr className='text-sm bg-light-blue-600 w-full text-white font-[arial] tracking-wide'>
+                    <th className="p-3"></th>
+                    <th className="p-3">BARCODE</th>
+                    <th className="p-3">NAME</th>
+                    <th className="p-3">BATCH</th>
+                    <th className="p-3">QTY REC</th>
+                    <th className="p-3">QTY</th>
+                    <th className="p-3">MFD</th>
+                    <th className="p-3">EXD</th>
+                    <th className="p-3">BB</th>
+                    <th className="p-3">MRP</th>
+                    <th className="p-3">PUR COST</th>
+                    <th className="p-3">GST</th>
+                    <th className="p-3">OTHER EXP</th>
+                    <th className="p-3">PRICE</th>
+                    <th className="p-3"></th>
                 </tr>
             </thead>
 
             <tbody>
                {products?.map((product, index)=>(
-                <tr key={index}>
-                    <td>{index+1}</td>
-                    <td>{product.product_barcode}</td>
-                    <td>{product.product_name}</td>
-                    <td>{product.batch_no}</td>
-                    <td>{product.quantity_recieved}</td>
-                    <td>{product.quantity}</td>
-                    <td>{product.manufacture_date}</td>
-                    <td>{product.expire_date}</td>
-                    <td>{product.best_before}</td>
-                    <td>{product.mrp}</td>
-                    <td>{product.purchase_cost}</td>
-                    <td>{product.gst}</td>
-                    <td>{product.other_expences}</td>
-                    <td>{product.price}</td>
-                    <td> <button onClick={(e) => handleDeleteProduct(e , index)} className="text-red-500 hover:text-red-700">Delete</button></td>
+                <tr key={index} className="border-b border-light-blue-100">
+                    <td className="p-3">{index+1}</td>
+                    <td className="p-3">{product.product_barcode}</td>
+                    <td className="p-3 text-start">{product.product_name}</td>
+                    <td className="p-3">{product.batch_no}</td>
+                    <td className="p-3">{product.quantity_recieved}</td>
+                    <td className="p-3">{product.size}</td>
+                    <td className="p-3">{product.manufacture_date}</td>
+                    <td className="p-3">{product.expire_date}</td>
+                    <td className="p-3">{product.best_before}</td>
+                    <td className="p-3">{product.mrp}</td>
+                    <td className="p-3">{product.purchase_cost}</td>
+                    <td className="p-3">{product.gst}</td>
+                    <td className="p-3">{product.other_expences}</td>
+                    <td className="p-3">{product.price}</td>
+                    <td className="p-3"> <button onClick={(e) => handleDeleteProduct(e , index)} className="text-red-500 hover:text-red-700">Remove</button></td>
                 </tr>
-
-              
                ))}
-
-
             </tbody>
         </table>
-        <div className="flex px-5 pt-5 gap-2">
-            <input type="checkbox" name="payment_done" checked={payment_done} onChange={()=>{payment_done ? setPaymentDone(false) : setPaymentDone(true)}} className="checkbox checkbox-info"/>
-            <label htmlFor="payment_done">Payment Done</label>
-        </div>
         <div className="flex justify-start p-5 gap-10">
-            <div onClick={()=>handleCreatePurchase()} className="btn btn-neutral">Submit</div>
-            <div className="btn btn-neutral ">Save</div>
+            <div onClick={()=>handleCreatePurchase()} className="bg-blue-500 text-white py-2 px-8 rounded-xl cursor-pointer">Submit</div>
+            <div onClick={()=>toast.warn("Feature Not Yet Added")} className="bg-green-500 text-white py-2 px-5 rounded-xl cursor-pointer">Save</div>
         </div>
     </div>
   )

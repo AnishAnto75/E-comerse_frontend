@@ -11,7 +11,6 @@ const initialState = orderAdapter.getInitialState({
     checkOutAddress : null,
     checkOutProducts : null,
     checkOutPaymentMethod : null,
-
 })
 
 const orderSlice = createSlice({
@@ -47,7 +46,7 @@ export const {
 export const {setCheckOutAddress , setCheckOutProducts , setCheckOutPaymentMethod, emptyCheckOut} = orderSlice.actions
 
 export const getCheckOutAddress = (state)=>state.order.checkOutAddress
-export const getCheckOutProduct = (state)=>state.order.checkOutProducts 
+export const getCheckOutProducts = (state)=>state.order.checkOutProducts
 export const getCheckOutPaymentMethod = (state)=>state.order.checkOutPaymentMethod
 export const getFetchOrderStatus  = (state)=>state.order.fetchOrderStatus
 export const getFetchOrderError  = (state)=>state.order.fetchOrderError

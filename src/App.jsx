@@ -56,10 +56,20 @@ import AdminBannerPage from "./pages/adminPages/adminBannerPages/AdminBannerPage
 import AdminCreateBannerPage from "./pages/adminPages/adminBannerPages/AdminCreateBannerPage.jsx";
 import { getAdminCreateBannerStatus } from "./slices/adminSlice/adminBannerSlice.js";
 import AdminEditBannerPage from "./pages/adminPages/adminBannerPages/AdminEditBannerPage.jsx";
-import AdminLowInStockPage from "./pages/adminPages/adminProductPages/AdminLowInStockPage.jsx";
 import AdminEditProductPage from "./pages/adminPages/adminProductPages/AdminEditProductPage.jsx";
 import AdminAllOrderPage from "./pages/adminPages/adminOrderPage/AdminAllOrderPage.jsx";
 import AdminViewCustomerPage from "./pages/adminPages/adminCustomerPages/AdminViewCustomerPage.jsx";
+import AdminGroupsCategoriesPage from "./pages/adminPages/adminGroups&CategoriesPages/AdminGroupsCategoriesPage.jsx"
+import AdminBrandPage from './pages/adminPages/adminBrandPages/AdminBrandPage.jsx'
+import AdminAddNewBrandPage from './pages/adminPages/adminBrandPages/AdminAddNewBrandPage.jsx'
+import AdminEditBrandPage from "./pages/adminPages/adminBrandPages/AdminEditBrandPage.jsx";
+import AdminViewBrandPage from './pages/adminPages/adminBrandPages/AdminViewBrandPage.jsx'
+import AdminAddGroupPage from "./pages/adminPages/adminGroups&CategoriesPages/AdminAddGroupPage.jsx";
+import AdminAddCategoryPage from './pages/adminPages/adminGroups&CategoriesPages/AdminAddCategoryPage.jsx'
+import AdminEditCustomerPage from "./pages/adminPages/adminCustomerPages/AdminEditCustomerPage.jsx";
+
+
+
 
 function App() {
     const dispatch = useDispatch()
@@ -109,7 +119,7 @@ function App() {
             </Route>
 
 {/* Products */}
-            <Route path="product" element={<ClientLayout />} >
+            <Route path="products" element={<ClientLayout />} >
                 <Route index element={<AllProductPages/>}/>
                 <Route path=':id' element={<ProductPage/>}/>
             </Route>
@@ -151,14 +161,29 @@ function App() {
                     <Route path="new-product" element={<AdminAddNewProductPage />}/>
                     <Route path="edit/:id" element={<AdminEditProductPage />}/>
                     <Route path="all-products" element={<AdminAllProductPage />}/>
-                    <Route path="low-in-stock" element={<AdminLowInStockPage />}/>
+                    <Route path="low-in-stock" element={<div>Low in Stock</div>}/>
                     <Route path="product_id/:id" element={<AdminProductViewPage />}/>
+                </Route>
+
+                <Route path="groups-categories">
+                    <Route index element={<AdminGroupsCategoriesPage  />}/>
+                    <Route path="new-group" element={<AdminAddGroupPage />}/>
+                    <Route path="new-category" element={<AdminAddCategoryPage />}/>
+
+                </Route>
+
+                <Route path="brands">
+                    <Route index element={<AdminBrandPage />}/>
+                    <Route path="new-brand" element={<AdminAddNewBrandPage />}/>
+                    <Route path="edit/:id" element={<AdminEditBrandPage />}/>
+                    <Route path=":id" element={<AdminViewBrandPage />}/>
                 </Route>
 
                 <Route path="customer">
                     <Route index element={<AdminCustomerPage />}/>
                     <Route path="all-customer" element={<AdminAllCustomerPage />}/>
                     <Route path="customer_id/:id" element={<AdminViewCustomerPage /> } />
+                    <Route path="edit/customer_id/:id" element={<AdminEditCustomerPage /> } />
                 </Route>
 
                 <Route path="entry">
