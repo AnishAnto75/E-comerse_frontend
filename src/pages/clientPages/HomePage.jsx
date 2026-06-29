@@ -11,7 +11,7 @@ const HomePage = () => {
         <ClientLayout />
         <div className='text-3xl text-center'>Home Page</div>
         <div className='flex gap-5'>
-            <div className='btn' onClick={()=>navigate('/admin')}>admin</div>
+            <div className='btn' onClick={()=>navigate('/admin/home')}>admin</div>
             <div className='btn' onClick={()=>navigate('/auth/login')}>Login</div>
             <div className='btn' onClick={()=>navigate('/auth/signup')}>Sign Up</div>
             <div className='btn' onClick={()=>navigate('/products')}>Products</div>

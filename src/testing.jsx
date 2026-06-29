@@ -1,39 +1,67 @@
-import React, { useState } from "react";
+import "./styles.css";
+import useLagRadar from "./useLagRadar";
+import React from "react";
+import ReactDOM from "react-dom";
 
-const FileInput = () => {
-  const [fileName, setFileName] = useState("");
+//
 
-  // Handle file selection
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFileName(file.name);
-    } else {
-      setFileName("");
-    }
-  };
+import Area from "./components/Area";
+import Band from "./components/Band";
+import Bar from "./components/Bar";
+import BarStacked from "./components/BarStacked";
+import Bubble from "./components/Bubble";
+import CustomStyles from "./components/CustomStyles";
+import DarkMode from "./components/DarkMode";
+import DynamicContainer from "./components/DynamicContainer";
+import InteractionMode from "./components/InteractionMode";
+import Line from "./components/Line";
+import MultipleAxes from "./components/MultipleAxes";
+import Steam from "./components/Steam";
+import BarHorizontal from "./components/BarHorizontal";
+import BarHorizontalStacked from "./components/BarHorizontalStacked";
+import SparkChart from "./components/SparkChart";
+import SyncedCursors from "./components/SyncedCursors";
+import StressTest from "./components/StressTest";
+
+const components = [
+  ["Line", Line],
+  ["Bar", Bar],
+  ["Bar (Stacked)", BarStacked],
+  ["Bar (Horizontal)", BarHorizontal],
+  ["Bar (Horizontal + Stacked)", BarHorizontalStacked],
+  ["Band", Band],
+  ["Area", Area],
+  ["Bubble", Bubble],
+  ["Steam", Steam],
+  ["Spark Chart", SparkChart],
+  ["Multiple Axes", MultipleAxes],
+  ["Interaction Modes", InteractionMode],
+  ["Dark Mode", DarkMode],
+  ["Dynamic / Overflow Container", DynamicContainer],
+  ["Custom Styles", CustomStyles],
+  ["Synced Cursors", SyncedCursors],
+  ["Stress Test", StressTest],
+];
+
+export default function App() {
+  useLagRadar();
 
   return (
-    <div className="flex flex-col items-center justify-center p-6 bg-gray-100 rounded-lg shadow-md">
-      <label
-        htmlFor="file-upload"
-        className="cursor-pointer bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300"
-      >
-        Choose File
-      </label>
-      <input
-        id="file-upload"
-        type="file"
-        className="hidden"
-        onChange={handleFileChange}
-      />
-      {fileName && (
-        <p className="mt-4 text-gray-700">
-          Selected file: <span className="font-semibold">{fileName}</span>
-        </p>
-      )}
+    <div>
+      {components.map(([label, Comp]) => {
+        return (
+          <div key={label + ""}>
+            <h1>{label}</h1>
+            <div>
+              <Comp />
+            </div>
+          </div>
+        );
+      })}
+      <div style={{ height: "50rem" }} />
     </div>
   );
-};
+}
 
-export default FileInput;
+const rootElement = document.getElementById("root");
+ReactDOM.render(<App />, rootElement);

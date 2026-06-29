@@ -1,5 +1,5 @@
 /* global.css */
-
+/* In your CSS file */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -24,4 +24,35 @@
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
+}
+
+/* removes the outline border of recharts charts */
+.recharts-wrapper,
+.recharts-wrapper:focus,
+.recharts-wrapper:focus-visible,
+.recharts-surface,
+.recharts-surface:focus,
+.recharts-surface:focus-visible {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.recharts-sector,
+.recharts-sector:focus,
+.recharts-sector:focus-visible,
+.recharts-pie-sector,
+.recharts-pie-sector:focus,
+.recharts-pie-sector:focus-visible {
+  outline: none !important;
+  stroke: none !important;
+}
+.recharts-label:focus,
+.recharts-label:focus-visible,
+.recharts-pie-label-text:focus,
+.recharts-pie-label-text:focus-visible {
+  outline: none !important;
+}
+.recharts-surface *:focus,
+.recharts-surface *:focus-visible {
+  outline: none !important;
 }

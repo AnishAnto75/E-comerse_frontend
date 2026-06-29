@@ -148,11 +148,16 @@ const AdminPurchaseEntryPage = () => {
         e.preventDefault()
 
         if(Number(mrp) < Number(price)){ toast.warn("PRICE Should Be Less Than MRP"); return }
+        if(quantity_recieved < 1){ 
+            toast.warn("Quantity Received Should Be Valid Number"); 
+            input4Ref.current.focus()
+            return 
+        }
 
         let existingProductBarcode = []
         products?.map(product=> existingProductBarcode = [...existingProductBarcode, product.product_barcode])
         if(existingProductBarcode.includes(product_barcode)){ toast.warn("Product Already Added"); return }
-        
+
         try {
             setLoading(true)
             const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/product/barcode/${product_barcode}`)
@@ -162,8 +167,10 @@ const AdminPurchaseEntryPage = () => {
             return
         } finally { setLoading(false)}
 
-        setTotalPurchaseAmount(( purchase_cost * quantity_recieved ) + total_purchase_amount)
-        const data = {product_barcode, product_name, batch_no, quantity_recieved, size, manufacture_date, expire_date, best_before, mrp, purchase_cost, gst, other_expences, price}
+        setTotalPurchaseAmount(((Number(purchase_cost) + Number(other_expences) ) * Number(quantity_recieved) ) + Number(total_purchase_amount))
+        const total_purchase_cost = (Number(purchase_cost) + Number(other_expences) ) * Number(quantity_recieved)
+
+        const data = {product_barcode, product_name, batch_no, quantity_recieved, size, manufacture_date, expire_date, best_before, mrp, purchase_cost, gst, other_expences, price, total_purchase_cost}
         setProducts([...products , data])
         reset()
     }
@@ -172,7 +179,7 @@ const AdminPurchaseEntryPage = () => {
         e.preventDefault()
         const rmPro = products.filter((_, i) => i == index)[0]
         const newArray = products.filter((_, i) => i !== index);
-        setTotalAmount(total_purchase_amount - (rmPro.quantity_recieved * rmPro.purchase_cost))
+        setTotalPurchaseAmount(total_purchase_amount - (Number(rmPro.quantity_recieved) * (Number(rmPro.purchase_cost) + Number(rmPro.other_expences))))
         setProducts(newArray);
     }
 
@@ -184,7 +191,9 @@ const AdminPurchaseEntryPage = () => {
         if(!products.length){input1Ref.current.focus(); return}
         if(supplier_id && invoice_no && products.length ){
             try {
+
                 setLoading(true)
+                console.log({data})
                 const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/create-purchase`, {data})
                 console.log("CreatePurchase payload", res.data)
                 toast.success(res.data?.message)
@@ -259,7 +268,7 @@ const AdminPurchaseEntryPage = () => {
 
             <div className="col-span-2">
                 <label htmlFor="batch_no">Batch No</label>
-                <input type="text" name="batch_no" id="batch_no" autoComplete="off" required
+                <input type="text" name="batch_no" id="batch_no" autoComplete="off"
                     value={batch_no} onChange={(e)=>setBatchNo(e.target.value)}
                     ref={input3Ref} onKeyDown={(e) => handleKeyDown(e, input4Ref)}
                     className="w-full mt-1 p-2 border border-gray-400 rounded-md " />
@@ -270,7 +279,7 @@ const AdminPurchaseEntryPage = () => {
                 <input type="number" name="QR" id="QR" autoComplete="off" required
                     value={quantity_recieved} onChange={(e)=>setQuantityRecieved(e.target.value)}
                     ref={input4Ref} onKeyDown={(e) => handleKeyDown(e, input5Ref)}
-                    className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
+                    className="w-full mt-1 p-2 border border-gray-400 rounded-md " />
             </div>
 
             <div className="col-span-2">
@@ -367,6 +376,7 @@ const AdminPurchaseEntryPage = () => {
                     <th className="p-3">GST</th>
                     <th className="p-3">OTHER EXP</th>
                     <th className="p-3">PRICE</th>
+                    <th className="p-3">Total</th>
                     <th className="p-3"></th>
                 </tr>
             </thead>
@@ -388,6 +398,7 @@ const AdminPurchaseEntryPage = () => {
                     <td className="p-3">{product.gst}</td>
                     <td className="p-3">{product.other_expences}</td>
                     <td className="p-3">{product.price}</td>
+                    <td className="p-3">{product.total_purchase_cost}</td>
                     <td className="p-3"> <button onClick={(e) => handleDeleteProduct(e , index)} className="text-red-500 hover:text-red-700">Remove</button></td>
                 </tr>
                ))}

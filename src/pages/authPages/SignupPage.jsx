@@ -18,6 +18,7 @@ const SignupPage = () => {
             if(password !== confirmPassword){toast.error("Password doesn't match"); return }
             if(!password || !email || !name || !gender){toast.error("Required all fields"); return}
             const data = {name, email, password, gender}
+            console.log(data)
             const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}auth/signup`, {data})
             if (res.status == 201){navigate('/auth/login')}
             toast.success(res.data.message)

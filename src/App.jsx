@@ -145,7 +145,7 @@ function App() {
             {isAdmin &&
 
             <Route path='admin' element={ <AdminLayout /> }>
-                <Route index element={<AdminHomePage />} />
+                <Route path="home" element={<AdminHomePage />} />
 
                 <Route path="dashboard" element={<AdminDashboardPage />} />
                 <Route path="orders" element={<AdminOrderPage />} />

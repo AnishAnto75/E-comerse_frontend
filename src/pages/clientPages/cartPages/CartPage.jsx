@@ -45,7 +45,6 @@ const CartPage = () => {
     let no = useSelector(getCartNoOfProductsInCart)
 
     const cartStatus = useSelector(getAddToCartStatus)
-    
 
     if(cart.length){
         cart?.map?.((product, index)=>{
