@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import AdminSideBar from '../../../components/admin/AdminSideBar'
 import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts'
-import { FaArrowDown, FaArrowUp } from 'react-icons/fa6'
+import { FaArrowDown, FaArrowUp, FaEye } from 'react-icons/fa6'
 import AdminOrderHeaderComponent from '../../../components/admin/AdminOrderComponents/AdminOrderHeaderComponent'
 import { Navigate, useNavigate } from 'react-router-dom'
 import LoadingSpinner from '../../../components/LoadingSpinner'
@@ -9,14 +9,16 @@ import ErrorComponent from '../../../components/ErrorComponent'
 import { format } from 'date-fns'
 import { IoIosStar } from 'react-icons/io'
 import { CiFilter } from 'react-icons/ci'
-import { IoFilter } from 'react-icons/io5'
+import { IoCloseSharp, IoFilter } from 'react-icons/io5'
 import { toast } from 'react-toastify'
+import AdminOrderPreviewComponent from '../../../components/admin/AdminOrderComponents/AdminOrderPreviewComponent'
 
 const AdminOrderPage = () => {
     const navigate = useNavigate()
 
     const [loading , setLoading] = useState(false)
     const [error , setError ] = useState(false)
+    const [selected_order, setSelectedOrder ] = useState(null)
     
     const data = {
         totalOrders:{
@@ -101,7 +103,7 @@ const AdminOrderPage = () => {
         },
         orders:[
             {
-                order_id : "ORD1451254856",
+                order_id : "ORD062792963341",
                 delivery_address : {
                     name: "Anish",
                     phoneNo: "78745245225",
@@ -131,7 +133,7 @@ const AdminOrderPage = () => {
                 order_rating: 5
             },
             {
-                order_id : "ORD1451254856",
+                order_id : "ORD062738902526",
                 delivery_address : {
                     name: "Anish",
                     phoneNo: "78745245225",
@@ -161,7 +163,7 @@ const AdminOrderPage = () => {
                 order_rating: 5
             },
             {
-                order_id : "ORD1451254856",
+                order_id : "ORD062710921516",
                 delivery_address : {
                     name: "Anish",
                     phoneNo: "78745245225",
@@ -191,7 +193,7 @@ const AdminOrderPage = () => {
                 order_rating: 5
             },
             {
-                order_id : "ORD1451254856",
+                order_id : "ORD062790229407",
                 delivery_address : {
                     name: "Anish",
                     phoneNo: "78745245225",
@@ -249,6 +251,8 @@ const AdminOrderPage = () => {
     <div className='flex'>
         <AdminSideBar />
         <div className='w-full p-5 font-inter'>
+            {/* This page is running by sample data */}
+            <div className='text-3xl text-red-500'>This page is running by sample data</div>
             <div className='text-3xl tracking-tight text-gray-800 font-semibold pt-1'>Orders</div>
             <div className='py-[10px] text-gray-500 tracking-tight font-medium'>Manage your recent orders and get through it</div>
             
@@ -275,13 +279,14 @@ const AdminOrderPage = () => {
                             <th className='py-4'>Amount</th>
                             <th className='py-4'>Status</th>
                             <th className='py-4'>Ratings</th>
+                            <th className='py-4'>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {orders?.map((order, index) =>{
                             const status = findOrderStatus(order.order_status)
                             return(
-                                <tr key={index} className='text-center border-b-[3px] border-gray-50 text-gray-800 text-base'>
+                                <tr key={index} onClick={()=>setSelectedOrder(order.order_id)} className={`text-center border-b-[3px] border-gray-50 text-gray-800 text-base ${ selected_order == order.order_id ? "bg-gray-50" : ''}`}>
                                     <td className='text-gray-600 font-semibold'>{index+1})</td>
                                     <td className='text-start py-4'>
                                         <span className='text-lg text-gray-700 block pb-0.5 font-semibold'>#{order.order_id}</span>
@@ -305,19 +310,24 @@ const AdminOrderPage = () => {
                                             <span className='text-[18px] text-gray-600 font-medium'>{order.order_rating}</span>
                                         </span>
                                     </td>
-                                </tr>   
+                                    <td className='text-center h-full align-middle'>
+                                        <FaEye onClick={() => navigate(`/admin/orders/order_id/${order.order_id}`)} className='cursor-pointer text-2xl inline-block' />
+                                    </td>
+                                </tr>
                             )
                         })}
                     </tbody>
                 </table>
-                
             </div>
         </div>
-        <div className="min-w-[26rem] max-w-[26rem] shrink-1 py-5 pr-5">
-            <div className="sticky top-5 h-[calc(100vh-40px)] rounded-xl border shadow-lg overflow-y-auto p-3">
-                order preview               
-            </div>
-        </div>
+        {selected_order &&
+            <div className='relative min-w-[26rem] max-w-[26rem] shrink-1 py-5 pr-5'>
+                <div className='sticky top-5 h-[calc(100vh-40px)] rounded-xl shadow border overflow-y-auto p-3'>
+                    <IoCloseSharp onClick={()=>setSelectedOrder(null)} className='absolute top-4 right-4 font-sans text-4xl cursor-pointer z-10 rounded-full hover:bg-red-50 text-red-500 p-1' />
+                    <AdminOrderPreviewComponent order_id = {selected_order}/>
+                </div>
+            </div> 
+        } 
     </div>
   )
 }

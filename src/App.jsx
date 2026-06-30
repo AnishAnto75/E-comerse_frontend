@@ -21,7 +21,6 @@ import AdminHomePage from "./pages/adminPages/AdminHomePage.jsx";
 import AdminDashboardPage from "./pages/adminPages/AdminDashboardPage.jsx";
 import AdminOrderPage from "./pages/adminPages/adminOrderPage/AdminOrderPage.jsx";
 import AdminOrderViewPage from "./pages/adminPages/adminOrderPage/AdminOrderViewPage.jsx";
-import AdminAllProductPage from "./pages/adminPages/adminProductPages/AdminAllProductPage.jsx";
 import AdminProductPage from "./pages/adminPages/adminProductPages/AdminProductPage.jsx";
 import AdminAddNewProductPage from "./pages/adminPages/adminProductPages/AdminAddNewProductPage.jsx";
 import AdminAllCustomerPage from "./pages/adminPages/adminCustomerPages/AdminAllCustomerPage.jsx";
@@ -57,7 +56,6 @@ import AdminCreateBannerPage from "./pages/adminPages/adminBannerPages/AdminCrea
 import { getAdminCreateBannerStatus } from "./slices/adminSlice/adminBannerSlice.js";
 import AdminEditBannerPage from "./pages/adminPages/adminBannerPages/AdminEditBannerPage.jsx";
 import AdminEditProductPage from "./pages/adminPages/adminProductPages/AdminEditProductPage.jsx";
-import AdminAllOrderPage from "./pages/adminPages/adminOrderPage/AdminAllOrderPage.jsx";
 import AdminViewCustomerPage from "./pages/adminPages/adminCustomerPages/AdminViewCustomerPage.jsx";
 import AdminGroupsCategoriesPage from "./pages/adminPages/adminGroups&CategoriesPages/AdminGroupsCategoriesPage.jsx"
 import AdminBrandPage from './pages/adminPages/adminBrandPages/AdminBrandPage.jsx'
@@ -152,7 +150,6 @@ function App() {
 
                 <Route path="orders">
                     <Route index element={<AdminOrderPage />}/>
-                    <Route path="all" element={<AdminAllOrderPage/> } />
                     <Route path="order_id/:id" element={<AdminOrderViewPage/> } />
                 </Route>
 
@@ -160,7 +157,6 @@ function App() {
                     <Route index element={<AdminProductPage />}/>
                     <Route path="new-product" element={<AdminAddNewProductPage />}/>
                     <Route path="edit/:id" element={<AdminEditProductPage />}/>
-                    <Route path="all-products" element={<AdminAllProductPage />}/>
                     <Route path="low-in-stock" element={<div>Low in Stock</div>}/>
                     <Route path="product_id/:id" element={<AdminProductViewPage />}/>
                 </Route>

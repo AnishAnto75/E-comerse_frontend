@@ -279,6 +279,8 @@ const AdminDashboardPage = () => {
     <div className='w-full flex font-inter'>
         <AdminSideBar />
         <div className='w-full h-full p-5'>
+             {/* This page is running by sample data */}
+            <div className='text-3xl text-red-500'>This page is running by sample data</div>
             <div className='text-2xl text-gray-800 font-semibold font-inter pt-2 pb-5'>Dashboard</div>
             <div className='flex gap-5'>
                 <div className='w-full'>
