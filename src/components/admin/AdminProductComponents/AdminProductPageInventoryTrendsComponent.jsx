@@ -3,7 +3,7 @@ import { ResponsiveContainer, AreaChart, Area, CartesianGrid, Tooltip, XAxis, YA
 
 const AdminProductPageInventoryTrendsComponent = ({data}) => {
   return (
-    <div className="col-span-2 bg-white rounded-2xl shadow-md p-5">
+    <div className="col-span-2 rounded-2xl shadow-md p-5">
         <div className="flex justify-between items-center mb-5">
             <div>
                 <h2 className="text-xl font-bold text-gray-800">Inventory Trend</h2>

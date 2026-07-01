@@ -1,453 +1,277 @@
-import React, { useState } from 'react'
-import AdminSideBar from '../../../components/admin/AdminSideBar'
-import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts'
-import { FaArrowDown, FaArrowUp, FaEye } from 'react-icons/fa6'
-import AdminOrderHeaderComponent from '../../../components/admin/AdminOrderComponents/AdminOrderHeaderComponent'
-import { Navigate, useNavigate } from 'react-router-dom'
-import LoadingSpinner from '../../../components/LoadingSpinner'
-import ErrorComponent from '../../../components/ErrorComponent'
-import { format } from 'date-fns'
-import { IoIosStar } from 'react-icons/io'
-import { CiFilter } from 'react-icons/ci'
-import { IoCloseSharp, IoFilter } from 'react-icons/io5'
-import { toast } from 'react-toastify'
-import AdminOrderPreviewComponent from '../../../components/admin/AdminOrderComponents/AdminOrderPreviewComponent'
+import React, { useState } from "react";
+import {FaBoxOpen, FaWarehouse, FaRupeeSign, FaExclamationTriangle, FaTimesCircle, FaCheckCircle, FaChartLine, FaTags, FaPlus, FaDownload, FaUpload, FaFilter, FaSortAmountDown, FaSyncAlt, FaEye, FaTrash, FaFire, FaClock, FaArrowUp, FaChevronLeft, FaChevronRight, FaTrashAlt, FaFileExport, FaEdit, FaSearch } from "react-icons/fa";
+import { IoIosStar } from "react-icons/io";
+import { IoCloseSharp } from "react-icons/io5";
+import { ResponsiveContainer, AreaChart, Area, CartesianGrid, Tooltip, XAxis, YAxis} from "recharts";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
+import AdminSideBar from "../../../components/admin/AdminSideBar";
+import AdminProductSummaryCards from "../../../components/admin/AdminProductComponents/AdminProductSummaryCards";
+import AdminProductPageInventoryTrendsComponent from "../../../components/admin/AdminProductComponents/AdminProductPageInventoryTrendsComponent";
+import AdminProductPageInventoryInsightsComponent from "../../../components/admin/AdminProductComponents/AdminProductPageInventoryInsightsComponent";
+import AdminProductPreviewComponent from "../../../components/admin/AdminProductComponents/AdminProductPreviewComponent";
 
 const AdminProductPage = () => {
-    const navigate = useNavigate()
 
-    const [loading , setLoading] = useState(false)
-    const [error , setError ] = useState(false)
-    const [selected_order, setSelectedOrder ] = useState(null)
+    const navigate = useNavigate()
+    const [selected_product , setSelectedProduct] = useState(null)
 
     const data = {
-        total_products : 4500,
-        total_inventory: 100000,
-        total_inventory_value: 35987450,
-        low_in_stock: 450,
-        out_of_stock: 542,
-        active_products: 3800,
-
-        orders:[
+        summary:{
+            total_products: 6512,
+            total_inventory: 124802,
+            inventory_value: 1824500,
+            low_in_stock: 100,
+            out_of_stock: 200,
+            inactive_products: 500,
+            active_products: 501,
+            total_brands: 42,
+        },
+        inventoryChartData : [
+            { month: "Jan", inventory_value : 8900 },
+            { month: "Feb", inventory_value : 9600 },
+            { month: "Mar", inventory_value : 9100 },
+            { month: "Apr", inventory_value : 10400 },
+            { month: "May", inventory_value : 1050 },
+            { month: "Jun", inventory_value : 12482 },
+        ],
+        categories: [
             {
-                order_id : "ORD062792963341",
-                delivery_address : {
-                    name: "Anish",
-                    phoneNo: "78745245225",
-                    pincode:854526
-                },
-                total_no_of_produc: "5",
-                total_amount : 8452,
-                payment_method: "UPI",
-                order_status: {
-                    placed: {
-                        status: true,
-                        date: "2026-06-27T12:58:48.408Z"
-                    },
-                    confirmed: {
-                        status: false
-                    },
-                    out: {
-                        status: false
-                    },
-                    delivered: {
-                        "status": false
-                    },
-                    canceled: {
-                        "status": false
-                    }
-                },
-                order_rating: 5
+                _id: "1524",
+                name: "Groceries"
             },
             {
-                order_id : "ORD062738902526",
-                delivery_address : {
-                    name: "Anish",
-                    phoneNo: "78745245225",
-                    pincode:854526
-                },
-                total_no_of_produc: "5",
-                total_amount : 8452,
-                payment_method: "UPI",
-                order_status: {
-                    placed: {
-                        status: true,
-                        date: "2026-06-27T12:58:48.408Z"
-                    },
-                    confirmed: {
-                        status: true
-                    },
-                    out: {
-                        status: true
-                    },
-                    delivered: {
-                        "status": false
-                    },
-                    canceled: {
-                        "status": false
-                    }
-                },
-                order_rating: 5
+                _id: "1525",
+                name: "Electronics"
             },
             {
-                order_id : "ORD062710921516",
-                delivery_address : {
-                    name: "Anish",
-                    phoneNo: "78745245225",
-                    pincode:854526
-                },
-                total_no_of_produc: "5",
-                total_amount : 8452,
-                payment_method: "UPI",
-                order_status: {
-                    placed: {
-                        status: true,
-                        date: "2026-06-27T12:58:48.408Z"
-                    },
-                    confirmed: {
-                        status: true
-                    },
-                    out: {
-                        status: false
-                    },
-                    delivered: {
-                        "status": false
-                    },
-                    canceled: {
-                        "status": false
-                    }
-                },
-                order_rating: 5
+                _id: "1526",
+                name: "Dairy Products"
             },
             {
-                order_id : "ORD062790229407",
-                delivery_address : {
-                    name: "Anish",
-                    phoneNo: "78745245225",
-                    pincode:854526
-                },
-                total_no_of_produc: "5",
-                total_amount : 8452,
-                payment_method: "UPI",
-                order_status: {
-                    placed: {
-                        status: true,
-                        date: "2026-06-27T12:58:48.408Z"
-                    },
-                    confirmed: {
-                        status: false
-                    },
-                    out: {
-                        status: false
-                    },
-                    delivered: {
-                        "status": false
-                    },
-                    canceled: {
-                        "status": false
-                    }
-                },
-                order_rating: 5
-            },           
+                _id: "1527",
+                name: "Ice Cream"
+            },
+        ],
+        brands: [
+            {
+                _id: "1524",
+                name: "Surf Excel"
+            },
+            {
+                _id: "1525",
+                name: "NKS"
+            },
+            {
+                _id: "1526",
+                name: "Family Plasts"
+            },
+            {
+                _id: "1527",
+                name: "Amul"
+            },
+        ],
+        products: [
+            {
+                category_name: "Dairy Products",
+                brand_name: "Adhavan",
+                product_name: "Adhavan Milk 500ml",
+                product_barcode: "CO",
+                product_photos: "/3-08.webp",
+                status: "active",
+                product_ratings : 4,
+                product_total_stock: 78,
+                product_low_in_stock: 10,
+                size: "500ml",
+                mrp: 39,
+                price: 38           
+            },
+            {
+                category_name: "Dairy Products",
+                brand_name: "Adhavan",
+                product_name: "Adhavan Milk 200ml",
+                product_barcode: "KVR",
+                product_photos: "/3-08.webp",
+                status: "inactive",
+                product_ratings : 3,
+                product_total_stock: 5,
+                product_low_in_stock: 10,
+                size: "200ml",
+                mrp: 20,
+                price: 19.5           
+            },
+            {
+                category_name: "Soft Drinks",
+                brand_name: "7UP",
+                product_name: "7UP 750ml soft drink",
+                product_barcode: "HK",
+                product_photos: "/3-08.webp",
+                status: "active",
+                product_ratings : 5,
+                product_total_stock: 0,
+                product_low_in_stock: 10,
+                size: "750ml",
+                mrp: 40,
+                price: 39           
+            }
         ]
     }
 
-    const findOrderStatus = (order_status)=> {
-        const placed = order_status.placed
-        const confirmed = order_status.confirmed 
-        const out = order_status.out
-        const delivered = order_status.delivered 
-        const canceled = order_status.canceled  
-        return canceled.status ? {value: "Canceled", color:"bg-red-500"} : 
-            delivered.status ? {value: "Delivered", color:"bg-green-500"} : 
-            out.status ? {value: "Out", color:"bg-green-500"} : 
-            confirmed.status ? {value: "Confirmed", color:"bg-blue-500"} : 
-            placed.status ? {value: "Placed", color:"bg-blue-500"} : 
-            {value: "NaN", color:"yellow", date: "NaN"}
-    }
+  return (
+    <div className="flex">
+    <AdminSideBar/>
 
-    const totalOrders = data.totalOrders
-    const totalRevenue = data.totalRevenue
-    const pendingOrders = data.pendingOrders
-    const orders = data.orders
+    <div className="w-full min-h-screen p-5  font-inter">
+        {/* This page is running by sample data */}
+        <div className='text-3xl text-red-500 py-5'>This page is running by sample data</div>
 
-    if(loading){return <LoadingSpinner/>}
-    if(error){return <ErrorComponent/>}
+      {/* Header */}
+        <div className="flex justify-between items-center mb-8">
+            <div>
+                <h1 className="text-4xl font-bold text-gray-800 tracking-tight">Products</h1>
+                <p className="text-gray-600 mt-2">Manage your products, inventory, pricing and categories.</p>
+            </div>
+            <button onClick={()=>navigate('/admin/products/new-product')} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-blue-700 transition"><FaPlus />Add Product</button>
+        </div>
 
-    return (
-    <div className='flex'>
-        <AdminSideBar />
-        <div className='w-full p-5 font-inter'>
-            {/* This page is running by sample data */}
-            <div className='text-3xl text-red-500'>This page is running by sample data</div>
-            <div className='text-3xl tracking-tight text-gray-800 font-semibold pt-1'>Products</div>
-            <div className='py-[10px] text-gray-500 tracking-tight font-medium'>Manage all your products and inventory</div>
+        <AdminProductSummaryCards data={data.summary}/>
 
-            {/* Header Cards */}
-            <div className="grid grid-cols-6 gap-5 mt-3 ">
-                <div className="bg-white rounded-xl border-t-4 border-blue-500 shadow-md p-5">
-                    <div className="text-xs uppercase tracking-widest text-gray-500 font-semibold">Total Products</div>
-                    <div className="text-4xl font-bold text-blue-600 mt-2">{data.total_products.toLocaleString()}</div>
+        <div className="grid grid-cols-3 gap-6 mt-8">
+
+            <AdminProductPageInventoryTrendsComponent data={data.inventoryChartData}/>
+
+            <AdminProductPageInventoryInsightsComponent data={data.summary}/>
+        </div>
+
+        <div className="h-[calc(100vh-40px)] border flex flex-col mt-5 rounded-2xl shadow-md p-5">
+
+            <div className="flex flex-col xl:flex-row gap-4 justify-between">
+                <div className="relative flex-1">
+                    <FaSearch className="absolute left-4 top-4 text-gray-400" />
+                    <input type="text" placeholder="Search products, barcode" className="w-full font-medium text-gray-800 border rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-blue-500 outline-none"/>
                 </div>
+                <div className="flex flex-wrap gap-3 text-gray-800 font-medium">
+                    <select className="border rounded-xl px-4 py-3">
+                        <option>All Categories</option>
+                        {data.categories?.map((category, index)=>(
+                            <option key={index}>{category.name}</option>
+                        ))}
+                    </select>
 
-                <div className="bg-white rounded-xl border-t-4 border-green-500 shadow-md p-5">
-                    <div className="text-xs uppercase tracking-widest text-gray-500 font-semibold">Total Inventory</div>
-                    <div className="text-4xl font-bold text-green-600 mt-2">{data.total_inventory.toLocaleString()}</div>
-                </div>
+                        <select className="border rounded-xl px-4 py-3 text-gray-800 font-medium">
+                        <option >All Brands</option>
+                        {data.brands?.map((brand, index)=>(
+                            <option key={index}>{brand.name}</option>
+                        ))}
+                    </select>
 
-                <div className="bg-white rounded-xl border-t-4 border-indigo-500 shadow-md p-5">
-                    <div className="text-xs uppercase tracking-widest text-gray-500 font-semibold">Inventory Value</div>
-                    <div className="text-4xl font-bold text-indigo-600 mt-2">₹{data.total_inventory_value.toLocaleString()}</div>
-                </div>
+                    <select className="border rounded-xl px-4 py-3 text-gray-800 font-medium">
+                        <option>Status</option>
+                        <option>Active</option>
+                        <option>Inactive</option>
+                    </select>
 
-                <div className="bg-white rounded-xl border-t-4 border-amber-500 shadow-md p-5">
-                    <div className="text-xs uppercase tracking-widest text-gray-500 font-semibold">Low Stock</div>
-                    <div className="text-4xl font-bold text-amber-600 mt-2">{data.low_in_stock.toLocaleString()}</div>
-                </div>
+                    <select className="border rounded-xl px-4 py-3 text-gray-800 font-medium">
+                        <option>All Stock</option>
+                        <option>In Stock</option>
+                        <option>Low Stock</option>
+                        <option>Out Of Stock</option>
+                    </select>
 
-                <div className="bg-white rounded-xl border-t-4 border-red-500 shadow-md p-5">
-                    <div className="text-xs uppercase tracking-widest text-gray-500 font-semibold">Out of Stock</div>
-                    <div className="text-4xl font-bold text-red-600 mt-2">{data.out_of_stock.toLocaleString()}</div>
-                </div>
-
-                <div className="bg-white rounded-xl border-t-4 border-cyan-500 shadow-md p-5">
-                    <div className="text-xs uppercase tracking-widest text-gray-500 font-semibold">Active Products</div>
-                    <div className="text-4xl font-bold text-cyan-600 mt-2">{data.active_products.toLocaleString()}</div>
                 </div>
             </div>
 
-            <div className='flex justify-between pt-5'>
-                {/* Search Orders */}
-                <div className="items-center md:w-72 relative">
-                    <input type='text' placeholder='Search' className='shadow border-2 py-2 px-2 pr-9 w-full rounded-lg text-gray-900 text-[15px] focus:outline-none'/>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-6 absolute top-2 right-2 text-gray-700 cursor-pointer"><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
-                </div>
-                <div onClick={()=>toast.warn("function Not added")} className='border-[3px] border-blue-100 p-[5.5px] rounded-xl px-5 text-lg font-inter font-medium text-blue-500 mr-3 tracking-wide flex items-center gap-1 cursor-pointer'><IoFilter className='text-2xl'/>Filter</div>
-            </div>
-
-            <div className='mt-5 h-[calc(100vh-40px)] overflow-y-auto border shadow-md font-inter tracking-tight rounded-xl px-5'>
-                {/* Table */}
-                <table className='w-full mt-3'>
-                    <thead className='sticky top-0 bg-white'>
-                        <tr className='text-blue-gray-500'>
-                            <th className='py-4' />
-                            <th className='py-4 text-start'>Order Id</th>
-                            <th className='py-4 text-start'>Customer</th>
-                            <th className='py-4'>Quantity</th>
-                            <th className='py-4'>Amount</th>
-                            <th className='py-4'>Status</th>
-                            <th className='py-4'>Ratings</th>
-                            <th className='py-4'>Action</th>
+            <div className="flex-1 overflow-y-auto mt-5">
+                <table className="w-full border-separate border-spacing-0">
+                    <thead className="sticky top-0 z-20 bg-white shadow-sm">
+                        <tr className="text-blue-gray-500">
+                            <th className="py-4 bg-white"></th>
+                            <th className="py-4 bg-white max-w-16"></th>
+                            <th className="py-4 text-start bg-white">Product Name / Barcode</th>
+                            <th className="py-4 bg-white">Category</th>
+                            <th className="py-4 bg-white">Brand</th>
+                            <th className="py-4 bg-white">Size</th>
+                            <th className="py-4 bg-white">MRP</th>
+                            <th className="py-4 bg-white">Price</th>
+                            <th className="py-4 bg-white">Stock</th>
+                            <th className="py-4 bg-white">Status</th>
+                            <th className="py-4 bg-white">Ratings</th>
+                            <th className="py-4 bg-white">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {orders?.map((order, index) =>{
-                            const status = findOrderStatus(order.order_status)
-                            return(
-                                <tr key={index} onClick={()=>setSelectedOrder(order.order_id)} className={`text-center border-b-[3px] border-gray-50 text-gray-800 text-base ${ selected_order == order.order_id ? "bg-gray-50" : ''}`}>
-                                    <td className='text-gray-600 font-semibold'>{index+1})</td>
-                                    <td className='text-start py-4'>
-                                        <span className='text-lg text-gray-700 block pb-0.5 font-semibold'>#{order.order_id}</span>
-                                        <span className='text-gray-500 text-[17px]'>{format(new Date(order.order_status?.placed?.date) , "dd/MM - p")}</span>
-                                    </td>
-                                    <td className='flex flex-col text-start py-4 font-medium '>
-                                        <span className='text-lg text-gray-800 pb-0.5'>{order?.delivery_address?.name}</span>
-                                        <span className='text-gray-500'>{order?.delivery_address?.phoneNo}</span>
-                                    </td>
-                                    <td className='py-4 font-medium text-lg text-gray-700'>{order.total_no_of_produc} items</td>
-                                    <td className='flex flex-col py-4'>
-                                        <span className='text-lg text-gray-800 block pb-0.5 font-medium'>{order.total_amount.toLocaleString()}</span>
-                                        <span className='text-gray-500'>{order.payment_method}</span>
-                                    </td>
-                                    <td className='justify-items-center py-4'>
-                                        <span className={`${status.color} p-2 block w-28 text-center text-white tracking-wide rounded-2xl`}>{status.value}</span>
-                                    </td>
-                                    <td>
-                                        <span className='flex gap-0.5 py-4 items-center justify-center'>
-                                            <IoIosStar className='h-5 w-5 text-amber-500'/>
-                                            <span className='text-[18px] text-gray-600 font-medium'>{order.order_rating}</span>
-                                        </span>
-                                    </td>
-                                    <td className='text-center h-full align-middle'>
-                                        <FaEye onClick={() => navigate(`/admin/orders/order_id/${order.order_id}`)} className='cursor-pointer text-2xl inline-block' />
-                                    </td>
-                                </tr>
-                            )
-                        })}
+                    {data?.products?.map((product, index) =>{
+                        return(
+                            <tr onClick={()=>setSelectedProduct(product.product_barcode)} key={index} className={`text-center border-b-[3px] text-lg font-medium text-gray-700 border-gray-50 ${ selected_product == product.product_barcode ? "bg-gray-100" : ''}`}>
+                                <td className='text-gray-600 font-semibold pl-2'>{index+1}</td>
+                                <td>
+                                    <div className="flex justify-center">
+                                        <img src={product?.product_photos} alt={product?.product_name} className="w-16 h-16 text-center rounded-xl object-cover"/>
+                                    </div>
+                                </td>
+                                <td className='text-start py-4 flex flex-col'>
+                                    <span className='mb-0.5 font-semibold'>{product?.product_name}</span>
+                                    <span className='text-gray-500 text-[17px]'>{product?.product_barcode}</span>
+                                </td>
+                                <td className='py-4 '>{product?.category_name}</td>
+                                <td className='py-4 '>{product?.brand_name}</td>
+                                <td className='py-4 '>{product?.size}</td>
+                                <td className='py-4 '>{product?.mrp}</td>
+                                <td className='py-4 '>{product?.price}</td>
+                                <td className="py-4">
+                                    <span className={` p-1 border-[3px] rounded-xl px-5 ${ product?.product_total_stock == 0 ? "bg-red-50 text-red-400 border-red-100" : product.product_total_stock <= product.product_low_in_stock ? "bg-amber-50 text-amber-800 border-amber-200" : "bg-green-50 text-green-500 border-green-100"  } `}>
+                                        {product?.product_total_stock}
+                                    </span>
+                                </td>
+                                <td className='py-4'>
+                                    <span className={`p-1 border-2 rounded-xl px-3 capitalize ${ product?.status == "active" ? "bg-cyan-50 text-cyan-500" : "bg-red-50 text-red-500" }`}>
+                                        {product?.status}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span className='flex gap-0.5 py-4 items-center justify-center'>
+                                        <IoIosStar className='h-5 w-5 text-amber-500'/>
+                                        <span className='text-[18px] text-gray-600 font-medium'>{product?.product_ratings}</span>
+                                    </span>
+                                </td>
+                                <td className='space-x-2 text-2xl '>
+                                    <FaEdit onClick={() => navigate(`/admin/produscts/edit/${product.product_barcode}`)} className='cursor-pointer inline-block text-orange-600' />
+                                    <FaEye onClick={() => navigate(`/admin/products/product_id/${product.product_barcode}`)} className='cursor-pointer text-cyan-600 inline-block' />
+                                </td>
+                            </tr>
+                        )
+                    })}
                     </tbody>
                 </table>
             </div>
-        </div>
-        {selected_order &&
-            <div className='relative min-w-[26rem] max-w-[26rem] shrink-1 py-5 pr-5'>
-                <div className='sticky top-5 h-[calc(100vh-40px)] rounded-xl shadow border overflow-y-auto p-3'>
-                    <IoCloseSharp onClick={()=>setSelectedOrder(null)} className='absolute top-4 right-4 font-sans text-4xl cursor-pointer z-10 rounded-full hover:bg-red-50 text-red-500 p-1' />
-                    <AdminOrderPreviewComponent order_id = {selected_order}/>
+            <div className="pt-7 pb-2 flex justify-center border-t ">
+                <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
+                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center"><FaChevronLeft /></button>
+                        <button className="w-11 h-11 rounded-xl bg-blue-600 text-white font-semibold">1</button>
+                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">2</button>
+                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">3</button>
+                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">4</button>
+                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">5</button>
+                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center"><FaChevronRight /></button>
+                    </div>
                 </div>
-            </div> 
-        } 
+            </div>
+        </div>
     </div>
-  )
-}
+
+    {/* Product Preview */}
+    {selected_product &&
+    <div className='relative min-w-[26rem] max-w-[26rem] shrink-1 py-5 pr-5'>
+        <div className='sticky top-5 h-[calc(100vh-40px)] rounded-xl shadow-lg overflow-y-auto p-3'>
+            <IoCloseSharp onClick={()=>setSelectedProduct(null)} className='absolute top-4 right-4 font-sans text-4xl cursor-pointer z-10 rounded-full hover:bg-red-50 text-red-500 p-1' />
+            <AdminProductPreviewComponent product_id = {selected_product}/>
+        </div>
+    </div> 
+    }
+    </div>
+  );
+};
 
 export default AdminProductPage
-
-
-
-
-// import React, { useEffect, useRef, useState } from 'react'
-// import { Link, useNavigate } from 'react-router-dom'
-// import axios from 'axios'
-// import { toast } from 'react-toastify'
-// import { Card, CardHeader, Input, Typography, Button, CardBody, Chip, CardFooter, Tabs, TabsHeader, Tab, Avatar, IconButton, Tooltip,} from "@material-tailwind/react";
-// import { debounce } from 'lodash';
-// import LoadingSpinner from '../../../components/LoadingSpinner';
-// import ErrorComponent from '../../../components/ErrorComponent';
-// import AdminSideBar from '../../../components/admin/AdminSideBar';
-// import { FaEye } from 'react-icons/fa';
-// import { MdEdit } from 'react-icons/md';
-
-// const AdminProductPage = () => {
-    
-//     const navigate = useNavigate()
-//     const [loading , setLoading] = useState(false)
-//     const [error , setError] = useState(false)
-//     const [response, setResponse] = useState(null)
-//     const [products, setProducts] = useState(null)
-//     const handleRef = useRef(true) 
-
-//     const [search_products_name, setSearchProductsName] = useState('')
-
-//     useEffect(()=>{
-//         const fetchForProductPage = async()=>{
-//             try {
-//                 setLoading(true)
-//                 const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product/product-page`)
-//                 console.log("fetchForProductPage payload : " , res.data)
-//                 setResponse(res.data?.data)
-//                 setProducts(res.data?.data?.products)
-//             } catch (error) {
-//                 setError(true)
-//                 toast.error(error.response?.data?.message)
-//                 console.log("error in fetchForProductPage :" , error)
-//             } finally { setLoading(false) }
-//         }
-//         if(handleRef.current) {
-//             fetchForProductPage()
-//             handleRef.current = false
-//         }
-//     } , [])
-
-//     const requestProductsByName = debounce(async (term) => {
-//         if(term.length > 1){
-//             try {
-//                 const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product/search?name=${term}`)
-//                 setProducts(res.data.data) 
-//             } catch (error) {
-//                 console.error("error in requestProductsByName :" , error)
-//             }
-//         }
-//     },500)
-
-//     const handleSearchProducts = (e) => {
-//         const term = e.target.value;
-//         setSearchProductsName(term)
-//         if(term?.length > 1){requestProductsByName(term)}
-//         else{setProducts(response.products)}
-//     }
-
-//     if(loading){return <LoadingSpinner/>}
-//     if(error){return <ErrorComponent/>}
-//     if(!response){return <ErrorComponent/>}
-
-//   return (
-//     <div className='flex'>
-//     <AdminSideBar />
-//     <div className='p-2 w-full bg-white'>
-//         <div className=' col-span-8 grid grid-cols-3 gap-5 w-full px-3 pt-3 text-gray-800'>
-//             <div onClick={()=> navigate('/admin/products/all-products')} className='col-span-1 bg-blue-gray-50/50 min-h-44 rounded-2xl p-10 flex flex-col cursor-pointer'>
-//                 <span>Total Products</span>
-//                 <span className='text-5xl w-full px-5 h-full items-center flex'>{response?.total_products ? response.total_products : "NaN"}</span>
-//             </div>            
-//             <div onClick={()=> navigate('/admin/products/low-in-stock')} className='col-span-1 bg-blue-gray-50/50 min-h-44 rounded-2xl p-10 flex flex-col cursor-pointer'>
-//                 <span className=''>Low Stock Products</span>
-//                 <span className='text-5xl w-full px-5 h-full items-center flex line-clamp-1'>{response?.low_in_stock ? response.low_in_stock : "NaN"}</span>
-//             </div>     
-//             <div onClick={()=>navigate('/admin/stock')} className='col-span-1 bg-blue-gray-50/50 min-h-44 rounded-2xl p-10 flex flex-col cursor-pointer'>
-//                 <span>Total Stock</span>
-//                 <span className='text-4xl w-full px-5 h-full items-center flex line-clamp-1'>{response?.total_stock ? response.total_stock : "NaN"}</span>
-//             </div>         
-//         </div>
-//         <div className="w-full p-2">
-//             <div className="rounded-none p-4">
-//                 <div className="flex justify-between gap-4 ">
-//                     <div className="items-center md:w-72 relative">
-//                         <input type='text' value={search_products_name} onChange={(e)=>handleSearchProducts(e)} placeholder='Search' className='border-2 border-blue-200 py-2 px-2 pr-9 w-full rounded-lg text-sm placeholder:text-blue-300/75 font-poppins focus:outline-none'/>
-//                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.3} stroke="currentColor" className="size-6 absolute top-2 right-2 text-blue-400 cursor-pointer"><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
-//                     </div>
-//                     <div className="flex shrink-0 items-center gap-2">
-//                         <Button onClick={()=>navigate(`/admin/products/all-products`)} variant="outlined" color='blue' size="sm">view all</Button>
-//                         <Button onClick={()=>navigate(`/admin/brands`)} size="sm" color='blue' variant='gradient'>Brands</Button>
-//                         <Button onClick={()=>navigate(`/admin/groups-categories`)} size="sm" color='blue' variant='gradient'>Groups & Categories</Button>
-//                         <Button onClick={()=>navigate(`/admin/products/new-product`)} size="sm" color='blue' variant='gradient'>Add Product</Button>
-//                     </div>
-//                 </div>
-//             </div>
-//             <div className="pt-2 px-0">
-//                 <table className="w-full min-w-max table-auto text-left ">
-//                     <thead>
-//                         <tr className='border-y border-blue-gray-100 text-center'>
-//                             <th className="bg-blue-gray-50/50 p-4 text-start">
-//                                 <div className="font-normal text-sm  text-gray-600 tracking-wider leading-none pl-5">Particulars</div>
-//                             </th>
-//                             <th className="bg-blue-gray-50/50 p-4">
-//                                 <div className="font-normal text-sm text-gray-600 tracking-wider leading-none">Brand</div>
-//                             </th>
-//                             <th className="bg-blue-gray-50/50 p-4">
-//                                 <div className="font-normal text-sm text-gray-600 tracking-wider leading-none">Stock</div>
-//                             </th>
-//                             <th className="bg-blue-gray-50/50 p-4">
-//                                 <div className="font-normal text-sm text-gray-600 tracking-wider leading-none">Actions</div>
-//                             </th>
-//                         </tr>
-//                     </thead>
-//                     <tbody className=''>
-//                         {products?.map((product, index) => {
-//                             const isLast = index === products?.length - 1;
-//                             const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
-//                             return (
-//                                 <tr key={index} className='hover:bg-gray-50 text-center'>
-//                                 <td className={`${classes}`}>
-//                                     <div className="flex items-center text-start gap-3">
-//                                         <Avatar src={product.product_photos ? product.product_photos : '/3-08.webp'} alt={product.product_brand} size="md" />
-//                                         <div className="flex flex-col text-sm">
-//                                             <div className="font-normal text-blue-gray-700 line-clamp-1">{product.product_name}</div>
-//                                             <div className="font-normal text-blue-gray-700 opacity-70">{product.product_barcode}</div>
-//                                         </div>
-//                                     </div>
-//                                 </td>
-//                                 <td className={classes}>
-//                                     <div className="text-sm text-blue-gray-800 line-clamp-1">{product?.product_brand?.Brand_name}</div>
-//                                 </td>
-//                                 <td className={classes}>
-//                                     <div className="text-sm text-blue-gray-800 line-clamp-1">{product?.product_inventory_id?.product_total_stock}</div>
-//                                 </td>
-//                                 <td className={classes}>
-//                                     <div className='flex justify-center gap-2 h-full w-full text-gray-700'>
-//                                         <FaEye onClick={()=>navigate(`product_id/${product.product_barcode}`)} className='text-2xl cursor-pointer h-10 w-7'/>
-//                                         <MdEdit onClick={()=>navigate(`edit/${product.product_barcode}`)} className='text-2xl cursor-pointer h-10 w-7' />
-//                                     </div>
-//                                 </td>
-//                             </tr>
-//                             );
-//                         })}
-//                     </tbody>
-//                 </table>
-//             </div>
-//         </div>
-//     </div>
-//     </div>
-//   )
-// }
-
-// export default AdminProductPage

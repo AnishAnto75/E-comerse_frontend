@@ -11,12 +11,11 @@ import { FaIndianRupeeSign } from 'react-icons/fa6'
 const AdminOrderPreviewComponent = ({order_id}) => {
 
     const handleRef = useRef(true)
-    const [id, setId] = useState(null)
     const [loading , setLoading ] = useState(false)
     const [error , setError ] = useState(false)
     const [order , setOrder ]  = useState(null) 
 
-     useEffect(() => {
+    useEffect(() => {
         if (!order_id) return;
         const fetchOrder = async () => {
             try {
@@ -35,81 +34,6 @@ const AdminOrderPreviewComponent = ({order_id}) => {
         };
         fetchOrder();
     }, [order_id]);
-
-    // const order = {
-    //     createdAt: "2026-06-27T13:06:28.898Z",
-    //     delivery_address: {
-    //         addressType : "home",
-    //         alternatePhoneNo : null,
-    //         city : "Karungal",
-    //         district : "KK Dist",
-    //         houseNo : "184226",
-    //         landMark: "near road",
-    //         name: "Anish",
-    //         phoneNo: 9458623145,
-    //         pincode : 629157,
-    //         state: "Tamil Nadu"
-    //     },
-    //     delivery_charges: 50,
-    //     order_id: "ORD062710921516",
-    //     order_status: {
-    //         canceled:{
-    //             status: true, date: '2026-06-27T13:06:28.886Z'
-    //         },
-    //         confirmed:{
-    //             status: true, date: '2026-06-27T13:06:28.886Z'
-    //         },
-    //         delivered:{
-    //             status: true, date: '2026-06-27T13:06:28.886Z'
-    //         },
-    //         out:{
-    //             status: true, date: '2026-06-27T13:06:28.886Z'
-    //         },
-    //         placed:{
-    //             status: true, date: '2026-12-27T13:06:28.886Z'
-    //         }
-    //     },
-    //     payment_method:"Cash On Delivery",
-    //     product_details:[
-    //         {
-    //             no_of_product:2,
-    //             product_barcode:"CO",
-    //             product_batch_no:"50",
-    //             product_expire_date:null,
-    //             product_id:{_id: '69e520d837f468fb983d24ff', product_photos: null},
-    //             product_manufacture_date:null,
-    //             product_mrp:55,
-    //             product_name:"NKS CO Rice",
-    //             product_price:52,
-    //             _id:"6a3fcad424b39de2b694eda2",
-    //         },
-    //         {
-    //             no_of_product:2,
-    //             product_barcode:"KVR",
-    //             product_batch_no:"356",
-    //             product_expire_date:"5555-05-05T00:00:00.000Z",
-    //             product_id:{_id: '69e25cf1853de9e6eedf3e4f', product_photos: null},
-    //             product_manufacture_date:"5555-05-05T00:00:00.000Z",
-    //             product_mrp:55,
-    //             product_name:"NKS Kavuni Rice",
-    //             product_price:52,
-    //             _id:"6a3fcad424b39de2b694eda3",
-    //         }
-    //     ],
-    //     total_amount:258,
-    //     total_mrp:220,
-    //     total_no_of_product:4,
-    //     total_price:208,
-    //     updatedAt:"2026-06-27T13:06:28.898Z",
-    //     user_id:{
-    //         email:"customer1@gmail.com",
-    //         name:"customer1",
-    //         phoneNumber:null,
-    //         user_id:"USR062773192981",
-    //         _id:"6a3fb979c4d86e8842906ea7",
-    //     },
-    //     _id:"6a3fcad424b39de2b694eda1",
-    // }
 
     const date = (date)=>{
         if(isNaN(Date.parse(date))){ return }

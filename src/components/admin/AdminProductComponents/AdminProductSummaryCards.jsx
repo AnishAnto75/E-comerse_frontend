@@ -6,7 +6,7 @@ const AdminProductSummaryCards = ({data}) => {
   return (
      <div className="grid xl:grid-cols-4 md:grid-cols-2 gap-6">
         {/* Total Products */}
-        <div className='bg-white rounded-2xl border-t-4 border-blue-500 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-6'>
+        <div className='bg-white rounded-2xl  border-t-4 border-blue-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
             <div className="flex justify-between items-center">
                 <div>
                     <p className="text-blue-300 font-semibold">TOTAL PRODUCTS</p>
@@ -18,7 +18,7 @@ const AdminProductSummaryCards = ({data}) => {
             </div>
         </div>
         {/* Total Inventory */}
-        <div className='bg-white rounded-2xl border-t-4 border-green-600 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-6'>
+        <div className='bg-white rounded-2xl border-t-4 border-green-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
             <div className="flex justify-between items-center">
                 <div>
                     <p className="text-green-300 font-semibold">TOTAL INVENTORY</p>
@@ -30,7 +30,7 @@ const AdminProductSummaryCards = ({data}) => {
             </div>
         </div>
         {/* Inventory Value */}
-        <div className='bg-white rounded-2xl border-t-4 border-purple-600 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-6'>
+        <div className='bg-white rounded-2xl border-t-4 border-purple-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
             <div className="flex justify-between items-center">
                 <div>
                     <p className="text-purple-300 font-semibold">INVENTORY VALUE</p>
@@ -42,7 +42,7 @@ const AdminProductSummaryCards = ({data}) => {
             </div>
         </div>
         {/* Brand */}
-        <div className='bg-white rounded-2xl border-t-4 border-indigo-600 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-6'>
+        <div className='bg-white rounded-2xl border-t-4 border-indigo-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
             <div className="flex justify-between items-center">
                 <div>
                     <p className="text-indigo-300 font-semibold">BRAND</p>
@@ -54,7 +54,7 @@ const AdminProductSummaryCards = ({data}) => {
             </div>
         </div>
         {/* Low In Stock */}
-        <div className='bg-white rounded-2xl border-t-4 border-amber-600 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-6'>
+        <div className='bg-white rounded-2xl border-t-4 border-amber-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
             <div className="flex justify-between items-center">
                 <div>
                     <p className="text-amber-300 font-semibold">LOW IN STOCK</p>
@@ -66,7 +66,7 @@ const AdminProductSummaryCards = ({data}) => {
             </div>
         </div>
         {/* Out Of Stock */}
-        <div className='bg-white rounded-2xl border-t-4 border-red-600 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-6'>
+        <div className='bg-white rounded-2xl border-t-4 border-red-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
             <div className="flex justify-between items-center">
                 <div>
                     <p className="text-red-200 font-semibold">OUT OF STOCK</p>
@@ -78,11 +78,11 @@ const AdminProductSummaryCards = ({data}) => {
             </div>
         </div>
         {/* Active Products*/}
-        <div className='bg-white rounded-2xl border-t-4 border-cyan-600 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-6'>
+        <div className='bg-white rounded-2xl border-t-4 border-cyan-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
             <div className="flex justify-between items-center">
                 <div>
                     <p className="text-cyan-200 font-semibold">ACTIVE PRODUCTS</p>
-                    <h2 className='text-3xl mt-2 font-bold text-cyan-700'>{data.low_in_stock?.toLocaleString()}</h2>
+                    <h2 className='text-3xl mt-2 font-bold text-cyan-700'>{data.active_products?.toLocaleString()}</h2>
                 </div>
                 <div className={`bg-cyan-50 h-[58px] p-4 rounded-2xl`}>
                     <FaCheckCircle size={24} className="text-cyan-600" />
@@ -90,14 +90,14 @@ const AdminProductSummaryCards = ({data}) => {
             </div>
         </div>
         {/* Hidden Stock */}
-        <div className='bg-white rounded-2xl border-t-4 border-gray-600 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-6'>
+        <div className='bg-white rounded-2xl border-t-4 border-gray-800 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
             <div className="flex justify-between items-center">
                 <div>
-                    <p className="text-gray-500 font-semibold">HIDDEN PRODUCTS</p>
-                    <h2 className='text-3xl mt-2 font-bold text-gray-900'>{data.hidden_stock?.toLocaleString()}</h2>
+                    <p className="text-gray-500 font-semibold">INACTIVE PRODUCTS</p>
+                    <h2 className='text-3xl mt-2 font-bold text-gray-800'>{data.inactive_products?.toLocaleString()}</h2>
                 </div>
-                <div className={`bg-gray-50 h-[58px] p-4 rounded-2xl`}>
-                    <FaTags size={24} className="text-gray-600" />
+                <div className={`bg-gray-100 h-[58px] p-4 rounded-2xl`}>
+                    <FaTags size={24} className="text-gray-800" />
                 </div>
             </div>
         </div>
