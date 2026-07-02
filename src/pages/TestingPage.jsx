@@ -4,416 +4,372 @@ import {
   LineChart,
   Line,
   XAxis,
-  YAxis,
   Tooltip,
   CartesianGrid,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-  BarChart,
-  AreaChart,
-  Area,
-  Bar
 } from "recharts";
+
 import {
-  FaSearch,
-  FaEye,
-  FaEdit,
-  FaTrashAlt,
-  FaUserPlus,
-} from "react-icons/fa";
-import AdminSideBar from "../components/admin/AdminSideBar";
+  FiUsers,
+  FiPackage,
+  FiTrendingUp,
+  FiStar,
+  FiPlus,
+  FiSearch,
+} from "react-icons/fi";
 
 const TestingPage = () => {
-    
-    const customerStatusData = [
-      { name: "Active", value: 850 },
-      { name: "Inactive", value: 220 },
-      { name: "VIP", value: 85 },
-      { name: "Blocked", value: 45 },
-    ];
-    
-    const COLORS = [
-      "#22C55E",
-      "#F59E0B",
-      "#3B82F6",
-      "#EF4444",
-    ];
+  const growthData = [
+    { month: "Jan", suppliers: 82 },
+    { month: "Feb", suppliers: 89 },
+    { month: "Mar", suppliers: 95 },
+    { month: "Apr", suppliers: 103 },
+    { month: "May", suppliers: 115 },
+    { month: "Jun", suppliers: 126 },
+  ];
 
-
-const customerGrowthData = [
-  { month: "Jan", customers: 120 },
-  { month: "Feb", customers: 180 },
-  { month: "Mar", customers: 240 },
-  { month: "Apr", customers: 320 },
-  { month: "May", customers: 410 },
-  { month: "Jun", customers: 520 },
-  { month: "Jul", customers: 640 },
-];
-
-const customerRevenueData = [
-  { month: "Jan", revenue: 125000 },
-  { month: "Feb", revenue: 148000 },
-  { month: "Mar", revenue: 172000 },
-  { month: "Apr", revenue: 210000 },
-  { month: "May", revenue: 248000 },
-  { month: "Jun", revenue: 286000 },
-  { month: "Jul", revenue: 330000 },
-];
-
-const customerRegistrationData = [
-  { month: "Jan", registrations: 42 },
-  { month: "Feb", registrations: 56 },
-  { month: "Mar", registrations: 63 },
-  { month: "Apr", registrations: 78 },
-  { month: "May", registrations: 91 },
-  { month: "Jun", registrations: 106 },
-  { month: "Jul", registrations: 118 },
-];
-
-
-  const customers = [
+  const recentlyJoined = [
     {
-      id: "CUS001",
-      name: "John Smith",
-      email: "john@example.com",
-      phone: "+91 9876543210",
-      orders: 18,
-      spent: "₹24,500",
-      joined: "12 Jan 2026",
+      name: "TechZone Pvt Ltd",
+      category: "Electronics",
+      joined: "2 days ago",
+    },
+    {
+      name: "Fresh Farms",
+      category: "Groceries",
+      joined: "5 days ago",
+    },
+    {
+      name: "Style Hub",
+      category: "Fashion",
+      joined: "1 week ago",
+    },
+  ];
+
+  const requestedProducts = [
+    {
+      product: "Apple MagSafe Charger",
+      requests: 84,
+    },
+    {
+      product: "JBL Flip Speaker",
+      requests: 65,
+    },
+    {
+      product: "Office Chair",
+      requests: 42,
+    },
+    {
+      product: "Gaming Keyboard",
+      requests: 36,
+    },
+  ];
+
+  const suppliers = [
+    {
+      name: "TechZone",
+      email: "tech@gmail.com",
+      products: 245,
+      revenue: "₹18.4L",
+      rating: 4.8,
       status: "Active",
     },
     {
-      id: "CUS002",
-      name: "Emma Watson",
-      email: "emma@example.com",
-      phone: "+91 9988776655",
-      orders: 9,
-      spent: "₹12,900",
-      joined: "18 Feb 2026",
+      name: "Fresh Farms",
+      email: "fresh@gmail.com",
+      products: 168,
+      revenue: "₹12.6L",
+      rating: 4.7,
       status: "Active",
     },
     {
-      id: "CUS003",
-      name: "Michael Lee",
-      email: "michael@example.com",
-      phone: "+91 9123456780",
-      orders: 3,
-      spent: "₹3,200",
-      joined: "05 Mar 2026",
+      name: "Style Hub",
+      email: "style@gmail.com",
+      products: 312,
+      revenue: "₹21.2L",
+      rating: 4.9,
+      status: "Active",
+    },
+    {
+      name: "Home Essentials",
+      email: "home@gmail.com",
+      products: 112,
+      revenue: "₹8.4L",
+      rating: 4.4,
       status: "Inactive",
     },
+  ];
+
+  const cards = [
     {
-      id: "CUS004",
-      name: "Sophia Brown",
-      email: "sophia@example.com",
-      phone: "+91 9876501234",
-      orders: 26,
-      spent: "₹52,300",
-      joined: "11 Apr 2026",
-      status: "VIP",
+      title: "Total Suppliers",
+      value: "126",
+      color: "from-indigo-500 to-violet-500",
+      icon: <FiUsers />,
     },
     {
-      id: "CUS005",
-      name: "David Wilson",
-      email: "david@example.com",
-      phone: "+91 9011223344",
-      orders: 7,
-      spent: "₹8,100",
-      joined: "28 Apr 2026",
-      status: "Blocked",
+      title: "Active Suppliers",
+      value: "118",
+      color: "from-green-500 to-emerald-500",
+      icon: <FiUsers />,
+    },
+    {
+      title: "Products",
+      value: "5,842",
+      color: "from-blue-500 to-cyan-500",
+      icon: <FiPackage />,
+    },
+    {
+      title: "Total Revenue",
+      value: "₹2.48 Cr",
+      color: "from-orange-500 to-amber-500",
+      icon: <FiTrendingUp />,
+    },
+    {
+      title: "Avg Rating",
+      value: "4.7",
+      color: "from-pink-500 to-rose-500",
+      icon: <FiStar />,
     },
   ];
 
   return (
-    <div className="flex">
-        <AdminSideBar />
+    <div className="min-h-screen p-8 font-sans">
 
-    <div className="min-h-screen w-full bg-gray-100 p-6 font-inter">
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-800">
-            Customers
-          </h1>
-          <p className="text-gray-500 mt-1">
-            Manage your customers and their activities.
-          </p>
+
+      <div className="bg-gradient-to-r from-indigo-600 to-violet-600 rounded-3xl p-8 text-white shadow-xl">
+
+        <div className="flex justify-between items-center">
+
+          <div>
+            <h1 className="text-4xl font-bold">
+              Suppliers
+            </h1>
+
+            <p className="opacity-90 mt-2">
+              Manage all registered suppliers
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+
+            <button className="bg-white text-gray-700 px-4 py-2 rounded-xl flex items-center gap-2">
+              <FiSearch />
+              Search
+            </button>
+
+            <button className="bg-yellow-400 text-black px-5 py-2 rounded-xl flex items-center gap-2 font-semibold">
+              <FiPlus />
+              Add Supplier
+            </button>
+
+          </div>
+
         </div>
 
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition">
-          + Add Customer
-        </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
-        <div className="bg-white rounded-xl shadow p-5">
-          <p className="text-gray-500 text-sm">Total Customers</p>
-          <h2 className="text-3xl font-bold mt-2">1,284</h2>
-        </div>
+      {/* Cards */}
 
-        <div className="bg-white rounded-xl shadow p-5">
-          <p className="text-gray-500 text-sm">Active Customers</p>
-          <h2 className="text-3xl font-bold text-green-600 mt-2">1,036</h2>
-        </div>
+      <div className="grid lg:grid-cols-5 md:grid-cols-2 gap-5 mt-8">
 
-        <div className="bg-white rounded-xl shadow p-5">
-          <p className="text-gray-500 text-sm">New This Month</p>
-          <h2 className="text-3xl font-bold text-blue-600 mt-2">146</h2>
-        </div>
+        {cards.map((item) => (
 
-        <div className="bg-white rounded-xl shadow p-5">
-          <p className="text-gray-500 text-sm">Blocked Customers</p>
-          <h2 className="text-3xl font-bold text-red-500 mt-2">24</h2>
-        </div>
+          <div
+            key={item.title}
+            className="bg-white rounded-3xl p-6 shadow-lg hover:-translate-y-1 duration-300"
+          >
+
+            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-r ${item.color} text-white flex items-center justify-center text-2xl`}>
+
+              {item.icon}
+
+            </div>
+
+            <p className="text-gray-500 mt-5">
+              {item.title}
+            </p>
+
+            <h2 className="text-3xl font-bold mt-1">
+              {item.value}
+            </h2>
+
+          </div>
+
+        ))}
+
       </div>
 
-      
+      {/* Chart + Recently Joined */}
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-3 gap-6 mt-8">
 
-      {/* Customer Growth */}
-      <div className="bg-white rounded-xl shadow p-5">
+        <div className="bg-white rounded-3xl shadow-lg p-6 lg:col-span-2">
 
-        <h2 className="text-lg font-semibold text-gray-800">
-          Customer Growth
+          <h2 className="font-semibold text-xl mb-6">
+            Supplier Growth
+          </h2>
+
+          <ResponsiveContainer width="100%" height={250}>
+            <LineChart data={growthData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="suppliers"
+                stroke="#6366F1"
+                strokeWidth={4}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+
+        </div>
+
+        <div className="bg-white rounded-3xl shadow-lg p-6">
+
+          <h2 className="font-semibold text-xl mb-5">
+            Recently Joined
+          </h2>
+
+          <div className="space-y-4">
+
+            {recentlyJoined.map((item) => (
+
+              <div
+                key={item.name}
+                className="border rounded-2xl p-4 hover:bg-slate-50"
+              >
+
+                <h3 className="font-semibold">
+                  {item.name}
+                </h3>
+
+                <p className="text-sm text-gray-500">
+                  {item.category}
+                </p>
+
+                <span className="text-indigo-600 text-sm font-medium">
+                  {item.joined}
+                </span>
+
+              </div>
+
+            ))}
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* Requested Products */}
+
+      <div className="bg-white rounded-3xl shadow-lg p-6 mt-8">
+
+        <h2 className="font-semibold text-xl mb-5">
+          🔥 Customer Requested Products
         </h2>
 
-        <p className="text-sm text-gray-500 mb-5">
-          Monthly customer registrations
-        </p>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
 
-        <ResponsiveContainer width="100%" height={320}>
-          <LineChart data={customerGrowthData}>
-            <CartesianGrid strokeDasharray="3 3" />
+          {requestedProducts.map((item) => (
 
-            <XAxis dataKey="month" />
-
-            <YAxis />
-
-            <Tooltip />
-
-            <Line
-              type="monotone"
-              dataKey="customers"
-              stroke="#2563EB"
-              strokeWidth={3}
-              dot={{ r: 5 }}
-              activeDot={{ r: 7 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-
-      </div>
- {/* Customer Revenue */}
-        <div className="bg-white rounded-xl shadow p-5">
-  <h2 className="text-lg font-semibold text-gray-800">
-    Customer Revenue
-  </h2>
-
-  <p className="text-sm text-gray-500 mb-4">
-    Monthly revenue generated from customers
-  </p>
-
-  <ResponsiveContainer width="100%" height={300}>
-    <AreaChart data={customerRevenueData}>
-      <CartesianGrid strokeDasharray="3 3" />
-
-      <XAxis dataKey="month" />
-
-      <YAxis />
-
-      <Tooltip />
-
-      <Area
-        type="monotone"
-        dataKey="revenue"
-        stroke="#3B82F6"
-        fill="#93C5FD"
-        strokeWidth={3}
-      />
-    </AreaChart>
-  </ResponsiveContainer>
-        </div>
-      {/* Customer Status */}
-      <div className="bg-white rounded-xl shadow p-5">
-
-        <h2 className="text-lg font-semibold text-gray-800">
-          Customer Status
-        </h2>
-
-        <p className="text-sm text-gray-500 mb-5">
-          Distribution of customers
-        </p>
-
-        <ResponsiveContainer width="100%" height={320}>
-          <PieChart>
-
-            <Pie
-              data={customerStatusData}
-              cx="50%"
-              cy="50%"
-              outerRadius={90}
-              innerRadius={55}
-              dataKey="value"
-              label
+            <div
+              key={item.product}
+              className="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-5 border"
             >
-              {customerStatusData.map((entry, index) => (
-                <Cell
-                  key={index}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
 
-            <Tooltip />
+              <h3 className="font-semibold">
+                {item.product}
+              </h3>
 
-            <Legend />
+              <div className="mt-4 inline-block bg-red-500 text-white px-3 py-1 rounded-full text-sm">
+                {item.requests} Requests
+              </div>
 
-          </PieChart>
-        </ResponsiveContainer>
+            </div>
 
-      </div>
-       
-{/* customer Registration */}
-<div className="bg-white rounded-xl shadow p-5">
-  <h2 className="text-lg font-semibold text-gray-800">
-    Customer Registrations
-  </h2>
+          ))}
 
-  <p className="text-sm text-gray-500 mb-4">
-    Monthly new customer registrations
-  </p>
-
-  <ResponsiveContainer width="100%" height={300}>
-    <BarChart data={customerRegistrationData}>
-      <CartesianGrid strokeDasharray="3 3" />
-
-      <XAxis dataKey="month" />
-
-      <YAxis />
-
-      <Tooltip />
-
-      <Bar
-        dataKey="registrations"
-        fill="#10B981"
-        radius={[8, 8, 0, 0]}
-      />
-    </BarChart>
-  </ResponsiveContainer>
-</div>
-
-    </div>
-
-    {/* Search */}
-      <div className="bg-white rounded-xl shadow p-4 my-5 flex items-center">
-        <div className="relative w-full max-w-md">
-          <FaSearch
-            size={18}
-            className="absolute left-3 top-3 text-gray-400"
-          />
-
-          <input
-            type="text"
-            placeholder="Search customer..."
-            className="w-full pl-10 pr-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
-          />
         </div>
+
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-xl shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead className="bg-gray-50 border-b">
-              <tr className="text-left text-gray-600 text-sm">
-                <th className="px-6 py-4">Customer</th>
-                <th className="px-6 py-4">Phone</th>
-                <th className="px-6 py-4">Orders</th>
-                <th className="px-6 py-4">Spent</th>
-                <th className="px-6 py-4">Joined</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4 text-center">Actions</th>
+      {/* Supplier Table */}
+
+      <div className="bg-white rounded-3xl shadow-lg mt-8 overflow-hidden">
+
+        <div className="p-6 border-b">
+
+          <h2 className="text-xl font-semibold">
+            Supplier Directory
+          </h2>
+
+        </div>
+
+        <table className="w-full">
+
+          <thead className="bg-slate-50">
+
+            <tr className="text-left">
+
+              <th className="p-4">Supplier</th>
+              <th>Email</th>
+              <th>Products</th>
+              <th>Revenue</th>
+              <th>Rating</th>
+              <th>Status</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            {suppliers.map((item) => (
+
+              <tr
+                key={item.email}
+                className="border-t hover:bg-slate-50"
+              >
+
+                <td className="p-4 font-medium">
+                  {item.name}
+                </td>
+
+                <td>{item.email}</td>
+
+                <td>{item.products}</td>
+
+                <td>{item.revenue}</td>
+
+                <td>⭐ {item.rating}</td>
+
+                <td>
+
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm text-white ${
+                      item.status === "Active"
+                        ? "bg-green-500"
+                        : "bg-red-500"
+                    }`}
+                  >
+                    {item.status}
+                  </span>
+
+                </td>
+
               </tr>
-            </thead>
 
-            <tbody>
-              {customers.map((customer) => (
-                <tr
-                  key={customer.id}
-                  className="border-b hover:bg-gray-50 transition"
-                >
-                  <td className="px-6 py-5">
-                    <div className="flex items-center gap-4">
-                      <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold">
-                        {customer.name.charAt(0)}
-                      </div>
+            ))}
 
-                      <div>
-                        <h3 className="font-semibold text-gray-800">
-                          {customer.name}
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          {customer.email}
-                        </p>
-                      </div>
-                    </div>
-                  </td>
+          </tbody>
 
-                  <td className="px-6 py-5">{customer.phone}</td>
+        </table>
 
-                  <td className="px-6 py-5 font-medium">
-                    {customer.orders}
-                  </td>
-
-                  <td className="px-6 py-5 font-semibold">
-                    {customer.spent}
-                  </td>
-
-                  <td className="px-6 py-5">{customer.joined}</td>
-
-                  <td className="px-6 py-5">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold
-                      ${
-                        customer.status === "Active"
-                          ? "bg-green-100 text-green-700"
-                          : customer.status === "VIP"
-                          ? "bg-purple-100 text-purple-700"
-                          : customer.status === "Blocked"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-gray-200 text-gray-700"
-                      }`}
-                    >
-                      {customer.status}
-                    </span>
-                  </td>
-
-                  <td className="px-6 py-5">
-                    <div className="flex justify-center gap-4">
-                      <button className="text-blue-600 hover:text-blue-800">
-                        <FaEye size={19} />
-                      </button>
-
-                      <button className="text-green-600 hover:text-green-800">
-                        <FaEdit size={19} />
-                      </button>
-
-                      <button className="text-red-600 hover:text-red-800">
-                        <FaTrashAlt size={19} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
       </div>
-    </div>
+
     </div>
   );
 };

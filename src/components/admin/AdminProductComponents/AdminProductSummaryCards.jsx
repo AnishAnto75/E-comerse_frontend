@@ -6,14 +6,14 @@ const AdminProductSummaryCards = ({data}) => {
   return (
      <div className="grid xl:grid-cols-4 md:grid-cols-2 gap-6">
         {/* Total Products */}
-        <div className='bg-white rounded-2xl  border-t-4 border-blue-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
+        <div className='bg-white rounded-2xl  border-t-4 border-sky-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
             <div className="flex justify-between items-center">
                 <div>
-                    <p className="text-blue-300 font-semibold">TOTAL PRODUCTS</p>
-                    <h2 className='text-3xl mt-2 font-bold text-blue-600'>{data.total_products?.toLocaleString()}</h2>
+                    <p className="text-sky-500 font-semibold">TOTAL PRODUCTS</p>
+                    <h2 className='text-3xl mt-2 font-bold text-sky-600'>{data.total_products?.toLocaleString()}</h2>
                 </div>
-                <div className={`bg-blue-50 h-[58px] p-4 rounded-2xl`}>
-                    <FaBoxOpen size={26} className="text-blue-600"/>
+                <div className={`bg-sky-50 h-[58px] p-4 rounded-2xl`}>
+                    <FaBoxOpen size={26} className="text-sky-600"/>
                 </div>
             </div>
         </div>
@@ -21,7 +21,7 @@ const AdminProductSummaryCards = ({data}) => {
         <div className='bg-white rounded-2xl border-t-4 border-green-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
             <div className="flex justify-between items-center">
                 <div>
-                    <p className="text-green-300 font-semibold">TOTAL INVENTORY</p>
+                    <p className="text-green-500 font-semibold">TOTAL INVENTORY</p>
                     <h2 className='text-3xl mt-2 font-bold text-green-600'>{data.total_inventory?.toLocaleString()}</h2>
                 </div>
                 <div className={`bg-green-50 h-[58px] p-4 rounded-2xl`}>
@@ -33,7 +33,7 @@ const AdminProductSummaryCards = ({data}) => {
         <div className='bg-white rounded-2xl border-t-4 border-purple-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
             <div className="flex justify-between items-center">
                 <div>
-                    <p className="text-purple-300 font-semibold">INVENTORY VALUE</p>
+                    <p className="text-purple-500 font-semibold">INVENTORY VALUE</p>
                     <h2 className='text-3xl mt-2 font-bold text-purple-600'>{data.inventory_value?.toLocaleString()}</h2>
                 </div>
                 <div className={`bg-purple-50 h-[58px] p-4 rounded-2xl`}>
@@ -45,7 +45,7 @@ const AdminProductSummaryCards = ({data}) => {
         <div className='bg-white rounded-2xl border-t-4 border-indigo-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
             <div className="flex justify-between items-center">
                 <div>
-                    <p className="text-indigo-300 font-semibold">BRAND</p>
+                    <p className="text-indigo-500 font-semibold">BRAND</p>
                     <h2 className='text-3xl mt-2 font-bold text-indigo-700'>{data.total_brands?.toLocaleString()}</h2>
                 </div>
                 <div className={`bg-indigo-50 h-[58px] p-4 rounded-2xl`}>
@@ -54,14 +54,14 @@ const AdminProductSummaryCards = ({data}) => {
             </div>
         </div>
         {/* Low In Stock */}
-        <div className='bg-white rounded-2xl border-t-4 border-amber-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
+        <div className='bg-white rounded-2xl border-t-4 border-amber-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
             <div className="flex justify-between items-center">
                 <div>
-                    <p className="text-amber-300 font-semibold">LOW IN STOCK</p>
-                    <h2 className='text-3xl mt-2 font-bold text-amber-800'>{data.low_in_stock?.toLocaleString()}</h2>
+                    <p className="text-amber-500 font-semibold">LOW IN STOCK</p>
+                    <h2 className='text-3xl mt-2 font-bold text-amber-600'>{data.low_in_stock?.toLocaleString()}</h2>
                 </div>
                 <div className={`bg-amber-50 h-[58px] p-4 rounded-2xl`}>
-                    <FaExclamationTriangle size={24} className="text-amber-600" />
+                    <FaExclamationTriangle size={24} className="text-amber-500" />
                 </div>
             </div>
         </div>
@@ -69,8 +69,8 @@ const AdminProductSummaryCards = ({data}) => {
         <div className='bg-white rounded-2xl border-t-4 border-red-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
             <div className="flex justify-between items-center">
                 <div>
-                    <p className="text-red-200 font-semibold">OUT OF STOCK</p>
-                    <h2 className='text-3xl mt-2 font-bold text-red-700'>{data.out_of_stock?.toLocaleString()}</h2>
+                    <p className="text-red-400 font-semibold">OUT OF STOCK</p>
+                    <h2 className='text-3xl mt-2 font-bold text-red-500'>{data.out_of_stock?.toLocaleString()}</h2>
                 </div>
                 <div className={`bg-red-50 h-[58px] p-4 rounded-2xl`}>
                     <FaTimesCircle size={24} className="text-red-600" />
@@ -78,14 +78,14 @@ const AdminProductSummaryCards = ({data}) => {
             </div>
         </div>
         {/* Active Products*/}
-        <div className='bg-white rounded-2xl border-t-4 border-cyan-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
+        <div className='bg-white rounded-2xl border-t-4 border-cyan-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
             <div className="flex justify-between items-center">
                 <div>
-                    <p className="text-cyan-200 font-semibold">ACTIVE PRODUCTS</p>
-                    <h2 className='text-3xl mt-2 font-bold text-cyan-700'>{data.active_products?.toLocaleString()}</h2>
+                    <p className="text-cyan-400 font-semibold">ACTIVE PRODUCTS</p>
+                    <h2 className='text-3xl mt-2 font-bold text-cyan-500'>{data.active_products?.toLocaleString()}</h2>
                 </div>
                 <div className={`bg-cyan-50 h-[58px] p-4 rounded-2xl`}>
-                    <FaCheckCircle size={24} className="text-cyan-600" />
+                    <FaCheckCircle size={24} className="text-cyan-500" />
                 </div>
             </div>
         </div>

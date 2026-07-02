@@ -49,8 +49,8 @@ const AdminOrderPreviewComponent = ({order_id}) => {
 
   return (
     <div className="p-1 font-inter">
-        <div className='text-xl font-semibold text-blue-gray-500 pl-3 pt-2'>Order Preview</div>
-        <div className='text-xl font-semibold text-blue-gray-700 mt-3 pl-3 pt-0.5'>#{order.order_id}</div>
+        <div className='text-xl font-semibold text-gray-700 pl-3 pt-2'>Order Preview</div>
+        <div className='text-xl font-semibold text-gray-600 mt-3 pl-3 pt-0.5'>#{order.order_id}</div>
         {/* Product Details */}
         <div className='mt-5'>
         {order.product_details?.map((product, index)=>(
@@ -71,58 +71,62 @@ const AdminOrderPreviewComponent = ({order_id}) => {
         ))}
         </div>
         {/* Order Status */}
-        <div className='rounded-xl space-y-2 border-2 bg-white mt-5 p-4 font-medium text-lg text-blue-gray-800'>
+        <div className='rounded-xl space-y-2 border-2 bg-white mt-5 p-4 font-medium text-lg text-gray-700'>
             <div className='flex justify-between'>
-                <div>Placed</div>
+                <div className='text-gray-600'>Placed</div>
                 <div>{date(order_status.placed?.date)}</div>
             </div>            
             {order_status.confirmed.status &&
                 <div className='flex justify-between'>
-                    <div>Confirmed</div><div>{date(order_status.confirmed.date)}</div>
+                    <div className='text-gray-600'>Confirmed</div>
+                    <div>{date(order_status.confirmed.date)}</div>
                 </div>  
             }          
             {order_status.out.status &&
                 <div className='flex justify-between'>
-                    <div>Out</div><div>{date(order_status.out.date)}</div>
+                    <div className='text-gray-600'>Out</div>
+                    <div>{date(order_status.out.date)}</div>
                 </div>  
             }          
             {order_status.delivered.status &&
                 <div className='flex justify-between'>
-                    <div>Delivered</div><div>{date(order_status.delivered.date)}</div>
+                    <div className='text-gray-600'>Delivered</div>
+                    <div>{date(order_status.delivered.date)}</div>
                 </div>  
             }          
             {order_status.canceled.status &&
                 <div className='flex justify-between'>
-                    <div>Canceled</div><div>{date(order_status.canceled.date)}</div>
+                    <div className='text-gray-600'>Canceled</div>
+                    <div>{date(order_status.canceled.date)}</div>
                 </div>  
             }          
         </div>
         {/* Amount */}
         <div className='border-2 rounded-xl bg-white mt-5 p-4 space-y-2'>
             <div className='flex items-center font-medium justify-between text-lg'>
-                <div className='text-blue-gray-700'>MRP({order.total_no_of_product})</div>
-                <div className='flex items-center text-blue-gray-900 font-semibold'><FaIndianRupeeSign />{order.total_mrp}</div>
+                <div className='text-gray-700'>MRP({order.total_no_of_product})</div>
+                <div className='flex items-center text-gray-800 font-semibold'><FaIndianRupeeSign />{order.total_mrp}</div>
             </div>
             <div className='flex items-center font-medium justify-between text-lg'>
-                <div className='text-blue-gray-700'>Discount</div>
-                <div className='flex items-center text-blue-gray-900 font-semibold'>-<FaIndianRupeeSign />{order.total_mrp - order.total_price}</div>
+                <div className='text-gray-700'>Discount</div>
+                <div className='flex items-center text-gray-800 font-semibold'>-<FaIndianRupeeSign />{order.total_mrp - order.total_price}</div>
             </div>
             <div className='flex items-center font-medium justify-between text-lg'>
-                <div className='text-blue-gray-700'>Price</div>
-                <div className='flex items-center text-blue-gray-900 font-semibold'><FaIndianRupeeSign />{order.total_price}</div>
+                <div className='text-gray-700'>Price</div>
+                <div className='flex items-center text-gray-800 font-semibold'><FaIndianRupeeSign />{order.total_price}</div>
             </div>
             <div className='flex items-center font-medium justify-between text-lg'>
-                <div className='text-blue-gray-700'>Delivery Charges</div>
-                <div className='flex items-center text-blue-gray-900 font-semibold'><FaIndianRupeeSign />{order.delivery_charges}</div>
+                <div className='text-gray-700'>Delivery Charges</div>
+                <div className='flex items-center text-gray-800 font-semibold'><FaIndianRupeeSign />{order.delivery_charges}</div>
             </div>
             <div className='flex items-center font-medium justify-between border-t-[3px] border-dashed pt-3 '>
-                <div className='text-blue-gray-800 text-xl'>Total</div>
-                <div className='flex items-center text-blue-gray-900 text-xl font-semibold'><FaIndianRupeeSign />{order.total_amount}</div>
+                <div className='text-gray-800 text-xl'>Total</div>
+                <div className='flex items-center text-gray-800 text-xl font-semibold'><FaIndianRupeeSign />{order.total_amount}</div>
             </div>
         </div>
         {/* Delevery Address */}
         <div className=' border-2 mt-5 rounded-xl bg-white text-gray-900 w-full p-3'>
-            <div className='text-lg text-blue-gray-700 font-semibold mb-3 '>Delivery Address </div> 
+            <div className='text-lg text-gray-700 font-semibold mb-3 '>Delivery Address </div> 
             <div className='px-2 tracking-wide'>
                 <div className='pb-2'><span className='bg-gray-100 text-gray-800 p-2 text-sm font-roboto font-bold uppercase rounded '>{order.delivery_address.addressType}</span></div>
                 <div className='gap-1 flex'>

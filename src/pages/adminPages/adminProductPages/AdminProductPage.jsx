@@ -145,7 +145,6 @@ const AdminProductPage = () => {
         </div>
 
         <div className="h-[calc(100vh-40px)] border flex flex-col mt-5 rounded-2xl shadow-md p-5">
-
             <div className="flex flex-col xl:flex-row gap-4 justify-between">
                 <div className="relative flex-1">
                     <FaSearch className="absolute left-4 top-4 text-gray-400" />
@@ -220,7 +219,7 @@ const AdminProductPage = () => {
                                 <td className='py-4 '>{product?.mrp}</td>
                                 <td className='py-4 '>{product?.price}</td>
                                 <td className="py-4">
-                                    <span className={` p-1 border-[3px] rounded-xl px-5 ${ product?.product_total_stock == 0 ? "bg-red-50 text-red-400 border-red-100" : product.product_total_stock <= product.product_low_in_stock ? "bg-amber-50 text-amber-800 border-amber-200" : "bg-green-50 text-green-500 border-green-100"  } `}>
+                                    <span className={` p-1 border-[3px] rounded-xl px-5 ${ product?.product_total_stock == 0 ? "bg-red-50 text-red-400 border-red-200" : product.product_total_stock <= product.product_low_in_stock ? "bg-amber-50 text-amber-500 border-amber-200" : "bg-green-50 text-green-500 border-green-100"  } `}>
                                         {product?.product_total_stock}
                                     </span>
                                 </td>
@@ -236,7 +235,7 @@ const AdminProductPage = () => {
                                     </span>
                                 </td>
                                 <td className='space-x-2 text-2xl '>
-                                    <FaEdit onClick={() => navigate(`/admin/produscts/edit/${product.product_barcode}`)} className='cursor-pointer inline-block text-orange-600' />
+                                    <FaEdit onClick={() => navigate(`/admin/produscts/edit/${product.product_barcode}`)} className='cursor-pointer inline-block text-orange-500' />
                                     <FaEye onClick={() => navigate(`/admin/products/product_id/${product.product_barcode}`)} className='cursor-pointer text-cyan-600 inline-block' />
                                 </td>
                             </tr>

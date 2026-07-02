@@ -11,7 +11,7 @@ const AdminDashboardHeaderComponent = ({purchase, sales, orders,profit}) => {
             <div className='bg-white col-span-1 w-full min-h-44 rounded-lg border-2 p-2 px-4'>
                 <div className='flex'>
                     <div>
-                        <BiSolidPurchaseTag className='bg-amber-100 h-9 w-9 mt-2 text-amber-600 rounded-full p-1'/>
+                        <BiSolidPurchaseTag className='bg-amber-100 h-9 w-9 mt-2 text-amber-500 rounded-full p-1.5'/>
                         <div className='pt-1.5 pb-2 text-gray-600 font-medium'>Purchase</div>
                         <div className='text-2xl text-gray-800 font-medium '>{purchase.total_purchase}</div>
                     </div>

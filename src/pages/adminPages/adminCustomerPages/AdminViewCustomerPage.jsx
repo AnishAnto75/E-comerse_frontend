@@ -18,7 +18,7 @@ const AdminViewCustomerPage = () => {
         const fetchUser = async()=>{
             try {
                 setLoading(true)
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin//customer/customer_id/${id}`)
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/customer/customer_id/${id}`)
                 console.log("adminFetchUser payload : " , res.data)
                 setUser(res.data.data)
             } catch (error){

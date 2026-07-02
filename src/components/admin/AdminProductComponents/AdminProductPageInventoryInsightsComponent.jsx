@@ -17,7 +17,7 @@ const AdminProductPageInventoryInsightsComponent = ({data}) => {
                     <span className="font-semibold text-cyan-600">{active_products_percentage}%</span>
                 </div>
                 <div className="h-3 bg-gray-200 rounded-full mt-2">
-                    <div className="h-3 rounded-full bg-cyan-500 transition-all duration-500" style={{ width: `${active_products_percentage}%` }}/>
+                    <div className="h-3 rounded-full bg-cyan-400 transition-all duration-500" style={{ width: `${active_products_percentage}%` }}/>
                 </div>
             </div>
             <div>
@@ -32,10 +32,10 @@ const AdminProductPageInventoryInsightsComponent = ({data}) => {
             <div>
                 <div className="flex justify-between">
                     <span className="text-gray-700 font-medium">Low Stock ({data.low_in_stock})</span>
-                    <span className="font-semibold text-amber-800">{low_stock_percentage}%</span>
+                    <span className="font-semibold text-amber-500">{low_stock_percentage}%</span>
                 </div>
                 <div className="h-3 bg-gray-200 rounded-full mt-2">
-                    <div className="h-3 rounded-full bg-amber-500 transition-all duration-500" style={{ width: `${low_stock_percentage}%` }}/>
+                    <div className="h-3 rounded-full bg-amber-400 transition-all duration-500" style={{ width: `${low_stock_percentage}%` }}/>
                 </div>
             </div>
             <div>
