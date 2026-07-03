@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 
-import { FaSearch, FaEdit, FaEye, FaChevronRight, FaChevronLeft } from "react-icons/fa";
+import { FaSearch, FaEdit, FaEye, FaChevronRight, FaChevronLeft, FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { IoCloseSharp } from "react-icons/io5";
 import { IoIosStar } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
+import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts'
 import AdminSideBar from "../../../components/admin/AdminSideBar";
-import AdminCustomerSummaryHeaderComponent from "../../../components/admin/AdminCustomerComponent/AdminCustomerSummaryHeaderComponent";
-import AdminCustomerGrowthComponent from "../../../components/admin/AdminCustomerComponent/AdminCustomerGrowthComponent";
-import AdminCustomerRevenueComponent from "../../../components/admin/AdminCustomerComponent/AdminCustomerRevenueComponent";
 import AdminCustomerInsightComponent from "../../../components/admin/AdminCustomerComponent/AdminCustomerInsightComponent";
 import AdminCustomerRegistration from "../../../components/admin/AdminCustomerComponent/AdminCustomerRegistration";
 import AdminCustomerPreviewComponent from "../../../components/admin/AdminCustomerComponent/AdminCustomerPreviewComponent";
+import AdminTotalCustomerComponent from "../../../components/admin/AdminCustomerComponent/AdminTotalCustomerComponent";
+import AdminCustomerTotalRevenueComponent from "../../../components/admin/AdminCustomerComponent/AdminCustomerTotalRevenueComponent";
 
 const AdminCustomerPage = () => {
 
@@ -26,6 +26,7 @@ const AdminCustomerPage = () => {
         inactive_customers : 900,
         blocked_customers : 100,
         deleted_customers : 100,
+
         customerGrowthData : [
             { month: "Jan", customers: 120 },
             { month: "Feb", customers: 180 },
@@ -63,6 +64,7 @@ const AdminCustomerPage = () => {
             { month: "Nov", registrations: 158 },
             { month: "Dec", registrations: 168 },
         ],
+
         customers: [
             {
                 status: "active",
@@ -125,6 +127,88 @@ const AdminCustomerPage = () => {
                 deleted: true,
                 createdAt: "2026-07-02T12:17:55.639Z",
             }
+        ],
+        totalCustomers: {
+            value:4000,
+            increment: 25,
+            chartData: [
+                {
+                    name: 'Mar',
+                    customers: 4000,
+                },
+                {
+                    name: 'Apr',
+                    customers: 3000,
+                },
+                {
+                    name: 'May',
+                    customers: 2000,
+                },
+                {
+                    name: 'Jun',
+                    customers: 2780,
+                },
+                {
+                    name: 'Jul',
+                    customers: 1890,
+                },
+                {
+                    name: 'Aug',
+                    customers: 2390,
+                },
+                {
+                    name: 'Sep',
+                    customers: 3490,
+                },
+            ]
+        },
+        totalRevenue : {
+            value: 161238152,
+            increment: -25,
+            chartData: [
+                {
+                    name: 'Mar',
+                    revenue: 2000,
+                },
+                {
+                    name: 'Apr',
+                    revenue: 3000,
+                },
+                {
+                    name: 'May',
+                    revenue: 2000,
+                },
+                {
+                    name: 'Jun',
+                    revenue: 2780,
+                },
+                {
+                    name: 'Jul',
+                    revenue: 1890,
+                },
+                {
+                    name: 'Aug',
+                    revenue: 2390,
+                },
+                {
+                    name: 'Sep',
+                    revenue: 1490,
+                },
+            ]
+        }
+    }
+
+    
+    const pendingOrders = {
+        value: 400,
+        increment: 5,
+        chartData: [
+            {
+                name: "Pending Orders",
+                placed: 900,
+                confirmed: 580,
+                out: 20,
+            },
         ]
     }
 
@@ -138,16 +222,19 @@ const AdminCustomerPage = () => {
                 <p className="text-gray-500 mt-1">Manage customers and their activities.</p>
             </div>
 
-            <AdminCustomerSummaryHeaderComponent data={data} />
+            <div className='grid grid-cols-2 gap-5 mt-5 mb-10'>
+                
+                <AdminTotalCustomerComponent totalCustomers={data.totalCustomers} />
+                <AdminCustomerTotalRevenueComponent totalRevenue={data.totalRevenue} />
+
+            </div>
 
             <div className="grid grid-cols-10 gap-6">
-                <AdminCustomerGrowthComponent data={data} />
-                <AdminCustomerRevenueComponent data={data} />
                 <AdminCustomerInsightComponent data={data} />
                 <AdminCustomerRegistration data={data} />
             </div>
 
-            <div className="h-[calc(100vh-40px)] border flex flex-col mt-5 rounded-2xl shadow-md p-5">
+            <div className="h-[calc(100vh-40px)] border flex flex-col mt-10 rounded-2xl shadow-md p-5">
                 <div className="flex flex-col xl:flex-row gap-4 justify-between">
                     <div className="relative flex-1">
                         <FaSearch className="absolute left-4 top-4 text-gray-400" />
@@ -241,7 +328,7 @@ const AdminCustomerPage = () => {
                 <AdminCustomerPreviewComponent user_id = {selectedCustomer}/>
             </div>
         </div> 
-    }
+        }
     </div>
   );
 };

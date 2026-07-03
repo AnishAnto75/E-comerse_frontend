@@ -23,7 +23,6 @@ import AdminOrderPage from "./pages/adminPages/adminOrderPage/AdminOrderPage.jsx
 import AdminOrderViewPage from "./pages/adminPages/adminOrderPage/AdminOrderViewPage.jsx";
 import AdminProductPage from "./pages/adminPages/adminProductPages/AdminProductPage.jsx";
 import AdminAddNewProductPage from "./pages/adminPages/adminProductPages/AdminAddNewProductPage.jsx";
-import AdminAllCustomerPage from "./pages/adminPages/adminCustomerPages/AdminAllCustomerPage.jsx";
 import AdminCustomerPage from "./pages/adminPages/adminCustomerPages/AdminCustomerPage.jsx";
 import AdminStaffManagement from "./pages/adminPages/AdminStaffPages/AdminStaffManagement.jsx";
 import AdminAddNewStaffPage from "./pages/adminPages/AdminStaffPages/AdminAddNewStaffPage.jsx";
@@ -45,7 +44,6 @@ import { ToastContainer } from 'react-toastify';
 import AdminProductViewPage from "./pages/adminPages/adminProductPages/AdminProductViewPage.jsx";
 import AdminSupplierPage from "./pages/adminPages/adminSupplierPages/AdminSupplierPage.jsx";
 import AdminCreateSupplier from "./pages/adminPages/adminSupplierPages/AdminCreateSupplier.jsx";
-import AdminAllSuppliersPage from "./pages/adminPages/adminSupplierPages/AdminAllSuppliersPage.jsx";
 import AdminSupplierViewPage from "./pages/adminPages/adminSupplierPages/AdminSupplierViewPage.jsx";
 import AdminEntryPage from "./pages/adminPages/AdminEntryPage.jsx";
 import AdminPurchaseEntryPage from "./pages/adminPages/adminPurchasePages/AdminPurchaseEntryPage.jsx";
@@ -177,12 +175,11 @@ function App() {
 
                 <Route path="customer">
                     <Route index element={<AdminCustomerPage />}/>
-                    <Route path="all-customer" element={<AdminAllCustomerPage />}/>
                     <Route path="customer_id/:id" element={<AdminViewCustomerPage /> } />
                     <Route path="edit/customer_id/:id" element={<AdminEditCustomerPage /> } />
                 </Route>
 
-                <Route path="entry">
+                <Route path="purchase">
                     <Route index element={<AdminEntryPage />}/>
                     <Route path="purchase-entry" element={<AdminPurchaseEntryPage /> } />
                     <Route path="all-purchases" element={<AdminAllPurchasesPage /> } />
@@ -191,9 +188,9 @@ function App() {
 
                 <Route path="supplier">
                     <Route index element={<AdminSupplierPage />}/>
+                    <Route path="supplier_id/:id" element={<AdminSupplierViewPage />}/>
                     <Route path="create-supplier" element={<AdminCreateSupplier />}/>
-                    <Route path="all-supplier" element={<AdminAllSuppliersPage />}/>
-                    <Route path=":id" element={<AdminSupplierViewPage />}/>
+                    <Route path="edit/supplier_id/:id" element={<div>Edit Supplier</div>}/>
                 </Route>
 
                 <Route path="stock" element={<div>stock</div>} />

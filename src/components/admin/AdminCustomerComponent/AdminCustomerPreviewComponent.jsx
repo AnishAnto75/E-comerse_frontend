@@ -3,8 +3,11 @@ import LoadingComponent from '../../LoadingComponent'
 import axios from 'axios'
 import { IoIosStar } from 'react-icons/io'
 import { format } from 'date-fns'
+import { useNavigate } from 'react-router-dom'
 
 const AdminCustomerPreviewComponent = ({user_id}) => {
+
+    const navigate = useNavigate()
     const handleRef = useRef(true)
     const [loading , setLoading ] = useState(false)
     const [error , setError ] = useState(false)
@@ -60,7 +63,7 @@ return (
     <div className="p-2 font-inter">
         <div className='text-xl font-semibold text-gray-800'>Customer Preview</div>
         <div className='text-xl font-semibold text-gray-600 mt-3 pl-3 pt-0.5'>#{customer.user_id}</div>
-        <div className="flex relative justify-center mt-4 rounded-3xl py-5 flex-col items-center bg-gray-100/70">
+        <div onClick={()=>navigate(`/admin/customer/customer_id/${customer.user_id}`)} className="flex relative justify-center mt-4 cursor-pointer rounded-3xl py-5 flex-col items-center bg-gray-100/70">
             <div className={`absolute w-6 h-6 rounded-full top-5 right-5 ${ customer.deleted?"bg-gray-800" : customer.status == "active" ? "bg-blue-500" : customer.status == "inactive" ? "bg-amber-500" : customer.status == "blocked" ? "bg-red-500" : "" }`} title={customer.deleted ? "Deleted" : customer.status}/>
             <div className="w-36 h-36 rounded-full bg-blue-100 text-8xl font-inter flex items-center justify-center  uppercase text-blue-700 font-bold">{customer.name?.charAt(0)}</div>
             <div className='flex gap-1.5 mt-1' title='Ratings'>

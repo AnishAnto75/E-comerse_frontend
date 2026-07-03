@@ -137,14 +137,14 @@ const AdminProductPage = () => {
 
         <AdminProductSummaryCards data={data.summary}/>
 
-        <div className="grid grid-cols-3 gap-6 mt-8">
+        <div className="grid grid-cols-3 gap-6 mt-10">
 
             <AdminProductPageInventoryTrendsComponent data={data.inventoryChartData}/>
 
             <AdminProductPageInventoryInsightsComponent data={data.summary}/>
         </div>
 
-        <div className="h-[calc(100vh-40px)] border flex flex-col mt-5 rounded-2xl shadow-md p-5">
+        <div className="h-[calc(100vh-40px)] border flex flex-col mt-10 rounded-2xl shadow-md p-5">
             <div className="flex flex-col xl:flex-row gap-4 justify-between">
                 <div className="relative flex-1">
                     <FaSearch className="absolute left-4 top-4 text-gray-400" />
@@ -184,7 +184,7 @@ const AdminProductPage = () => {
             <div className="flex-1 overflow-y-auto mt-5">
                 <table className="w-full border-separate border-spacing-0">
                     <thead className="sticky top-0 z-20 bg-white shadow-sm">
-                        <tr className="text-blue-gray-500">
+                        <tr className="text-gray-500">
                             <th className="py-4 bg-white"></th>
                             <th className="py-4 bg-white max-w-16"></th>
                             <th className="py-4 text-start bg-white">Product Name / Barcode</th>
