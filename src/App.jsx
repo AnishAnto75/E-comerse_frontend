@@ -24,7 +24,7 @@ import AdminOrderViewPage from "./pages/adminPages/adminOrderPage/AdminOrderView
 import AdminProductPage from "./pages/adminPages/adminProductPages/AdminProductPage.jsx";
 import AdminAddNewProductPage from "./pages/adminPages/adminProductPages/AdminAddNewProductPage.jsx";
 import AdminCustomerPage from "./pages/adminPages/adminCustomerPages/AdminCustomerPage.jsx";
-import AdminStaffManagement from "./pages/adminPages/AdminStaffPages/AdminStaffManagement.jsx";
+import AdminStaffManagementPage from "./pages/adminPages/AdminStaffPages/AdminStaffManagementPage.jsx";
 import AdminAddNewStaffPage from "./pages/adminPages/AdminStaffPages/AdminAddNewStaffPage.jsx";
 import AdminAllStaffPage from "./pages/adminPages/AdminStaffPages/AdminAllStaffPage.jsx";
 import AdminStaffViewPage from "./pages/adminPages/AdminStaffPages/AdminStaffViewPage.jsx";
@@ -45,7 +45,6 @@ import AdminProductViewPage from "./pages/adminPages/adminProductPages/AdminProd
 import AdminSupplierPage from "./pages/adminPages/adminSupplierPages/AdminSupplierPage.jsx";
 import AdminCreateSupplier from "./pages/adminPages/adminSupplierPages/AdminCreateSupplier.jsx";
 import AdminSupplierViewPage from "./pages/adminPages/adminSupplierPages/AdminSupplierViewPage.jsx";
-import AdminEntryPage from "./pages/adminPages/AdminEntryPage.jsx";
 import AdminPurchaseEntryPage from "./pages/adminPages/adminPurchasePages/AdminPurchaseEntryPage.jsx";
 import AdminAllPurchasesPage from "./pages/adminPages/adminPurchasePages/AdminAllPurchasesPage.jsx";
 import AdminPurchaseViewPage from "./pages/adminPages/adminPurchasePages/AdminPurchaseViewPage.jsx";
@@ -63,8 +62,7 @@ import AdminViewBrandPage from './pages/adminPages/adminBrandPages/AdminViewBran
 import AdminAddGroupPage from "./pages/adminPages/adminGroups&CategoriesPages/AdminAddGroupPage.jsx";
 import AdminAddCategoryPage from './pages/adminPages/adminGroups&CategoriesPages/AdminAddCategoryPage.jsx'
 import AdminEditCustomerPage from "./pages/adminPages/adminCustomerPages/AdminEditCustomerPage.jsx";
-
-
+import AdminPurchasePage from "./pages/adminPages/adminProductPages/AdminPurchasePage.jsx";
 
 
 function App() {
@@ -180,7 +178,7 @@ function App() {
                 </Route>
 
                 <Route path="purchase">
-                    <Route index element={<AdminEntryPage />}/>
+                    <Route index element={<AdminPurchasePage />}/>
                     <Route path="purchase-entry" element={<AdminPurchaseEntryPage /> } />
                     <Route path="all-purchases" element={<AdminAllPurchasesPage /> } />
                     <Route path="purchase/:id" element={<AdminPurchaseViewPage /> } />
@@ -197,10 +195,10 @@ function App() {
                 <Route path="notification" element={<div>notification</div>} />
 
                 <Route path="staff">
-                    <Route index element={<AdminStaffManagement />}/>
-                    <Route path="new-staff" element={<AdminAddNewStaffPage />}/>
+                    <Route index element={<AdminStaffManagementPage />}/>
+                    <Route path="create-staff" element={<AdminAddNewStaffPage />}/>
                     <Route path="all-staff" element={<AdminAllStaffPage />}/>
-                    <Route path=":id" element={<AdminStaffViewPage />}/>
+                    <Route path="staff_id/:id" element={<AdminStaffViewPage />}/>
                 </Route>
 
                 <Route path="payments" element={<div>payments</div>} />

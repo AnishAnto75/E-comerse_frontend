@@ -1,6 +1,6 @@
 import React from 'react'
-import { FaCheckCircle, FaExclamationTriangle, FaTimesCircle } from 'react-icons/fa'
-import { FaBoxOpen, FaChartLine, FaRupeeSign, FaTags, FaWarehouse } from 'react-icons/fa6'
+import { FaCheckCircle, FaExclamationTriangle, FaTag, FaTimesCircle } from 'react-icons/fa'
+import { FaBoxOpen, FaChartLine, FaIndianRupeeSign, FaRupeeSign, FaTags, FaWarehouse } from 'react-icons/fa6'
 
 const AdminProductSummaryCards = ({data}) => {
   return (
@@ -21,7 +21,7 @@ const AdminProductSummaryCards = ({data}) => {
         <div className='bg-white rounded-2xl border-t-4 border-green-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
             <div className="flex justify-between items-center">
                 <div>
-                    <p className="text-green-500 font-semibold">TOTAL INVENTORY</p>
+                    <p className="text-green-500 font-semibold">INVENTORY STOCK</p>
                     <h2 className='text-3xl mt-2 font-bold text-green-600'>{data.total_inventory?.toLocaleString()}</h2>
                 </div>
                 <div className={`bg-green-50 h-[58px] p-4 rounded-2xl`}>
@@ -34,7 +34,7 @@ const AdminProductSummaryCards = ({data}) => {
             <div className="flex justify-between items-center">
                 <div>
                     <p className="text-purple-500 font-semibold">INVENTORY VALUE</p>
-                    <h2 className='text-3xl mt-2 font-bold text-purple-600'>{data.inventory_value?.toLocaleString()}</h2>
+                    <h2 className='text-3xl mt-2 font-bold text-purple-600 flex items-center'><FaIndianRupeeSign size={26} />{data.inventory_value?.toLocaleString()}</h2>
                 </div>
                 <div className={`bg-purple-50 h-[58px] p-4 rounded-2xl`}>
                     <FaRupeeSign size={24} className="text-purple-600" />
@@ -45,11 +45,11 @@ const AdminProductSummaryCards = ({data}) => {
         <div className='bg-white rounded-2xl border-t-4 border-indigo-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
             <div className="flex justify-between items-center">
                 <div>
-                    <p className="text-indigo-500 font-semibold">BRAND</p>
+                    <p className="text-indigo-500 font-semibold">BRANDS</p>
                     <h2 className='text-3xl mt-2 font-bold text-indigo-700'>{data.total_brands?.toLocaleString()}</h2>
                 </div>
                 <div className={`bg-indigo-50 h-[58px] p-4 rounded-2xl`}>
-                    <FaChartLine size={24} className="text-indigo-600" />
+                    <FaTags  size={24} className="text-indigo-600" />
                 </div>
             </div>
         </div>

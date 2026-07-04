@@ -7,12 +7,13 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { FaIndianRupeeSign, FaMoneyBillTrendUp } from "react-icons/fa6";
-import AdminSideBar from "../components/admin/AdminSideBar";
-import AdminProductPageInventoryTrendsComponent from "../components/admin/AdminProductComponents/AdminProductPageInventoryTrendsComponent";
-import AdminProductPageInventoryInsightsComponent from "../components/admin/AdminProductComponents/AdminProductPageInventoryInsightsComponent";
-import AdminProductPreviewComponent from "../components/admin/AdminProductComponents/AdminProductPreviewComponent";
+import AdminSideBar from "../../../components/admin/AdminSideBar";
+import AdminProductPreviewComponent from "../../../components/admin/AdminProductComponents/AdminProductPreviewComponent";
+import AdminStaffPreviewComponent from "../../../components/admin/AdminStaffComponent/AdminStaffPreviewComponent";
+import AdminStaffHeaderCardsComponent from "../../../components/admin/AdminStaffComponent/AdminStaffHeaderCardsComponent";
+import AdminStaffChartComponent from "../../../components/admin/AdminStaffComponent/AdminStaffChartComponent";
 
-const TestingPage = () => {
+const AdminStaffManagementPage = () => {
 
     const navigate = useNavigate()
     const [selected_employee , setSelectedEmployee] = useState(null)
@@ -22,7 +23,7 @@ const TestingPage = () => {
         active_employee : 90,
         inactive_employee : 15,
         employe_expenditure :{ 
-            value : 150245,
+            value : 1502045,
             chartData:[
                 { month: "Jan", expense : 89000 },
                 { month: "Feb", expense : 96000 },
@@ -40,12 +41,12 @@ const TestingPage = () => {
         },
         employeeRoleData : {
             total_employee : [
-                { name: 'Total', value: 600 },
+                { name: 'Total', value: 105 },
             ],
             data : [
-                { name: 'Male', value: 150 },
-                { name: 'Female', value: 400 },
-                { name: 'others', value: 250 },
+                { name: 'Staff', value: 55 },
+                { name: 'managers', value: 5 },
+                { name: 'Delevery', value: 45 },
             ]
         },
         employeeData: [
@@ -54,7 +55,7 @@ const TestingPage = () => {
                 salary: 15000,
                 photo: '/3-08.webp',
                 status: "active",
-                last_login: null,
+                last_login: "2026-07-04T16:22:25.625Z",
                 _id: "6a3f9a5550650a2226dcaaaf",
                 staff_id: "STF0627732539",
                 name: "staff1",
@@ -63,21 +64,28 @@ const TestingPage = () => {
                 phone_number: 8451255645,
                 staff_DOB: null,
                 joining_date: "2026-07-04T16:22:25.625Z"
-            }
+            },
+            {
+                gender: "female",
+                salary: 30000,
+                photo: '/3-08.webp',
+                status: "inactive",
+                last_login: "2020-07-04T16:22:25.625Z",
+                _id: "6a3f9a5550650a2226dcaaaf",
+                staff_id: "STF0627732585",
+                name: "Anish Anto",
+                email: "antoanish75@gmail.com",
+                role: "General Manager",
+                phone_number: 8451255645,
+                staff_DOB: "2005-12-05T16:22:25.625Z",
+                joining_date: "2026-07-04T16:22:25.625Z"
+            },
         ]
     }
     
-    const COLORS = [ 
-        "#3B82F6", 
-        "#EC4899", 
-        '#8B5CF6',
-    ];
-
-    const employeeRoleData = data.employeeRoleData
-
   return (
     <div className="flex">
-    <AdminSideBar/>
+    <AdminSideBar />
 
     <div className="w-full min-h-screen p-5  font-inter">
         {/* This page is running by sample data */}
@@ -92,121 +100,9 @@ const TestingPage = () => {
             <button onClick={()=>navigate('/admin/staff/create-staff')} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-blue-700 transition"><FaPlus />Add Staff</button>
         </div>
 
-        <div className="grid xl:grid-cols-4 md:grid-cols-2 gap-6">
-            <div className='bg-white rounded-2xl  border-t-4 border-indigo-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
-                <div className="flex justify-between items-center">
-                    <div>
-                        <p className="text-indigo-500 font-semibold">TOTAL EMPLOYEE</p>
-                        <h2 className='text-3xl mt-2 font-bold text-indigo-600'>{data.total_employee}</h2>
-                    </div>
-                    <div className={`bg-indigo-50 h-[58px] p-4 rounded-2xl`}>
-                        <FaUsers size={26} className="text-indigo-600"/>
-                    </div>
-                </div>
-            </div>
-            <div className='bg-white rounded-2xl border-t-4 border-green-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
-                <div className="flex justify-between items-center">
-                    <div>
-                        <p className="text-green-500 font-semibold">ACTIVE EMPLOYEE</p>
-                        <h2 className='text-3xl mt-2 font-bold text-green-600'>{data.active_employee}</h2>
-                    </div>
-                    <div className={`bg-green-50 h-[58px] p-4 rounded-2xl`}>
-                        <FaUserCheck size={24} className="text-green-600" />
-                    </div>
-                </div>
-            </div>
-            <div className='bg-white rounded-2xl border-t-4 border-red-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
-                <div className="flex justify-between items-center">
-                    <div>
-                        <p className="text-red-500 font-semibold">INACTIVE EMPLOYEE</p>
-                        <h2 className='text-3xl mt-2 font-bold text-red-700'>{data.inactive_employee}</h2>
-                    </div>
-                    <div className={`bg-red-50 h-[58px] p-4 rounded-2xl`}>
-                        <FaUserSlash size={24} className="text-red-600" />
-                    </div>
-                </div>
-            </div>
-            <div className='bg-white rounded-2xl border-t-4 border-purple-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
-                <div className="flex justify-between items-center">
-                    <div>
-                        <p className="text-purple-500 font-semibold">EMPLOYEE EXPENDITURE</p>
-                        <h2 className='text-3xl mt-2 font-bold text-purple-600 flex items-center'><FaIndianRupeeSign size={26} />{data?.employe_expenditure?.value?.toLocaleString()}</h2>
-                    </div>
-                    <div className={`bg-purple-50 h-[58px] p-4 rounded-2xl`}>
-                        <FaMoneyBillTrendUp size={24} className="text-purple-600" />
-                    </div>
-                </div>
-            </div>
-        </div>
+        <AdminStaffHeaderCardsComponent data={data} />
 
-        <div className="grid grid-cols-3 gap-6 mt-10">
-            <div className="col-span-2 rounded-2xl shadow-md p-5">
-                <div className="flex justify-between items-center mb-5">
-                    <div>
-                        <h2 className="text-xl font-bold text-gray-800">Employee Expenditure</h2>
-                        <p className="text-gray-600 mt-1">Employee salary and welfare expense. </p>
-                    </div>
-                </div>
-                <ResponsiveContainer width="100%" height={300}>
-                    <AreaChart data={data?.employe_expenditure?.chartData}>
-                        <defs>
-                            <linearGradient id="inventory" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#8e24aa" stopOpacity={0.4} />
-                                <stop offset="95%" stopColor="#8e24aa" stopOpacity={0} />
-                            </linearGradient>
-                        </defs>
-                        <XAxis dataKey="month" tickLine={false} />
-                        <YAxis tickLine={false} />
-                        <Tooltip cursor={false} />
-                        <Area 
-                            type="monotone"
-                            dataKey="expense"
-                            name="Expenses"
-                            stroke="#8e24aa"
-                            fillOpacity={1}
-                            fill="url(#inventory)"
-                            strokeWidth={2}
-                            />
-                    </AreaChart>
-                </ResponsiveContainer>
-            </div>
-
-            <div className='col-span-1 rounded-2xl shadow-md p-5'>
-                <div className='text-xl text-gray-800 bg-red-0 font-semibold pl-5 pt-8 leading-3'>Employee Roles</div>
-                <ResponsiveContainer width="100%" height={332}>            
-                    <PieChart className='w-auto h-auto text-center '>
-                        <Pie data={employeeRoleData.total_employee}
-                            dataKey="value"
-                            cx="50%"
-                            cy="50%"
-                            outerRadius="50%"
-                            fill="#10B981"
-                            stroke="none"
-                            paddingAngle={-10}
-                            />
-                        <Pie data={employeeRoleData.data}
-                            dataKey="value"
-                            cx="50%"
-                            cy="50%"
-                            innerRadius="58%"
-                            outerRadius="80%"
-                            cornerRadius="10%"
-                            fill="#2563EB"
-                            paddingAngle={2}
-                            label
-                            >
-                            {/* for color */}
-                            {employeeRoleData?.data?.map((entry, index) => (
-                                <Cell key={`cell-${index}`}fill={COLORS[index % COLORS.length]}/>
-                            ))}
-                        </Pie>
-                        <Label position="center" fill="white" className='text-xl font-poppins'>{employeeRoleData.total_employee[0].value}</Label>
-                        <Tooltip />
-                    </PieChart>
-                </ResponsiveContainer>
-            </div>
-
-        </div>
+        <AdminStaffChartComponent employe_expenditure={data.employe_expenditure} employeeRoleData={data.employeeRoleData} />
 
         <div className="h-[calc(100vh-40px)] border flex flex-col mt-10 rounded-2xl shadow-md p-5">
             <div className="flex flex-col xl:flex-row gap-4 justify-between">
@@ -252,13 +148,13 @@ const TestingPage = () => {
                     <tbody>
                     {data?.employeeData?.map((employee, index) =>{
                         return(
-                            <tr key={index} className={`text-center border-b-[3px] text-lg font-medium text-gray-700 border-gray-50 ${ employee.staff_id == selected_employee ? "bg-gray-100" : ''}`}>
+                            <tr key={index} onClick={()=>setSelectedEmployee(employee.staff_id)} className={`text-center border-b-[3px] text-lg font-medium text-gray-700 border-gray-50 ${ employee.staff_id == selected_employee ? "bg-gray-100" : ''}`}>
                                 <td className='text-gray-600 font-semibold px-2'>{index+1})</td>
                                 <td className="text-start ">
                                     <div className="flex items-center gap-2 py-2">
                                         <img src={employee.photo} alt={employee?.name} className="w-[67px] h-[67px] text-center rounded-xl object-cover"/>
                                         <div className="flex flex-col ">
-                                            <span className='mb-0.5 font-semibold'>{employee.name}</span>
+                                            <span className='mb-0.5 font-semibold capitalize'>{employee.name}</span>
                                             <span className='text-gray-500 text-[17px]'>{employee.staff_id}</span>
                                         </div>
                                     </div>
@@ -306,12 +202,12 @@ const TestingPage = () => {
     <div className='relative min-w-[26rem] max-w-[26rem] shrink-1 py-5 pr-5'>
         <div className='sticky top-5 h-[calc(100vh-40px)] rounded-xl shadow-lg overflow-y-auto p-3'>
             <IoCloseSharp onClick={()=>setSelectedEmployee(null)} className='absolute top-4 right-4 font-sans text-4xl cursor-pointer z-10 rounded-full hover:bg-red-50 text-red-500 p-1' />
-            <AdminProductPreviewComponent product_id = {selected_employee}/>
+            <AdminStaffPreviewComponent staff_id={selected_employee} />
         </div>
     </div> 
-    }
+    } 
     </div>
   );
 };
 
-export default TestingPage
+export default AdminStaffManagementPage

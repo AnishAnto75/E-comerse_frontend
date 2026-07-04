@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import AdminSideBar from '../../../components/admin/AdminSideBar'
 import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts'
-import { FaArrowDown, FaArrowUp, FaEye } from 'react-icons/fa6'
+import { FaArrowDown, FaArrowUp, FaEye, FaIndianRupeeSign } from 'react-icons/fa6'
 import AdminOrderHeaderComponent from '../../../components/admin/AdminOrderComponents/AdminOrderHeaderComponent'
 import { Navigate, useNavigate } from 'react-router-dom'
 import LoadingSpinner from '../../../components/LoadingSpinner'
@@ -109,7 +109,7 @@ const AdminOrderPage = () => {
                     phoneNo: "78745245225",
                     pincode:854526
                 },
-                total_no_of_produc: "5",
+                total_no_of_products: "5",
                 total_amount : 8452,
                 payment_method: "UPI",
                 order_status: {
@@ -139,7 +139,7 @@ const AdminOrderPage = () => {
                     phoneNo: "78745245225",
                     pincode:854526
                 },
-                total_no_of_produc: "5",
+                total_no_of_products: "5",
                 total_amount : 8452,
                 payment_method: "UPI",
                 order_status: {
@@ -169,7 +169,7 @@ const AdminOrderPage = () => {
                     phoneNo: "78745245225",
                     pincode:854526
                 },
-                total_no_of_produc: "5",
+                total_no_of_products: "5",
                 total_amount : 8452,
                 payment_method: "UPI",
                 order_status: {
@@ -199,7 +199,7 @@ const AdminOrderPage = () => {
                     phoneNo: "78745245225",
                     pincode:854526
                 },
-                total_no_of_produc: "5",
+                total_no_of_products: "2",
                 total_amount : 8452,
                 payment_method: "UPI",
                 order_status: {
@@ -271,7 +271,7 @@ const AdminOrderPage = () => {
                 {/* Table */}
                 <table className='w-full mt-3'>
                     <thead className='sticky top-0 bg-white'>
-                        <tr className='text-blue-gray-500'>
+                        <tr className='text-gray-500'>
                             <th className='py-4' />
                             <th className='py-4 text-start'>Order Id</th>
                             <th className='py-4 text-start'>Customer</th>
@@ -286,34 +286,34 @@ const AdminOrderPage = () => {
                         {orders?.map((order, index) =>{
                             const status = findOrderStatus(order.order_status)
                             return(
-                                <tr key={index} onClick={()=>setSelectedOrder(order.order_id)} className={`text-center border-b-[3px] border-gray-50 text-gray-800 text-base ${ selected_order == order.order_id ? "bg-gray-50" : ''}`}>
-                                    <td className='text-gray-600 font-semibold'>{index+1})</td>
-                                    <td className='text-start py-4'>
-                                        <span className='text-lg text-gray-700 block pb-0.5 font-semibold'>#{order.order_id}</span>
-                                        <span className='text-gray-500 text-[17px]'>{format(new Date(order.order_status?.placed?.date) , "dd/MM - p")}</span>
-                                    </td>
-                                    <td className='flex flex-col text-start py-4 font-medium '>
-                                        <span className='text-lg text-gray-800 pb-0.5'>{order?.delivery_address?.name}</span>
-                                        <span className='text-gray-500'>{order?.delivery_address?.phoneNo}</span>
-                                    </td>
-                                    <td className='py-4 font-medium text-lg text-gray-700'>{order.total_no_of_produc} items</td>
-                                    <td className='flex flex-col py-4'>
-                                        <span className='text-lg text-gray-800 block pb-0.5 font-medium'>{order.total_amount.toLocaleString()}</span>
-                                        <span className='text-gray-500'>{order.payment_method}</span>
-                                    </td>
-                                    <td className='justify-items-center py-4'>
-                                        <span className={`${status.color} p-2 block w-28 text-center text-white tracking-wide rounded-2xl`}>{status.value}</span>
-                                    </td>
-                                    <td>
-                                        <span className='flex gap-0.5 py-4 items-center justify-center'>
-                                            <IoIosStar className='h-5 w-5 text-amber-500'/>
-                                            <span className='text-[18px] text-gray-600 font-medium'>{order.order_rating}</span>
-                                        </span>
-                                    </td>
-                                    <td className='text-center h-full align-middle'>
-                                        <FaEye onClick={() => navigate(`/admin/orders/order_id/${order.order_id}`)} className='cursor-pointer text-2xl inline-block' />
-                                    </td>
-                                </tr>
+                            <tr key={index} onClick={()=>setSelectedOrder(order.order_id)} className={`text-center border-b-[3px] border-gray-50 text-gray-800 text-base ${ selected_order == order.order_id ? "bg-gray-50" : ''}`}>
+                                <td className='text-gray-600 font-semibold'>{index+1})</td>
+                                <td className='text-start py-4'>
+                                    <span className='text-lg text-gray-700 block pb-0.5 font-semibold'>#{order.order_id}</span>
+                                    <span className='text-gray-500 text-[17px]'>{format(new Date(order.order_status?.placed?.date) , "dd/MM - p")}</span>
+                                </td>
+                                <td className='flex flex-col text-start py-4 font-medium '>
+                                    <span className='text-lg text-gray-800 pb-0.5'>{order?.delivery_address?.name}</span>
+                                    <span className='text-gray-500'>{order?.delivery_address?.phoneNo}</span>
+                                </td>
+                                <td className='py-4 font-medium text-lg text-gray-700'>{order.total_no_of_products} items</td>
+                                <td className='flex flex-col py-4'>
+                                    <span className='text-lg text-gray-800 pb-0.5 font-medium items-center flex justify-center'><FaIndianRupeeSign size={16} />{order?.total_amount?.toLocaleString()}</span>
+                                    <span className='text-gray-500'>{order.payment_method}</span>
+                                </td>
+                                <td className='justify-items-center py-4'>
+                                    <span className={`${status.color} p-2 block w-28 text-center text-white tracking-wide rounded-2xl`}>{status.value}</span>
+                                </td>
+                                <td>
+                                    <span className='flex gap-0.5 py-4 items-center justify-center'>
+                                        <IoIosStar className='h-5 w-5 text-amber-500'/>
+                                        <span className='text-[18px] text-gray-600 font-medium'>{order.order_rating}</span>
+                                    </span>
+                                </td>
+                                <td className='text-center h-full align-middle'>
+                                    <FaEye onClick={() => navigate(`/admin/orders/order_id/${order.order_id}`)} className='cursor-pointer text-2xl inline-block' />
+                                </td>
+                            </tr>
                             )
                         })}
                     </tbody>

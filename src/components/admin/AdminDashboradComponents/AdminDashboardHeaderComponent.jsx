@@ -1,6 +1,6 @@
 import React from 'react'
 import { BiSolidPurchaseTag } from 'react-icons/bi'
-import { FaBoxesStacked } from 'react-icons/fa6'
+import { FaBoxesStacked, FaIndianRupeeSign } from 'react-icons/fa6'
 import { GiProfit } from 'react-icons/gi'
 import { TbBrandShopee } from 'react-icons/tb'
 
@@ -12,8 +12,8 @@ const AdminDashboardHeaderComponent = ({purchase, sales, orders,profit}) => {
                 <div className='flex'>
                     <div>
                         <BiSolidPurchaseTag className='bg-amber-100 h-9 w-9 mt-2 text-amber-500 rounded-full p-1.5'/>
-                        <div className='pt-1.5 pb-2 text-gray-600 font-medium'>Purchase</div>
-                        <div className='text-2xl text-gray-800 font-medium '>{purchase.total_purchase}</div>
+                        <div className='pt-1.5 pb-2 text-gray-600 font-medium'>Purchases</div>
+                        <div className='text-2xl text-gray-800 font-medium flex items-center'><FaIndianRupeeSign size={22}/>{purchase?.total_purchase?.toLocaleString()}</div>
                     </div>
                     {purchase.increament > 0 ?
                         <svg viewBox="-25 0 250 100" className="w-56 pt-2  h-auto text-green-500" fill="none" > <path d="M120 22 L112 34 H117 V48 H123 V34 H128 Z" fill="currentColor"/><path d="M20 94 C45 72,70 60,95 66 C120 72,145 44,170 48 C195 52,215 38,230 34" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -29,7 +29,7 @@ const AdminDashboardHeaderComponent = ({purchase, sales, orders,profit}) => {
                     <div>
                         <TbBrandShopee className='bg-green-50 h-9 w-9 mt-2 text-green-500 rounded-full p-1'/>
                         <div className='pt-1.5 pb-2 text-gray-600 font-medium'>Sales</div>
-                        <div className='text-2xl text-gray-800 font-medium '>{sales.total_sales}</div>
+                        <div className='text-2xl text-gray-800 font-medium flex items-center'><FaIndianRupeeSign size={22} />{sales?.total_sales?.toLocaleString()}</div>
                     </div>
                     {sales.increament > 0 ?
                         <svg viewBox="-25 0 250 100" className="w-56 pt-2  h-auto text-green-500" fill="none" > <path d="M120 22 L112 34 H117 V48 H123 V34 H128 Z" fill="currentColor"/><path d="M20 94 C45 72,70 60,95 66 C120 72,145 44,170 48 C195 52,215 38,230 34" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -61,7 +61,7 @@ const AdminDashboardHeaderComponent = ({purchase, sales, orders,profit}) => {
                     <div>
                         <GiProfit className='bg-blue-50 h-9 w-9 mt-2 text-blue-500 rounded-full p-1'/>
                         <div className='pt-1.5 pb-2 text-gray-600 font-medium'>Profit</div>
-                        <div className='text-2xl text-gray-800 font-medium '>{profit.total_profit}</div>
+                        <div className='text-2xl text-gray-800 font-medium flex items-center'><FaIndianRupeeSign size={22}/>{profit?.total_profit?.toLocaleString()}</div>
                     </div>
                     {profit.increament > 0 ?
                         <svg viewBox="-25 0 250 100" className="w-56 pt-2  h-auto text-green-500" fill="none" > <path d="M120 22 L112 34 H117 V48 H123 V34 H128 Z" fill="currentColor"/><path d="M20 94 C45 72,70 60,95 66 C120 72,145 44,170 48 C195 52,215 38,230 34" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" /></svg>

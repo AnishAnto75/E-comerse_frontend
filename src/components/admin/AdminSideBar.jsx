@@ -54,16 +54,16 @@ const AdminSideBar = () => {
                     <TfiLayoutMediaCenterAlt className='mr-2 text-xl '/><span>Purchase</span>
                 </Link>
 
+                <Link to={'/admin/staff'} className={`flex items-center text-[17.5px] text-gray-700 py-2 px-5 mb-1 hover:bg-gray-300 hover:text-white rounded-xl transition-all delay-75  ${menuUrl == "staff" ? "bg-blue-400 text-white ": ""}`}>
+                    <MdOutlinePerson3 className='mr-2 text-xl '/><span>Staff Management</span>
+                </Link>
+
                 <Link to={'/admin/stock'} className={`flex items-center text-[17.5px] text-gray-700 py-2 px-5 mb-1 hover:bg-gray-300 hover:text-white rounded-xl transition-all delay-75  ${menuUrl == "stock" ? "bg-blue-400 text-white ": ""}`}>
                     <AiOutlineStock className='mr-2 text-xl '/><span>Stock</span>
                 </Link>
 
                 <Link to={'/admin/notification'} className={`flex items-center text-[17.5px] text-gray-700 py-2 px-5 mb-1 hover:bg-gray-300 hover:text-white rounded-xl transition-all delay-75  ${menuUrl == "notification" ? "bg-blue-400 text-white ": ""}`}>
                     <IoIosNotificationsOutline className='mr-2 text-[22px] '/><span>Notification</span>
-                </Link>
-
-                <Link to={'/admin/staff'} className={`flex items-center text-[17.5px] text-gray-700 py-2 px-5 mb-1 hover:bg-gray-300 hover:text-white rounded-xl transition-all delay-75  ${menuUrl == "staff" ? "bg-blue-400 text-white ": ""}`}>
-                    <MdOutlinePerson3 className='mr-2 text-xl '/><span>Staff Management</span>
                 </Link>
 
                 <Link to={'/admin/payments'} className={`flex items-center text-[17.5px] text-gray-700 py-2 px-5 mb-1 hover:bg-gray-300 hover:text-white rounded-xl transition-all delay-75  ${menuUrl == "payments" ? "bg-blue-400 text-white ": ""}`}>

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts'
-import { FaArrowDown, FaArrowUp } from 'react-icons/fa6'
+import { FaArrowDown, FaArrowUp, FaIndianRupeeSign } from 'react-icons/fa6'
 
 const AdminOrderHeaderComponent = ({totalOrders, totalRevenue, pendingOrders}) => {
   return (
@@ -42,7 +42,7 @@ const AdminOrderHeaderComponent = ({totalOrders, totalRevenue, pendingOrders}) =
         <div className='col-span-1 rounded-xl shadow-md border p-5'>
             <div className='text-gray-600 font-medium tracking-tight text-[16.5px]'>Total Revenue</div>
             <div className='flex items-center gap-3 py-3 font-inter'>
-                <span className='text-3xl font-semibold text-gray-800'>{totalRevenue.value.toLocaleString()}</span>
+                <span className='text-3xl font-semibold text-gray-800 flex items-center'><FaIndianRupeeSign size={26} />{totalRevenue.value.toLocaleString()}</span>
                 <span className={`flex items-center font-medium ${totalRevenue.increment < 0 ? "text-red-500" : "text-green-500"}`}>
                     {totalRevenue.increment < 0 ? <FaArrowDown /> : <FaArrowUp />}
                     {Math.abs(totalRevenue.increment)}%

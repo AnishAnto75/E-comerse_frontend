@@ -11,6 +11,7 @@ import AdminProductSummaryCards from "../../../components/admin/AdminProductComp
 import AdminProductPageInventoryTrendsComponent from "../../../components/admin/AdminProductComponents/AdminProductPageInventoryTrendsComponent";
 import AdminProductPageInventoryInsightsComponent from "../../../components/admin/AdminProductComponents/AdminProductPageInventoryInsightsComponent";
 import AdminProductPreviewComponent from "../../../components/admin/AdminProductComponents/AdminProductPreviewComponent";
+import { FaIndianRupeeSign } from "react-icons/fa6";
 
 const AdminProductPage = () => {
 
@@ -216,8 +217,12 @@ const AdminProductPage = () => {
                                 <td className='py-4 '>{product?.category_name}</td>
                                 <td className='py-4 '>{product?.brand_name}</td>
                                 <td className='py-4 '>{product?.size}</td>
-                                <td className='py-4 '>{product?.mrp}</td>
-                                <td className='py-4 '>{product?.price}</td>
+                                <td className='py-4 '>
+                                    <div className="flex items-center justify-center"><FaIndianRupeeSign />{product?.mrp?.toLocaleString()}</div>
+                                </td>
+                                <td className='py-4'>
+                                    <div className="flex items-center justify-center"><FaIndianRupeeSign />{product?.price}</div>
+                                </td>
                                 <td className="py-4">
                                     <span className={` p-1 border-[3px] rounded-xl px-5 ${ product?.product_total_stock == 0 ? "bg-red-50 text-red-400 border-red-200" : product.product_total_stock <= product.product_low_in_stock ? "bg-amber-50 text-amber-500 border-amber-200" : "bg-green-50 text-green-500 border-green-100"  } `}>
                                         {product?.product_total_stock}

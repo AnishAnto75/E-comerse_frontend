@@ -1,6 +1,6 @@
 import React from 'react'
 import { FaUserCheck, FaUsers, FaUserSlash } from 'react-icons/fa'
-import { FaMoneyBillTrendUp } from 'react-icons/fa6'
+import { FaIndianRupeeSign, FaMoneyBillTrendUp } from 'react-icons/fa6'
 
 const AdminSupplierSummaryCardsComponent = ({data}) => {
   return (
@@ -42,7 +42,7 @@ const AdminSupplierSummaryCardsComponent = ({data}) => {
             <div className="flex justify-between items-center">
                 <div>
                     <p className="text-amber-500 font-semibold">TOTAL PURCHASE VALUE</p>
-                    <h2 className='text-3xl mt-2 font-bold text-amber-500'>{data.total_purchase_value?.toLocaleString()}</h2>
+                    <h2 className='text-3xl mt-2 font-bold text-amber-500 flex items-center'><FaIndianRupeeSign size={26} />{data.total_purchase_value?.toLocaleString()}</h2>
                 </div>
                 <div className={`bg-amber-50 h-[58px] p-4 rounded-2xl`}>
                     <FaMoneyBillTrendUp size={26} className="text-amber-500"/>

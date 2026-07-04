@@ -40,7 +40,7 @@ const AdminProductPreviewComponent = ({product_id}) => {
             const unitCost = batch.purchase_cost + (batch.other_expences || 0);
             return total + (batch.stock * unitCost);
         }, 0);
-        return inventoryValue
+        return inventoryValue?.toLocaleString()
     } 
 
     if(loading){return <LoadingComponent/>}
@@ -91,9 +91,15 @@ const AdminProductPreviewComponent = ({product_id}) => {
                     <tr key={index} className='text-center text-blue-gray-600 '>
                         <td className='pt-4 '>{product_stock?.batch_no ? product_stock?.batch_no : "-" }</td>
                         <td className='pt-4 '>{product_stock?.stock}</td>
-                        <td className='pt-4 '>{product_stock?.mrp}</td>
-                        <td className='pt-4 '>{product_stock?.price}</td>
-                        <td className='pt-4 '>{product_stock?.purchase_cost + product_stock?.other_expences}</td>
+                        <td className='pt-4 '>
+                            <div className='flex items-center justify-center'><FaIndianRupeeSign />{product_stock?.mrp}</div>
+                        </td>
+                        <td className='pt-4'>
+                            <div className='flex items-center justify-center'><FaIndianRupeeSign />{product_stock?.price}</div>
+                        </td>
+                        <td className='pt-4 '>
+                            <div className='flex items-center justify-center'><FaIndianRupeeSign />{product_stock?.purchase_cost + product_stock?.other_expences}</div>
+                        </td>
                     </tr>
                 )
             })}
@@ -101,7 +107,7 @@ const AdminProductPreviewComponent = ({product_id}) => {
         </table>
         <div className='mt-4 flex justify-between text-xl border-y-2 py-3 font-semibold text-gray-700 px-4'>
             <div>Inventory value ({product.product_inventory_id?.product_total_stock})</div>
-            <div>{findInventoryValue(product?.product_inventory_id?.product_stock)}</div>
+            <div className='flex items-center'><FaIndianRupeeSign />{findInventoryValue(product?.product_inventory_id?.product_stock)}</div>
         </div>
 
     </div>

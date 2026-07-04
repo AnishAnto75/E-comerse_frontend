@@ -1,5 +1,6 @@
 import React from 'react'
 import { FaArrowDown, FaArrowUp } from 'react-icons/fa'
+import { FaIndianRupeeSign } from 'react-icons/fa6'
 import { Area, AreaChart, Tooltip, XAxis, YAxis, ResponsiveContainer } from 'recharts'
 
 const AdminCustomerTotalRevenueComponent = ({totalRevenue}) => {
@@ -7,7 +8,7 @@ const AdminCustomerTotalRevenueComponent = ({totalRevenue}) => {
     <div className='col-span-1 rounded-xl shadow-md border p-5'>
         <div className='text-gray-600 font-semibold tracking-normal text-lg'>Total Revenue</div>
         <div className='flex items-center gap-3 py-3 font-inter'>
-            <span className='text-3xl font-semibold text-gray-800'>{totalRevenue?.value?.toLocaleString()}</span>
+            <span className='text-3xl font-semibold text-gray-800 flex items-center'><FaIndianRupeeSign size={28} />{totalRevenue?.value?.toLocaleString()}</span>
             <span className={`flex items-center font-medium ${totalRevenue?.increment < 0 ? "text-red-500" : "text-green-500"}`}>
                 {totalRevenue?.increment < 0 ? <FaArrowDown /> : <FaArrowUp />}
                 {Math.abs(totalRevenue?.increment)}%
