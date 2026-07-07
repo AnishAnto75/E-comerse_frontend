@@ -98,7 +98,7 @@ const AdminProductPage = () => {
                             </div>
                         )}
                     </div>
-                </div>                    
+                </div>
                 <div className='px-5'>
                     <div className='text-xl border-b-2 border-gray-400 p-2 text-gray-700'>Categories</div>
                     <div className='p-1 flex flex-col gap-2 pt-3 text-gray-800 border-r-2 border-gray-400 bg-white'>

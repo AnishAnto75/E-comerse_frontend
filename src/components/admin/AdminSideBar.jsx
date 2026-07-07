@@ -19,11 +19,11 @@ const AdminSideBar = () => {
 
   return (
     <div className='hidden md:block'>
-    <div className='sticky top-1 border-r min-h-screen'>
+    <div className='sticky top-1 border-r'>
         <div className='bg-white min-w-64 max-w-64 font-sans'>
             {/* Logo */}
             <img src="/tiftoLogo.jpeg" alt="Logo" className=" w-44 ml-2 max-h-32 pt-3 object-cover"/>
-            <div className='mx-4 px-1 pb-5 pt-3 border-t'>
+            <div className='mx-4 px-1 pt-3 border-t'>
                 <div className='text-gray-700 text-[17px] pb-4'>Menu</div>
 
                 <Link to={'/admin/home'} className={`flex items-center text-[17.5px] text-gray-700 py-2 px-5 mb-1 hover:bg-gray-300 hover:text-white rounded-xl transition-all delay-75 ${menuUrl == "home" ? "bg-blue-400 text-white ": ""}`}>
@@ -44,6 +44,14 @@ const AdminSideBar = () => {
 
                 <Link to={'/admin/products'} className={`flex items-center text-[17.5px] text-gray-700 py-2 px-5 mb-1 hover:bg-gray-300 hover:text-white rounded-xl transition-all delay-75  ${menuUrl == "products" ? "bg-blue-400 text-white ": ""}`}>
                     <BsBoxSeam className='mr-2 text-xl '/><span>Products</span>
+                </Link>
+                
+                <Link to={'/admin/brands'} className={`flex items-center text-[17.5px] text-gray-700 py-2 px-5 mb-1 hover:bg-gray-300 hover:text-white rounded-xl transition-all delay-75  ${menuUrl == "brands" ? "bg-blue-400 text-white ": ""}`}>
+                    <BsBoxSeam className='mr-2 text-xl '/><span>Brands</span>
+                </Link>
+                
+                <Link to={'/admin/groups-categories'} className={`flex items-center text-[17.5px] text-gray-700 py-2 px-5 mb-1 hover:bg-gray-300 hover:text-white rounded-xl transition-all delay-75  ${menuUrl == "groups-categories" ? "bg-blue-400 text-white ": ""}`}>
+                    <BsBoxSeam className='mr-2 text-xl '/><span>Groups & Categories</span>
                 </Link>
                 
                 <Link to={'/admin/customer'} className={`flex items-center text-[17.5px] text-gray-700 py-2 px-5 mb-1 hover:bg-gray-300 hover:text-white rounded-xl transition-all delay-75  ${menuUrl == "customer" ? "bg-blue-400 text-white ": ""}`}>
@@ -68,10 +76,6 @@ const AdminSideBar = () => {
 
                 <Link to={'/admin/payments'} className={`flex items-center text-[17.5px] text-gray-700 py-2 px-5 mb-1 hover:bg-gray-300 hover:text-white rounded-xl transition-all delay-75  ${menuUrl == "payments" ? "bg-blue-400 text-white ": ""}`}>
                     <IoWalletOutline className='mr-2 text-xl '/><span>Payments</span>
-                </Link>
-
-                <Link to={'/admin/banners'} className={`flex items-center text-[17.5px] text-gray-700 py-2 px-5 mb-1 hover:bg-gray-300 hover:text-white rounded-xl transition-all delay-75  ${menuUrl == "banners" ? "bg-blue-400 text-white ": ""}`}>
-                    <TfiLayoutMediaCenterAlt className='mr-2 text-xl '/><span>Banners</span>
                 </Link>
 
                 <Link to={'/testing'} className={`flex items-center text-[17.5px] text-gray-700 py-2 px-5 mb-1 hover:bg-gray-300 hover:text-white rounded-xl transition-all delay-75  ${menuUrl == "banners" ? "bg-blue-400 text-white ": ""}`}>

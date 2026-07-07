@@ -5,16 +5,21 @@ import {Button} from '@material-tailwind/react'
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import ErrorComponent from "../../../components/ErrorComponent";
 import { useNavigate } from "react-router-dom";
+import AdminSideBar from "../../../components/admin/AdminSideBar";
+import { IoMdClose } from "react-icons/io";
+import { FiUploadCloud, FiX } from "react-icons/fi";
 
 const AdminAddNewProductPage = () => {
 
     const navigate = useNavigate()
+    
     const [loading , setLoading] = useState(false)
-    const [loading2 , setLoading2] = useState(false)
     const [error , setError ] = useState(false)
     const [Groups , setGroups] = useState([]) 
     const [Brands , setBrands] = useState([])
     const [Categories , setCategories] = useState([])
+    const [highlight , setHightLight] = useState('')
+
     const handleRef = useRef(true)
 
     // Fetch Groups
@@ -22,10 +27,9 @@ const AdminAddNewProductPage = () => {
         const fetchAllGroupsAndBrands = async()=>{
             try {
                 setLoading(true) 
-                const groupRes = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product-group/all-groups`)
-                const brandRes = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/brand/all-brand`)
-                setGroups(groupRes.data.data)
-                setBrands(brandRes.data.data)
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product/fetch-for-create-product`)
+                setGroups(res.data.data.groups)
+                setBrands(res.data.data.brands)
             } catch (error) {
                 setError(true)
                 console.log("error in fetchAllGroupsAndBrands :" , error)
@@ -41,7 +45,7 @@ const AdminAddNewProductPage = () => {
     const fetchCategoriesByGroup = async(id)=>{
         try {
             setLoading(true)
-            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product-category/group-id/${id}`)
+            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product/fetch-categories-for-create-product/${id}`)
             console.log("fetchCategoriesByGroup payload : " , res.data)        
             setCategories(res.data?.data)
         } catch (error) {
@@ -61,19 +65,102 @@ const AdminAddNewProductPage = () => {
     const [product_min_order_quantity , setMinOrderQuantity ] = useState(1)
     const [product_max_order_quantity , setMaxOrderQuantity ] = useState(999)
     const [product_low_in_stock , setLowInStock] = useState(10)
-    const [product_photos , setPhotos] = useState(null)
-    const [product_additional_photos , setAdditionalPhotos] = useState(null)
     const [product_hsn_code , setHsnCode ] = useState('')
+    const [product_photo , setPhoto] = useState(null)
+    const [product_additional_photos , setAdditionalPhotos] = useState(null)
     const [product_description , setDescription ] = useState('')
     const [product_highlights , setProductHighlights] = useState([])
 
-    const [highlight , setHightLight] = useState('')
 
     const handleGroup = (e)=>{
         setGroup(e.target.value)
         setCategory('')
         fetchCategoriesByGroup(e.target.value)
     }
+    
+    const photoInputRef = useRef(null);
+    const [previewPhoto, setPreviewPhoto] = useState("");
+    const [photoDragActive, setPhotoDragActive] = useState(false);
+    const handlePhoto = (file) => {
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+            alert("Please select a valid image.");
+            return;
+        }
+        if (file.size > MAX_FILE_SIZE) {
+            toast.error("Image size must be less than 5 MB.");
+            return;
+        }
+        setPhoto(file);
+        setPreviewPhoto(URL.createObjectURL(file));
+    };
+    const handleDropPhoto = (e) => {
+        e.preventDefault();
+        setPhotoDragActive(false);
+
+        const file = e.dataTransfer.files[0];
+        handlePhoto(file);
+    };
+    const handlePhotoChange = (e) => {
+        const file = e.target.files[0];
+        handlePhoto(e.target.files[0]);
+    };
+    const removePhoto = () => {
+        setPhoto(null);
+        setPreviewPhoto("");
+
+        if (photoInputRef.current) {photoInputRef.current.value = "";}
+    };
+
+    const additionalPhotoInputRef = useRef(null);
+    const [additionalPhotoPreview, setAdditionalPhotoPreview] = useState([]);
+    const [additionalPhotoDragActive, setAdditionalPhotoDragActive] = useState(false);
+
+    const handleAdditionalPhotos = (files) => {
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+        const validFiles = [...files].filter(file => {
+
+            if (!file.type.startsWith("image/")) {
+                toast.error(`${file.name} is not an image.`);
+                return false;
+            }
+
+            if (file.size > MAX_FILE_SIZE) {
+                toast.error(`${file.name} is larger than 5 MB.`);
+                return false;
+            }
+
+            return true;
+        });
+
+
+        const newFiles = [  ...(product_additional_photos || []), ...validFiles];
+        if (newFiles.length > 5) { 
+            toast.error("Maximum 5 additional photos allowed");
+            return;
+        }
+        setAdditionalPhotos(newFiles);
+        setAdditionalPhotoPreview( newFiles.map(file => ({
+            file,
+            preview: URL.createObjectURL(file),
+        })));
+
+        if (additionalPhotoInputRef.current) { additionalPhotoInputRef.current.value = "";}
+    };
+    const handleDropAdditionalPhotos = (e) => {
+        e.preventDefault();
+        setAdditionalPhotoDragActive(false);
+        handleAdditionalPhotos(e.dataTransfer.files);
+    };
+    const removeAdditionalPhoto = (index) => {
+        const newPreview = additionalPhotoPreview.filter((_, i) => i !== index);
+
+        setAdditionalPhotoPreview(newPreview);
+        setAdditionalPhotos(newPreview.map(item => item.file));
+
+        if (newPreview.length === 0) {additionalPhotoInputRef.current.value = "";}
+    };
 
     const reset = ()=>{
         setGroup('')
@@ -86,49 +173,19 @@ const AdminAddNewProductPage = () => {
         setMinOrderQuantity(1)
         setMaxOrderQuantity(999)
         setLowInStock(10)
-        setPhotos(null)
         setAdditionalPhotos(null)
         setHsnCode('')
         setDescription('')
         setProductHighlights([])
         setHightLight('')
+        removePhoto()
+        setAdditionalPhotos([]);
+        setAdditionalPhotoPreview([]);
+        if (additionalPhotoInputRef.current) {
+            additionalPhotoInputRef.current.value = "";
+        }
     }
-
-    const data =  {
-        product_group , 
-        product_category , 
-        product_brand , 
-        product_barcode , 
-        product_name , 
-        product_UOM,
-        product_net_unit , 
-        product_min_order_quantity,
-        product_max_order_quantity,
-        product_low_in_stock ,
-        product_photos , 
-        product_additional_photos,
-        product_hsn_code,
-        product_description , 
-        product_highlights
-    }
-
-    // Form Submission
-    const handleSubmit = async(e)=>{
-        e.preventDefault()
-        try {
-            setLoading2(true) 
-            console.log(data)
-            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/product/add-product` , {data})
-            console.log("addNewProduct response",res.data)
-            toast.success(res.data?.message)
-            reset()
-            navigate('/admin/products')
-        } catch (error) {
-            toast.error(error.response?.data?.message)
-            console.log("error in addNewProduct :" , error)
-        } finally { setLoading2(false) }
-    }
-
+    
     // Adding The Highligh
     const handleHighlight = (e)=>{
         e.preventDefault()
@@ -144,164 +201,229 @@ const AdminAddNewProductPage = () => {
         setProductHighlights(newArray);
     };
 
-  if (loading || loading2) { return <LoadingSpinner/>}
+    // Form Submission
+    const handleSubmit = async(e)=>{
+        e.preventDefault()
+        try {
+            if(product_min_order_quantity > product_max_order_quantity){toast.error("Min value should be less than max value"); return ; }
+            setLoading(true) 
+
+            const formData = new FormData();
+
+            formData.append("product_group", product_group);
+            formData.append("product_category", product_category);
+            formData.append("product_brand", product_brand);
+            formData.append("product_barcode", product_barcode);
+            formData.append("product_name", product_name);
+            formData.append("product_UOM", product_UOM);
+            formData.append("product_net_unit", product_net_unit);
+            formData.append("product_min_order_quantity", product_min_order_quantity);
+            formData.append("product_max_order_quantity", product_max_order_quantity);
+            formData.append("product_low_in_stock", product_low_in_stock);
+            formData.append("product_hsn_code", product_hsn_code);
+            formData.append("product_description", product_description);
+            formData.append("product_highlights", JSON.stringify(product_highlights));
+            formData.append("product_photo", product_photo);
+            product_additional_photos?.forEach(file => {
+                formData.append("product_additional_photos", file);
+            })
+
+            console.log(formData)
+            // const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/product/add-product` , {formData})
+            // console.log("addNewProduct response",res.data)
+            // toast.success(res.data?.message)
+            // reset()
+            // navigate('/admin/products')
+        } catch (error) {
+            toast.error(error.response?.data?.message)
+            console.log("error in addNewProduct :" , error)
+        } finally { setLoading(false) }
+    }
+
+
+  if (loading ) { return <LoadingSpinner/>}
   if (error) { return <ErrorComponent/>}
   return (
-    <form onSubmit={(e)=>handleSubmit(e)} className="w-full">
-        <div className="p-6 place-items-center w-full ">
-            <div>
-            <div className="text-light-blue-500 w-full">CREATE NEW PRODUCT</div>
-            <div className="bg-gray-50 rounded-xl container max-w-screen-xl shadow-lg p-4 px-4 md:p-8 my-3 gap-4 gap-y-2 text-base">
-                <div className=" gap-3 gap-y-2 md:gap-5 md:gap-y-5 text-md text-gray-700 md:grid md:grid-cols-10">
-                    <div className="col-span-10 text-lg text-light-blue-400 tracking-wider">Product Details</div>
+    <div className="flex">
+    <AdminSideBar />
+    <div className="p-6 font-inter place-items-center w-full ">
 
-                    <div className="col-span-3">
-                        <label htmlFor="product_group" >Group<span className="text-red-500 pl-0.5">*</span></label>
-                        <select name="product_group" required autoFocus value={product_group} onChange={(e)=> handleGroup(e)} className="w-full p-2 border border-gray-300 rounded-md text-sm cursor-pointer focus:border-2 focus:border-blue-500">
-                            <option disabled value='' />
-                            {Groups?.map(group =>( <option key= {group._id} value={group._id} className="text-sm"> {group.group_name} </option> ))}
-                        </select>
-                    </div>
-                    
-                    <div className="col-span-4">
-                        <label htmlFor="product_category" >Category<span className="text-red-500 pl-0.5">*</span></label>
-                        <select name="product_category" required disabled= {!Categories.length} value={product_category} onChange={(e)=> setCategory(e.target.value)} className={`w-full p-2 border border-gray-300 rounded-md text-sm focus:border-2 focus:border-blue-500 ${!Categories.length ? 'cursor-not-allowed' : "cursor-pointer"}`}>
-                            <option disabled value='' />
-                            {Categories?.map(category =>( <option key= {category._id} value={category._id} className="text-sm"> {category.category_name} </option> ))}
-                        </select>
-                    </div>
+        <div className="text-gray-600 text-2xl font-semibold w-full">Create Product</div>
 
-                    <div className="col-span-3">
-                        <label htmlFor="product_brand" >Brand<span className="text-red-500 pl-0.5">*</span></label>
-                        <select name="product_brand" required autoFocus value={product_brand} onChange={(e)=> setBrand(e.target.value)} className="w-full p-2 border border-gray-300 rounded-md text-sm cursor-pointer focus:border-2 focus:border-blue-500">
-                            <option disabled value='' />
-                            {Brands?.map(brand =>( <option key= {brand._id} value={brand._id} className="text-sm"> {brand.Brand_name} </option> ))}
-                        </select>
-                    </div>
+        <div className="rounded-xl container max-w-screen-xl mt-5 border shadow-lg p-8 gap-x-4 gap-y-2">
+            <form onSubmit={(e)=>handleSubmit(e)} className="w-full text-gray-700 gap-3 gap-y-2 grid grid-cols-10 ">
+                <div className="text-xl col-span-10 font-medium text-sky-600 mt-1 mb-2">Product Details</div>
 
-                    <div className="md:col-span-3 ">
-                        <label htmlFor="product_barcode">Barcode<span className="text-red-500 pl-0.5">*</span></label>
-                        <input type="text" name="product_barcode" id="product_barcode" autoComplete="off" required value={product_barcode} onChange={(e)=>setBarcode((e.target.value).toUpperCase().trim())} className="border border-gray-300 text-sm p-1.5 w-full rounded-md"/>
-                    </div>
-
-                    <div className="md:col-span-7">
-                        <label htmlFor="name">Name<span className="text-red-500 pl-0.5">*</span></label>
-                        <input type="text" name="name" id="name" autoComplete="off" required value={product_name} onChange={(e)=>setName(e.target.value)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
-                    </div>
-
-                    <div className=" col-span-10 text-lg text-light-blue-400 tracking-wider mt-3">Quantity and Stock Details</div>
-                    <div className="md:col-span-3">
-                        <label htmlFor="product_UOM">Unit Of Measure<span className="text-red-500 pl-0.5">*</span></label>
-                        <select name="product_UOM" required value={product_UOM} onChange={(e)=> setUOM(e.target.value)} className="w-full p-2 border border-gray-300 rounded-md text-sm cursor-pointer focus:border-2 focus:border-blue-500">
-                            <option disabled value='' />
-                            <option value='gm'>Gram</option>
-                            <option value='kg'>Kilo Gram</option>
-                            <option value='ml'>Milli Liter</option>
-                            <option value='lit'>Liter</option>
-                            <option value='pcs'>piece</option>
-                            <option value='cap'>capacity</option>
-                        </select>
-                    </div>
-                    <div className="md:col-span-2">
-                        <label htmlFor="product_net_unit">Net Unit</label>
-                        <input type="number" name="product_net_unit" id="product_net_unit" value={product_net_unit} onChange={(e)=>setNetUnit(e.target.value)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
-                    </div>
-                    <div className="md:col-span-3 ">
-                        <label htmlFor="product_min_order_quantity">Min OQ</label>
-                        <input type="number" name="product_min_order_quantity" id="product_min_order_quantity" value={product_min_order_quantity} onChange={(e)=>setMinOrderQuantity(e.target.value)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
-                    </div>
-                    <div className="md:col-span-2 ">
-                        <label htmlFor="product_max_order_quantity">Max OQ</label>
-                        <input type="number" name="product_max_order_quantity" id="product_max_order_quantity" value={product_max_order_quantity} onChange={(e)=>setMaxOrderQuantity(e.target.value)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
-                    </div>
-                    <div className="md:col-span-2">
-                        <label htmlFor="lowInStock">Low in stock</label>
-                        <input type="number" name="lowInStock" id="lowInStock" value={product_low_in_stock} onChange={(e)=>setLowInStock(e.target.value)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
-                    </div>
-                    <div className="md:col-span-2">
-                        <label htmlFor="product_hsn_code">HSN code</label>
-                        <input type="number" name="product_hsn_code" id="product_hsn_code" value={product_hsn_code} onChange={(e)=>setHsnCode(e.target.value)} className="border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
-                    </div>
-
-                    <div className=" col-span-10 text-lg text-light-blue-400 tracking-wider mt-3">Additional Information</div>
-                    <div className="md:col-span-5 grid grid-cols-5">
-                        <label htmlFor="product_photos" className=" col-span-5">Photo</label>
-                        <label htmlFor="product_photos" className=" col-span-2 py-2 hero cursor-pointer bg-white content-center px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Choose image
-                            <input id="product_photos" name="product_photos" type="file" className="sr-only" accept="image/png, image/jpeg" onChange={(e)=>setPhotos(e.target.files[0])}/>
-                        </label>
-                        {product_photos ?
-                            <div className="ml-4 mt-1 flex items-center col-span-3 content-center">
-                                <span className="text-sm text-gray-500 mr-2 line-clamp-1">{product_photos.name}</span>
-                                <button onClick={()=>setPhotos(null)} className="text-red-500 hover:text-red-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"clipRule="evenodd"/>
-                                    </svg>
-                                </button>
-                            </div>
-                            :
-                            <span className="col-span-3 content-center ml-4 text-sm text-gray-500">No file selected</span>
-                        }
-                    </div>
-
-                    <div className="md:col-span-5 grid grid-cols-5">
-                        <label htmlFor="additional_photos" className=" col-span-5">Additional Photos</label>
-                        <label htmlFor="product_additional_photos" className="col-span-2 py-2 hero cursor-pointer bg-white content-center px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Choose images
-                            <input id="product_additional_photos" name="product_additional_photos" type="file" className="sr-only" accept="image/png, image/jpeg" onChange={(e)=>setAdditionalPhotos(e.target.files[0])}/>
-                        </label>
-                        {product_additional_photos ?
-                            <div className="ml-4 flex items-center col-span-3 content-center">
-                                <span className="text-sm text-gray-500 mr-2 line-clamp-1">{product_additional_photos.name}</span>
-                                <button onClick={()=>setAdditionalPhotos(null)} className="text-red-500 hover:text-red-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"clipRule="evenodd"/>
-                                    </svg>
-                                </button>
-                            </div>
-                            :
-                            <span className=" col-span-3 content-center ml-4 text-sm text-gray-500">No file selected</span>
-                        }
-                    </div>
-
-                    <div className="md:col-span-10">
-                        <label htmlFor="description">Description</label>
-                        <textarea name="description" id="description"
-                            value={product_description} onChange={(e)=>setDescription(e.target.value)}
-                            className="h-full mt-1 resize-none border text-sm border-gray-300 p-1.5 w-full rounded-md"/>
-                    </div>
-
-                    <div className="md:col-span-10 mt-7">
-                        <label htmlFor="highlights">Highlights</label>
-                        <input type="text" name="highlights" id="highlights"
-                            value={highlight} onChange={(e)=>setHightLight(e.target.value)}
-                            className="border text-sm border-gray-300 p-1.5 w-full rounded-md" />
-                        {product_highlights.length ?
-                            <div className="flex flex-col bg-white mt-3 gap-3 border-2 rounded-lg py-2 ">
-                                {product_highlights?.map((highlight , index)=>(
-                                    <div key={index} className="flex items-center justify-between px-5 hover:bg-slate-50">
-                                        <li >{highlight}</li>
-                                        <button onClick={(e) => handleDeleteValue(e , index)} className="text-red-500 hover:bg-gray-300 rounded-full p-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"clipRule="evenodd"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                            :''
-                        }
-                    </div>
-
-                    <div className="md:col-span-10 mt-5 grid grid-cols-5 gap-5">
-                        <Button onClick={()=>reset()} variant="text" color="red" className=" col-span-2" >Reset</Button>
-                        <Button type='submit' loading={loading2} variant="gradient" color="blue" className=" col-span-3" >Submit</Button> 
-                    </div>
+                <div className="col-span-3 space-y-2">
+                    <label className="text-lg font-medium text-gray-600" htmlFor="product_group" >Group<span className="text-red-500 pl-0.5">*</span></label>
+                    <select name="product_group" required autoFocus value={product_group} onChange={(e)=> handleGroup(e)} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium">
+                        <option disabled value='' />
+                        {Groups?.map(group =>( <option key= {group._id} value={group._id} className="text-sm"> {group.group_name} </option> ))}
+                    </select>
                 </div>
-            </div>
-            </div>
+                
+                <div className="col-span-4 space-y-2">
+                    <label className="text-lg font-medium text-gray-600" htmlFor="product_category" >Category<span className="text-red-500 pl-0.5">*</span></label>
+                    <select name="product_category" required disabled= {!Categories.length} value={product_category} onChange={(e)=> setCategory(e.target.value)} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium">
+                        <option disabled value='' />
+                        {Categories?.map(category =>( <option key= {category._id} value={category._id} className="text-sm"> {category.category_name} </option> ))}
+                    </select>
+                </div>
+
+                <div className="col-span-3 space-y-2">
+                    <label className="text-lg font-medium text-gray-600" htmlFor="product_brand" >Brand<span className="text-red-500 pl-0.5">*</span></label>
+                    <select name="product_brand" required autoFocus value={product_brand} onChange={(e)=> setBrand(e.target.value)} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium">
+                        <option disabled value='' />
+                        {Brands?.map(brand =>( <option key= {brand._id} value={brand._id} className="text-sm"> {brand.brand_name} </option> ))}
+                    </select>
+                </div>
+
+                <div className="md:col-span-3 space-y-2 ">
+                    <label className="text-lg font-medium text-gray-600" htmlFor="product_barcode">Barcode<span className="text-red-500 pl-0.5">*</span></label>
+                    <input type="text" name="product_barcode" id="product_barcode" autoComplete="off" required value={product_barcode} onChange={(e)=>setBarcode((e.target.value).toUpperCase().trim())} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium"/>
+                </div>
+
+                <div className="md:col-span-7 space-y-2">
+                    <label className="text-lg font-medium text-gray-600" htmlFor="name">Name<span className="text-red-500 pl-0.5">*</span></label>
+                    <input type="text" name="name" id="name" autoComplete="off" required value={product_name} onChange={(e)=>setName(e.target.value)} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium"/>
+                </div>
+
+                <div className="text-xl col-span-10 text-sky-600 font-medium mt-5 mb-2">Quantity and Stock Details</div>
+                <div className="col-span-3 space-y-2">
+                    <label className="text-lg font-medium text-gray-600" htmlFor="product_UOM">Unit Of Measure<span className="text-red-500 pl-0.5">*</span></label>
+                    <select name="product_UOM" required value={product_UOM} onChange={(e)=> setUOM(e.target.value)} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium">
+                        <option disabled value='' />
+                        <option value='gm'>Gram</option>
+                        <option value='kg'>Kilo Gram</option>
+                        <option value='ml'>Milli Liter</option>
+                        <option value='lit'>Liter</option>
+                        <option value='pcs'>piece</option>
+                        <option value='cap'>capacity</option>
+                    </select>
+                </div>
+                <div className="md:col-span-2 space-y-2">
+                    <label className="text-lg font-medium text-gray-600" htmlFor="product_net_unit">Net Unit</label>
+                    <input type="number" name="product_net_unit" id="product_net_unit" value={product_net_unit} onChange={(e)=>setNetUnit(Number(e.target.value))} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium"/>
+                </div>
+                <div className="md:col-span-3 space-y-2">
+                    <label className="text-lg font-medium text-gray-600" htmlFor="product_min_order_quantity">Min OQ</label>
+                    <input type="number" name="product_min_order_quantity" id="product_min_order_quantity" value={product_min_order_quantity} onChange={(e)=>setMinOrderQuantity(Number(e.target.value))} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium"/>
+                </div>
+                <div className="md:col-span-2 space-y-2">
+                    <label className="text-lg font-medium text-gray-600" htmlFor="product_max_order_quantity">Max OQ</label>
+                    <input type="number" name="product_max_order_quantity" id="product_max_order_quantity" value={product_max_order_quantity} onChange={(e)=>setMaxOrderQuantity(Number(e.target.value))} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium"/>
+                </div>
+                <div className="md:col-span-2 space-y-2">
+                    <label className="text-lg font-medium text-gray-600" htmlFor="lowInStock">Low in stock</label>
+                    <input type="number" name="lowInStock" id="lowInStock" value={product_low_in_stock} onChange={(e)=>setLowInStock(Number(e.target.value))} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium"/>
+                </div>
+                <div className="md:col-span-2 space-y-2">
+                    <label className="text-lg font-medium text-gray-600" htmlFor="product_hsn_code">HSN code</label>
+                    <input type="number" name="product_hsn_code" id="product_hsn_code" value={product_hsn_code} onChange={(e)=>setHsnCode(e.target.value)} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium"/>
+                </div>
+
+                <div className="text-xl col-span-10 text-sky-600 font-medium mt-5 mb-2">Additional Information</div>
+
+                <div className=" space-y-2 col-span-5 ">
+                    <div className="text-lg font-medium text-gray-600">Photo<span className="text-red-500 pl-0.5">*</span></div>
+                    <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={(e)=> handlePhoto(e.target.files[0])}/>
+                    {!previewPhoto ? (
+                        <div onClick={() => photoInputRef.current.click()}
+                            onDragOver={(e) => { 
+                                e.preventDefault(); 
+                                setPhotoDragActive(true) 
+                            }}
+                            onDragLeave={() => setPhotoDragActive(false)}
+                            onDrop={handleDropPhoto}
+                            className={`flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-10 cursor-pointer transition-all duration-300 ${ photoDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-blue-500 hover:bg-gray-50"}`}
+                        >
+                            <FiUploadCloud size={55} className={photoDragActive ? "text-blue-500" : "text-gray-400"}/>
+                            <h2 className="text-lg font-semibold text-gray-700">Drag & Drop Image</h2>
+                            <p className="text-gray-500">or click to browse</p>
+                            <p className="text-sm text-gray-400">PNG, JPG, JPEG</p>
+                        </div>
+                    ) : (
+                        <div className="relative">
+                            <img src={previewPhoto} alt="Preview" className="h-[245px] w-full rounded-xl border object-cove" />
+                            <button type="button" onClick={removePhoto} className="absolute right-3 top-3 rounded-full bg-red-500 p-2 text-white shadow-lg transition hover:bg-red-600">
+                                <FiX size={18} />
+                            </button>
+                        </div>
+                    )}
+                </div>
+                    
+               <div className="col-span-5 space-y-2">
+
+                    <div className="text-lg font-medium text-gray-600">Additional Photos</div>
+                    <input ref={additionalPhotoInputRef} type="file" multiple accept="image/*" className="hidden" onChange={(e)=> handleAdditionalPhotos(e.target.files)}/>
+                    {!additionalPhotoPreview.length ? (
+                        <div onClick={() => additionalPhotoInputRef.current?.click()}
+                            onDragOver={(e) => { e.preventDefault(); setAdditionalPhotoDragActive(true);}}
+                            onDragLeave={() => setAdditionalPhotoDragActive(false)}
+                            onDrop={handleDropAdditionalPhotos}
+                            className={`flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-10 cursor-pointer transition-all duration-300 ${ additionalPhotoDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-blue-500 hover:bg-gray-50"}`}
+                            >
+                            <FiUploadCloud size={55} className={ additionalPhotoDragActive ? "text-blue-500" : "text-gray-400"}/>
+                            <h2 className="text-lg font-semibold">Drag & Drop Images</h2>
+                            <p className="text-gray-500">or click to browse</p>
+                            <p className="text-sm text-gray-400">Maximum 5 Images</p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="flex gap-4 overflow-x-auto rounded-xl border p-6 scrollbar-thin">
+                            {additionalPhotoPreview.map((photo, index) => (
+                                <div key={index} className="relative h-[192px] w-[192px] flex-shrink-0">
+                                    <img src={photo.preview} alt="" className="h-full w-full rounded-xl object-cover border"/>
+                                    <div className="absolute left-2 top-2 rounded-full bg-black/60 text-white text-xs px-2 py-1">{index + 1}</div>
+                                    <button type="button" onClick={() => removeAdditionalPhoto(index)} className="absolute right-2 top-2 rounded-full bg-red-500 p-1 text-white hover:bg-red-600">
+                                        <IoMdClose size={18}/>
+                                    </button>
+                                </div>
+                            ))}
+                            {additionalPhotoPreview.length < 5 && (
+                                <Button type="button" variant="outlined" onClick={() => additionalPhotoInputRef.current?.click()} className="h-[192px] min-w-[192px] flex flex-col justify-center items-center gap-2 rounded-xl border-2 border-dashed border-blue-500 text-blue-500 hover:bg-blue-50">
+                                    <FiUploadCloud size={30} />
+                                    <span>Add Photo</span>
+                                </Button>
+                            )}
+                        </div>
+                        </>
+                    )}
+                </div>
+
+                <div className="md:col-span-10 space-y-2">
+                    <label className="text-lg font-medium text-gray-600" htmlFor="description">Description</label>
+                    <textarea name="description" id="description" value={product_description} onChange={(e)=>setDescription(e.target.value)} className="border resize-none h-28 border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium"/>
+                </div>
+
+                <div className="md:col-span-10 space-y-2">
+                    <label className="text-lg font-medium text-gray-600" htmlFor="highlights">Highlights</label>
+                    <input type="text" name="highlights" id="highlights" value={highlight} onChange={(e)=>setHightLight(e.target.value)} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium"/>
+                    {product_highlights.length ?
+                        <div className="flex flex-col bg-white mt-3 gap-3 border-2 rounded-lg py-2 ">
+                            {product_highlights?.map((highlight , index)=>(
+                                <div key={index} className="flex items-center justify-between px-5 hover:bg-slate-50">
+                                    <li >{highlight}</li>
+                                    <button onClick={(e) => handleDeleteValue(e , index)} className="text-red-500 hover:bg-gray-300 rounded-full p-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"clipRule="evenodd"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                        :''
+                    }
+                </div>
+
+                <div className=" col-span-10 mt-10 grid grid-cols-4 gap-5">
+                    <button onClick={()=>reset()} className=" bg-red-500 text-white rounded-xl p-4 col-span-2" >Reset</button>
+                    <button type='submit' className="bg-blue-500 text-white rounded-xl p-4 col-span-2" >Submit</button> 
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
+    </div>
   )
 }
 

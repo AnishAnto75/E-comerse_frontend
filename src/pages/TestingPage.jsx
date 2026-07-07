@@ -1,317 +1,427 @@
-import React, { useState } from "react";
-import {FaBoxOpen, FaWarehouse, FaRupeeSign, FaExclamationTriangle, FaTimesCircle, FaCheckCircle, FaChartLine, FaTags, FaPlus, FaDownload, FaUpload, FaFilter, FaSortAmountDown, FaSyncAlt, FaEye, FaTrash, FaFire, FaClock, FaArrowUp, FaChevronLeft, FaChevronRight, FaTrashAlt, FaFileExport, FaEdit, FaSearch, FaUsers, FaUserCheck, FaUserSlash } from "react-icons/fa";
-import { IoIosStar } from "react-icons/io";
-import { IoCloseSharp } from "react-icons/io5";
-import { ResponsiveContainer, AreaChart, Area, CartesianGrid, Tooltip, XAxis, YAxis, PieChart, Pie, Cell, Label} from "recharts";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { format } from "date-fns";
-import { FaIndianRupeeSign, FaMoneyBillTrendUp } from "react-icons/fa6";
-import AdminSideBar from "../components/admin/AdminSideBar";
-import AdminProductPageInventoryTrendsComponent from "../components/admin/AdminProductComponents/AdminProductPageInventoryTrendsComponent";
-import AdminProductPageInventoryInsightsComponent from "../components/admin/AdminProductComponents/AdminProductPageInventoryInsightsComponent";
-import AdminProductPreviewComponent from "../components/admin/AdminProductComponents/AdminProductPreviewComponent";
+import React, { useState } from 'react'
+import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts'
+import { FaArrowDown, FaArrowUp, FaEye, FaIndianRupeeSign } from 'react-icons/fa6'
+import { Navigate, useNavigate } from 'react-router-dom'
+import { format } from 'date-fns'
+import { IoIosStar } from 'react-icons/io'
+import { CiFilter } from 'react-icons/ci'
+import { IoCloseSharp, IoFilter } from 'react-icons/io5'
+import { toast } from 'react-toastify'
+import AdminSideBar from "../components/admin/AdminSideBar"
 
 const TestingPage = () => {
-
     const navigate = useNavigate()
-    const [selected_employee , setSelectedEmployee] = useState(null)
 
+    const [loading , setLoading] = useState(false)
+    const [error , setError ] = useState(false)
+    const [selected_order, setSelectedOrder ] = useState(null)
+    
     const data = {
-        total_employee : 105 ,
-        active_employee : 90,
-        inactive_employee : 15,
-        employe_expenditure :{ 
-            value : 150245,
-            chartData:[
-                { month: "Jan", expense : 89000 },
-                { month: "Feb", expense : 96000 },
-                { month: "Mar", expense : 91000 },
-                { month: "Apr", expense : 104000 },
-                { month: "May", expense : 105054 },
-                { month: "Jun", expense : 124822 },
-                { month: "Jul", expense : 134820 },
-                { month: "Aug", expense : 124820 },
-                { month: "Sep", expense : 144820 },
-                { month: "Oct", expense : 154820 },
-                { month: "Nov", expense : 124820 },
-                { month: "Dec", expense : 164820 },
+        totalOrders:{
+            value: 1648,
+            increment: 25,
+            chartData: [
+                {
+                    name: 'Mar',
+                    orders: 4000,
+                },
+                {
+                    name: 'Apr',
+                    orders: 3000,
+                },
+                {
+                    name: 'May',
+                    orders: 2000,
+                },
+                {
+                    name: 'Jun',
+                    orders: 2780,
+                },
+                {
+                    name: 'Jul',
+                    orders: 1890,
+                },
+                {
+                    name: 'Aug',
+                    orders: 2390,
+                },
+                {
+                    name: 'Sep',
+                    orders: 3490,
+                },
             ]
         },
-        employeeRoleData : {
-            total_employee : [
-                { name: 'Total', value: 600 },
-            ],
-            data : [
-                { name: 'Male', value: 150 },
-                { name: 'Female', value: 400 },
-                { name: 'others', value: 250 },
+        totalRevenue:{
+            value: 161238152,
+            increment: -25,
+            chartData: [
+                {
+                    name: 'Mar',
+                    revenue: 2000,
+                },
+                {
+                    name: 'Apr',
+                    revenue: 3000,
+                },
+                {
+                    name: 'May',
+                    revenue: 2000,
+                },
+                {
+                    name: 'Jun',
+                    revenue: 2780,
+                },
+                {
+                    name: 'Jul',
+                    revenue: 1890,
+                },
+                {
+                    name: 'Aug',
+                    revenue: 2390,
+                },
+                {
+                    name: 'Sep',
+                    revenue: 3490,
+                },
             ]
         },
-        employeeData: [
+        pendingOrders: {
+            value: 400,
+            increment: 5,
+            chartData: [
+                {
+                    name: "Pending Orders",
+                    placed: 900,
+                    confirmed: 580,
+                    out: 20,
+                },
+            ]
+        },
+        orders:[
             {
-                gender: "male",
-                salary: 15000,
-                photo: '/3-08.webp',
-                status: "active",
-                last_login: null,
-                _id: "6a3f9a5550650a2226dcaaaf",
-                staff_id: "STF0627732539",
-                name: "staff1",
-                email: "staff1",
-                role: "delivery",
-                phone_number: 8451255645,
-                staff_DOB: null,
-                joining_date: "2026-07-04T16:22:25.625Z"
-            }
+                order_id : "ORD062792963341",
+                delivery_address : {
+                    name: "Anish",
+                    phoneNo: "78745245225",
+                    pincode:854526
+                },
+                total_no_of_products: "5",
+                total_amount : 8452,
+                payment_method: "UPI",
+                order_status: {
+                    placed: {
+                        status: true,
+                        date: "2026-06-27T12:58:48.408Z"
+                    },
+                    confirmed: {
+                        status: false
+                    },
+                    out: {
+                        status: false
+                    },
+                    delivered: {
+                        "status": false
+                    },
+                    canceled: {
+                        "status": false
+                    }
+                },
+                order_rating: 5
+            },
+            {
+                order_id : "ORD062738902526",
+                delivery_address : {
+                    name: "Anish",
+                    phoneNo: "78745245225",
+                    pincode:854526
+                },
+                total_no_of_products: "5",
+                total_amount : 8452,
+                payment_method: "UPI",
+                order_status: {
+                    placed: {
+                        status: true,
+                        date: "2026-06-27T12:58:48.408Z"
+                    },
+                    confirmed: {
+                        status: true
+                    },
+                    out: {
+                        status: true
+                    },
+                    delivered: {
+                        "status": false
+                    },
+                    canceled: {
+                        "status": false
+                    }
+                },
+                order_rating: 5
+            },
+            {
+                order_id : "ORD062710921516",
+                delivery_address : {
+                    name: "Anish",
+                    phoneNo: "78745245225",
+                    pincode:854526
+                },
+                total_no_of_products: "5",
+                total_amount : 8452,
+                payment_method: "UPI",
+                order_status: {
+                    placed: {
+                        status: true,
+                        date: "2026-06-27T12:58:48.408Z"
+                    },
+                    confirmed: {
+                        status: true
+                    },
+                    out: {
+                        status: false
+                    },
+                    delivered: {
+                        "status": false
+                    },
+                    canceled: {
+                        "status": false
+                    }
+                },
+                order_rating: 5
+            },
+            {
+                order_id : "ORD062790229407",
+                delivery_address : {
+                    name: "Anish",
+                    phoneNo: "78745245225",
+                    pincode:854526
+                },
+                total_no_of_products: "2",
+                total_amount : 8452,
+                payment_method: "UPI",
+                order_status: {
+                    placed: {
+                        status: true,
+                        date: "2026-06-27T12:58:48.408Z"
+                    },
+                    confirmed: {
+                        status: false
+                    },
+                    out: {
+                        status: false
+                    },
+                    delivered: {
+                        "status": false
+                    },
+                    canceled: {
+                        "status": false
+                    }
+                },
+                order_rating: 5
+            },           
         ]
     }
-    
-    const COLORS = [ 
-        "#3B82F6", 
-        "#EC4899", 
-        '#8B5CF6',
-    ];
 
-    const employeeRoleData = data.employeeRoleData
+    const findOrderStatus = (order_status)=> {
+        const placed = order_status.placed
+        const confirmed = order_status.confirmed 
+        const out = order_status.out
+        const delivered = order_status.delivered 
+        const canceled = order_status.canceled  
+        return canceled.status ? {value: "Canceled", color:"bg-red-500"} : 
+            delivered.status ? {value: "Delivered", color:"bg-green-500"} : 
+            out.status ? {value: "Out", color:"bg-green-500"} : 
+            confirmed.status ? {value: "Confirmed", color:"bg-blue-500"} : 
+            placed.status ? {value: "Placed", color:"bg-blue-500"} : 
+            {value: "NaN", color:"yellow", date: "NaN"}
+    }
 
-  return (
-    <div className="flex">
-    <AdminSideBar/>
+    const totalOrders = data.totalOrders
+    const totalRevenue = data.totalRevenue
+    const pendingOrders = data.pendingOrders
+    const orders = data.orders
 
-    <div className="w-full min-h-screen p-5  font-inter">
-        {/* This page is running by sample data */}
-        <div className='text-3xl text-red-500 py-5'>This page is running by sample data</div>
+    // if(loading){return <LoadingSpinner />}
+    // if(error){return <ErrorComponent />}
 
-      {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-            <div>
-                <h1 className="text-4xl font-bold text-gray-800 tracking-tight">Employee Management</h1>
-                <p className="text-gray-600 mt-2">Manage employees, roles, and access permissions.</p>
-            </div>
-            <button onClick={()=>navigate('/admin/staff/create-staff')} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-blue-700 transition"><FaPlus />Add Staff</button>
-        </div>
-
-        <div className="grid xl:grid-cols-4 md:grid-cols-2 gap-6">
-            <div className='bg-white rounded-2xl  border-t-4 border-indigo-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
-                <div className="flex justify-between items-center">
-                    <div>
-                        <p className="text-indigo-500 font-semibold">TOTAL EMPLOYEE</p>
-                        <h2 className='text-3xl mt-2 font-bold text-indigo-600'>{data.total_employee}</h2>
+    return (
+    <div className='flex'>
+        <AdminSideBar />
+        <div className='w-full p-5 font-inter'>
+            {/* This page is running by sample data */}
+            <div className='text-3xl text-red-500'>This page is running by sample data</div>
+            <div className='text-3xl tracking-tight text-gray-800 font-semibold pt-1'>Good Morning, Admin</div>
+            <div className='py-[10px] text-gray-500 tracking-normal font-medium'>Here's an overview of today's business performance.</div>
+            
+            <div className='grid grid-cols-3 gap-5 mt-5'>
+                <div className='col-span-1 shadow-md border rounded-xl p-5'>
+                    <div className='text-gray-600 font-medium tracking-tight text-[16.5px]'>Total Orders</div>
+                    <div className='flex items-center gap-3 py-3 font-inter'>
+                        <span className='text-3xl font-semibold text-gray-800'>{totalOrders.value.toLocaleString()}</span>
+                        <span className={`flex items-center font-medium ${totalOrders.increment < 0 ? "text-red-500" : "text-green-500"}`}>
+                            {totalOrders.increment < 0 ? <FaArrowDown /> : <FaArrowUp />}
+                            {Math.abs(totalOrders.increment)}%
+                        </span>
                     </div>
-                    <div className={`bg-indigo-50 h-[58px] p-4 rounded-2xl`}>
-                        <FaUsers size={26} className="text-indigo-600"/>
-                    </div>
-                </div>
-            </div>
-            <div className='bg-white rounded-2xl border-t-4 border-green-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
-                <div className="flex justify-between items-center">
-                    <div>
-                        <p className="text-green-500 font-semibold">ACTIVE EMPLOYEE</p>
-                        <h2 className='text-3xl mt-2 font-bold text-green-600'>{data.active_employee}</h2>
-                    </div>
-                    <div className={`bg-green-50 h-[58px] p-4 rounded-2xl`}>
-                        <FaUserCheck size={24} className="text-green-600" />
-                    </div>
-                </div>
-            </div>
-            <div className='bg-white rounded-2xl border-t-4 border-red-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
-                <div className="flex justify-between items-center">
-                    <div>
-                        <p className="text-red-500 font-semibold">INACTIVE EMPLOYEE</p>
-                        <h2 className='text-3xl mt-2 font-bold text-red-700'>{data.inactive_employee}</h2>
-                    </div>
-                    <div className={`bg-red-50 h-[58px] p-4 rounded-2xl`}>
-                        <FaUserSlash size={24} className="text-red-600" />
-                    </div>
-                </div>
-            </div>
-            <div className='bg-white rounded-2xl border-t-4 border-purple-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
-                <div className="flex justify-between items-center">
-                    <div>
-                        <p className="text-purple-500 font-semibold">EMPLOYEE EXPENDITURE</p>
-                        <h2 className='text-3xl mt-2 font-bold text-purple-600 flex items-center'><FaIndianRupeeSign size={26} />{data?.employe_expenditure?.value?.toLocaleString()}</h2>
-                    </div>
-                    <div className={`bg-purple-50 h-[58px] p-4 rounded-2xl`}>
-                        <FaMoneyBillTrendUp size={24} className="text-purple-600" />
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div className="grid grid-cols-3 gap-6 mt-10">
-            <div className="col-span-2 rounded-2xl shadow-md p-5">
-                <div className="flex justify-between items-center mb-5">
-                    <div>
-                        <h2 className="text-xl font-bold text-gray-800">Employee Expenditure</h2>
-                        <p className="text-gray-600 mt-1">Employee salary and welfare expense. </p>
-                    </div>
-                </div>
-                <ResponsiveContainer width="100%" height={300}>
-                    <AreaChart data={data?.employe_expenditure?.chartData}>
-                        <defs>
-                            <linearGradient id="inventory" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#8e24aa" stopOpacity={0.4} />
-                                <stop offset="95%" stopColor="#8e24aa" stopOpacity={0} />
-                            </linearGradient>
-                        </defs>
-                        <XAxis dataKey="month" tickLine={false} />
-                        <YAxis tickLine={false} />
-                        <Tooltip cursor={false} />
-                        <Area 
-                            type="monotone"
-                            dataKey="expense"
-                            name="Expenses"
-                            stroke="#8e24aa"
-                            fillOpacity={1}
-                            fill="url(#inventory)"
-                            strokeWidth={2}
+                    <ResponsiveContainer width="100%" height={180}>            
+                        <AreaChart data={totalOrders.chartData}>
+                            <defs>
+                                <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <XAxis dataKey="name" axisLine={false} tickLine={false} interval={0}  padding={{ left: 12, right: 10 }} />
+                            <Tooltip cursor={false}/>
+                            <Area
+                                type="monotone"
+                                dataKey="orders"
+                                stroke="#8884d8"
+                                fillOpacity={1}
+                                fill="url(#colorOrders)"
+                                isAnimationActive={true}
+                                animationBegin={0}
+                                animationDuration={1100}
                             />
-                    </AreaChart>
-                </ResponsiveContainer>
-            </div>
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </div>
 
-            <div className='col-span-1 rounded-2xl shadow-md p-5'>
-                <div className='text-xl text-gray-800 bg-red-0 font-semibold pl-5 pt-8 leading-3'>Employee Roles</div>
-                <ResponsiveContainer width="100%" height={332}>            
-                    <PieChart className='w-auto h-auto text-center '>
-                        <Pie data={employeeRoleData.total_employee}
-                            dataKey="value"
-                            cx="50%"
-                            cy="50%"
-                            outerRadius="50%"
-                            fill="#10B981"
-                            stroke="none"
-                            paddingAngle={-10}
+                <div className='col-span-1 rounded-xl shadow-md border p-5'>
+                    <div className='text-gray-600 font-medium tracking-tight text-[16.5px]'>Total Revenue</div>
+                    <div className='flex items-center gap-3 py-3 font-inter'>
+                        <span className='text-3xl font-semibold text-gray-800 flex items-center'><FaIndianRupeeSign size={26} />{totalRevenue.value.toLocaleString()}</span>
+                        <span className={`flex items-center font-medium ${totalRevenue.increment < 0 ? "text-red-500" : "text-green-500"}`}>
+                            {totalRevenue.increment < 0 ? <FaArrowDown /> : <FaArrowUp />}
+                            {Math.abs(totalRevenue.increment)}%
+                        </span>
+                    </div>
+                    <ResponsiveContainer width="100%" height={180}>            
+                        <AreaChart data={totalRevenue.chartData}>
+                            <defs>
+                                <linearGradient id="colordata" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="green" stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <XAxis dataKey="name" axisLine={false} tickLine={false} interval={0} padding={{ left: 12, right: 10 }} />
+                            <Tooltip cursor={false}/>
+                            <Area
+                                type="monotone"
+                                dataKey="revenue"
+                                stroke="green"
+                                fillOpacity={1}
+                                fill="url(#colordata)"
+                                isAnimationActive={true}
+                                animationBegin={0}
+                                animationDuration={1100}
                             />
-                        <Pie data={employeeRoleData.data}
-                            dataKey="value"
-                            cx="50%"
-                            cy="50%"
-                            innerRadius="58%"
-                            outerRadius="80%"
-                            cornerRadius="10%"
-                            fill="#2563EB"
-                            paddingAngle={2}
-                            label
-                            >
-                            {/* for color */}
-                            {employeeRoleData?.data?.map((entry, index) => (
-                                <Cell key={`cell-${index}`}fill={COLORS[index % COLORS.length]}/>
-                            ))}
-                        </Pie>
-                        <Label position="center" fill="white" className='text-xl font-poppins'>{employeeRoleData.total_employee[0].value}</Label>
-                        <Tooltip />
-                    </PieChart>
-                </ResponsiveContainer>
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </div>
+
+                <div className='col-span-1 rounded-xl shadow-md border p-5'>
+                    <div className='text-gray-600 font-medium tracking-tight text-[16.5px]'>Pending Orders</div>
+                    <div className='flex items-center gap-3 py-3 font-inter'>
+                        <span className='text-3xl font-semibold text-gray-800'>{pendingOrders.value.toLocaleString()}</span>
+                        <span className={`flex items-center font-medium ${pendingOrders.increment < 0 ? "text-red-500" : "text-green-500"}`}>
+                            {pendingOrders.increment < 0 ? <FaArrowDown /> : <FaArrowUp />}
+                            {Math.abs(pendingOrders.increment)}%
+                        </span>
+                    </div>
+                    <ResponsiveContainer width="100%" height={143}>
+                        <BarChart data={pendingOrders.chartData} layout="vertical" barSize={120} margin={{bottom:10}}>
+                            <XAxis type="number" hide />
+                            <YAxis type="category" dataKey="name" hide />
+                            <Tooltip cursor={false}/>
+                            <Bar dataKey="placed" stackId="pending" fill="#3B82F6" radius={[8, 0, 0, 8]}/>
+                            <Bar dataKey="confirmed" stackId="pending" fill="#F59E0B"/>
+                            <Bar dataKey="out" stackId="pending" fill="#10B981" radius={[0, 8, 8, 0]} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                    <div className="flex justify-center gap-5 mt-2 text-s font-inter tracking-tight ">
+                        <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                            <span>Placed ({pendingOrders.chartData[0].placed})</span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-amber-500"></div>
+                            <span>Confirmed ({pendingOrders.chartData[0].confirmed})</span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                            <span>Out ({pendingOrders.chartData[0].out})</span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
-        </div>
-
-        <div className="h-[calc(100vh-40px)] border flex flex-col mt-10 rounded-2xl shadow-md p-5">
-            <div className="flex flex-col xl:flex-row gap-4 justify-between">
-                <div className="relative flex-1">
-                    <FaSearch className="absolute left-4 top-4 text-gray-400" />
-                    <input type="text" placeholder="Search products, barcode" className="w-full font-medium text-gray-800 border rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-blue-500 outline-none"/>
+            <div className='flex justify-between pt-5'>
+                {/* Search Orders */}
+                <div className="items-center md:w-72 relative">
+                    <input type='text' placeholder='Search' className='shadow border-2 py-2 px-2 pr-9 w-full rounded-lg text-gray-900 text-[15px] focus:outline-none'/>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-6 absolute top-2 right-2 text-gray-700 cursor-pointer"><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
                 </div>
-                <div className="flex flex-wrap gap-3 text-gray-800 font-medium">
-
-                    <select className="border rounded-xl px-4 py-3 text-gray-800 font-medium">
-                        <option>Status</option>
-                        <option>Active</option>
-                        <option>Inactive</option>
-                    </select>
-
-                    <select className="border rounded-xl px-4 py-3 text-gray-800 font-medium">
-                        <option>Roles</option>
-                        <option>Staff</option>
-                        <option>Delevery</option>
-                        <option>Managers</option>
-                    </select>
-
-                </div>
+                <div onClick={()=>toast.warn("function Not added")} className='border-[3px] border-blue-100 p-[5.5px] rounded-xl px-5 text-lg font-inter font-medium text-blue-500 mr-3 tracking-wide flex items-center gap-1 cursor-pointer'><IoFilter className='text-2xl'/>Filter</div>
             </div>
 
-            <div className="flex-1 overflow-y-auto mt-5">
-                <table className="w-full border-separate border-spacing-0">
-                    <thead className="sticky top-0 z-20 bg-white shadow-sm">
-                        <tr className="text-gray-500">
-                            <th className="py-4 bg-white"></th>
-                            <th className="py-4 text-start bg-white">Employee Name </th>
-                            <th className="py-4 bg-white">Role</th>
-                            <th className="py-4 bg-white">Phone</th>
-                            <th className="py-4 bg-white">Email</th>
-                            <th className="py-4 bg-white">Salary</th>
-                            <th className="py-4 bg-white">Gender</th>
-                            <th className="py-4 bg-white">Joined</th>
-                            <th className="py-4 bg-white">Last login</th>
-                            <th className="py-4 bg-white">Status</th>
-                            <th className="py-4 bg-white">Action</th>
+            <div className='mt-5 h-[calc(100vh-40px)] overflow-y-auto border shadow-md font-inter tracking-tight rounded-xl px-5'>
+                {/* Table */}
+                <table className='w-full mt-3'>
+                    <thead className='sticky top-0 bg-white'>
+                        <tr className='text-gray-500'>
+                            <th className='py-4' />
+                            <th className='py-4 text-start'>Order Id</th>
+                            <th className='py-4 text-start'>Customer</th>
+                            <th className='py-4'>Quantity</th>
+                            <th className='py-4'>Amount</th>
+                            <th className='py-4'>Status</th>
+                            <th className='py-4'>Ratings</th>
+                            <th className='py-4'>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                    {data?.employeeData?.map((employee, index) =>{
-                        return(
-                            <tr key={index} className={`text-center border-b-[3px] text-lg font-medium text-gray-700 border-gray-50 ${ employee.staff_id == selected_employee ? "bg-gray-100" : ''}`}>
-                                <td className='text-gray-600 font-semibold px-2'>{index+1})</td>
-                                <td className="text-start ">
-                                    <div className="flex items-center gap-2 py-2">
-                                        <img src={employee.photo} alt={employee?.name} className="w-[67px] h-[67px] text-center rounded-xl object-cover"/>
-                                        <div className="flex flex-col ">
-                                            <span className='mb-0.5 font-semibold'>{employee.name}</span>
-                                            <span className='text-gray-500 text-[17px]'>{employee.staff_id}</span>
-                                        </div>
-                                    </div>
+                        {orders?.map((order, index) =>{
+                            const status = findOrderStatus(order.order_status)
+                            return(
+                            <tr key={index} onClick={()=>setSelectedOrder(order.order_id)} className={`text-center border-b-[3px] border-gray-50 text-gray-800 text-base ${ selected_order == order.order_id ? "bg-gray-50" : ''}`}>
+                                <td className='text-gray-600 font-semibold'>{index+1})</td>
+                                <td className='text-start py-4'>
+                                    <span className='text-lg text-gray-700 block pb-0.5 font-semibold'>#{order.order_id}</span>
+                                    <span className='text-gray-500 text-[17px]'>{format(new Date(order.order_status?.placed?.date) , "dd/MM - p")}</span>
                                 </td>
-                                <td className='py-4 capitalize'>{employee.role}</td>
-                                <td className='py-4 '>{employee.phone_number}</td>
-                                <td className='py-4 '>{employee.email}</td>
-                                <td className='py-4 '>
-                                    <div className="flex items-center justify-center"><FaIndianRupeeSign />{employee?.salary?.toLocaleString()}</div>
+                                <td className='flex flex-col text-start py-4 font-medium '>
+                                    <span className='text-lg text-gray-800 pb-0.5'>{order?.delivery_address?.name}</span>
+                                    <span className='text-gray-500'>{order?.delivery_address?.phoneNo}</span>
                                 </td>
-                                <td className='py-4 capitalize'>{employee.gender}</td>
-                                <td className='py-4 '>{format(employee.joining_date, 'dd MMM yyy')}</td>
-                                <td className='py-4 '>{format(employee.last_login, 'dd MMM yyy')}</td>
-                                <td className='py-4'>
-                                    <span className={`p-1 border-2 rounded-xl px-3 capitalize ${ employee?.status == "active" ? "bg-cyan-50 text-cyan-500" : "bg-red-50 text-red-500" }`}>{employee?.status}</span>
+                                <td className='py-4 font-medium text-lg text-gray-700'>{order.total_no_of_products} items</td>
+                                <td className='flex flex-col py-4'>
+                                    <span className='text-lg text-gray-800 pb-0.5 font-medium items-center flex justify-center'><FaIndianRupeeSign size={16} />{order?.total_amount?.toLocaleString()}</span>
+                                    <span className='text-gray-500'>{order.payment_method}</span>
                                 </td>
-                                <td className='space-x-2 text-2xl '>
-                                    <FaEdit onClick={() => navigate(`/admin/produscts/edit/${product.product_barcode}`)} className='cursor-pointer inline-block text-orange-500' />
-                                    <FaEye onClick={() => navigate(`/admin/products/product_id/${product.product_barcode}`)} className='cursor-pointer text-cyan-600 inline-block' />
+                                <td className='justify-items-center py-4'>
+                                    <span className={`${status.color} p-2 block w-28 text-center text-white tracking-wide rounded-2xl`}>{status.value}</span>
+                                </td>
+                                <td>
+                                    <span className='flex gap-0.5 py-4 items-center justify-center'>
+                                        <IoIosStar className='h-5 w-5 text-amber-500'/>
+                                        <span className='text-[18px] text-gray-600 font-medium'>{order.order_rating}</span>
+                                    </span>
+                                </td>
+                                <td className='text-center h-full align-middle'>
+                                    <FaEye onClick={() => navigate(`/admin/orders/order_id/${order.order_id}`)} className='cursor-pointer text-2xl inline-block' />
                                 </td>
                             </tr>
-                        )
-                    })}
+                            )
+                        })}
                     </tbody>
                 </table>
             </div>
-            <div className="pt-7 pb-2 flex justify-center border-t ">
-                <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-2">
-                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center"><FaChevronLeft /></button>
-                        <button className="w-11 h-11 rounded-xl bg-blue-600 text-white font-semibold">1</button>
-                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">2</button>
-                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">3</button>
-                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">4</button>
-                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">5</button>
-                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center"><FaChevronRight /></button>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
-
-    {/* Product Preview */}
-    {selected_employee &&
-    <div className='relative min-w-[26rem] max-w-[26rem] shrink-1 py-5 pr-5'>
-        <div className='sticky top-5 h-[calc(100vh-40px)] rounded-xl shadow-lg overflow-y-auto p-3'>
-            <IoCloseSharp onClick={()=>setSelectedEmployee(null)} className='absolute top-4 right-4 font-sans text-4xl cursor-pointer z-10 rounded-full hover:bg-red-50 text-red-500 p-1' />
-            <AdminProductPreviewComponent product_id = {selected_employee}/>
-        </div>
-    </div> 
-    }
-    </div>
-  );
-};
+  )
+}
 
 export default TestingPage
