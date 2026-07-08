@@ -8,6 +8,7 @@ import LoadingSpinner from '../../../components/LoadingSpinner';
 import ErrorComponent from '../../../components/ErrorComponent';
 import AdminSideBar from '../../../components/admin/AdminSideBar';
 import { IoIosAddCircleOutline} from "react-icons/io";
+import { FaPlus } from 'react-icons/fa6';
 
 const AdminProductPage = () => {
     
@@ -83,7 +84,8 @@ const AdminProductPage = () => {
             <div className="rounded-none p-4">
                 <div className="flex justify-end gap-4 ">
                     <div className="flex shrink-0 items-center gap-2">
-                        <Button onClick={()=>navigate(`new-group`)} size="sm" color='blue' variant='gradient'>Add Group</Button>
+                        <button onClick={()=>navigate('/admin/groups-categories/new-group')} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-blue-700 transition"><FaPlus />Add Group</button>            
+                        <button onClick={()=>navigate('/admin/groups-categories/new-category')} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-blue-700 transition"><FaPlus />Add Category</button>            
                     </div>
                 </div>
             </div>

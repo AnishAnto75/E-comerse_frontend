@@ -9,6 +9,7 @@ import ErrorComponent from '../../../components/ErrorComponent';
 import AdminSideBar from '../../../components/admin/AdminSideBar';
 import { FaEye } from "react-icons/fa"
 import { MdEdit } from "react-icons/md";
+import { FaPlus } from 'react-icons/fa6';
 
 const AdminBrandPage = () => {
 
@@ -78,7 +79,7 @@ const AdminBrandPage = () => {
                     FILTER 
                 </Button>
             </div>
-            <Button onClick={()=>navigate(`/admin/brands/new-brand`)} size="sm" color='blue' variant='gradient' className=' items-end content-end justify-end'>New Brand</Button>
+            <button onClick={()=>navigate('/admin/brands/new-brand')} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-blue-700 transition"><FaPlus />Add Brand</button>            
         </div>
 
         <table className="w-full">

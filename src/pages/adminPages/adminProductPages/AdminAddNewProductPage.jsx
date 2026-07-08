@@ -15,10 +15,11 @@ const AdminAddNewProductPage = () => {
     
     const [loading , setLoading] = useState(false)
     const [error , setError ] = useState(false)
+
     const [Groups , setGroups] = useState([]) 
     const [Brands , setBrands] = useState([])
     const [Categories , setCategories] = useState([])
-    const [highlight , setHightLight] = useState('')
+    const [highlightInput, setHighlightInput] = useState("");
 
     const handleRef = useRef(true)
 
@@ -64,7 +65,6 @@ const AdminAddNewProductPage = () => {
     const [product_net_unit , setNetUnit ] = useState(1)
     const [product_min_order_quantity , setMinOrderQuantity ] = useState(1)
     const [product_max_order_quantity , setMaxOrderQuantity ] = useState(999)
-    const [product_low_in_stock , setLowInStock] = useState(10)
     const [product_hsn_code , setHsnCode ] = useState('')
     const [product_photo , setPhoto] = useState(null)
     const [product_additional_photos , setAdditionalPhotos] = useState(null)
@@ -165,6 +165,7 @@ const AdminAddNewProductPage = () => {
     const reset = ()=>{
         setGroup('')
         setCategory('')
+        setCategories([])
         setBrand('')
         setBarcode('')
         setName('')
@@ -172,12 +173,11 @@ const AdminAddNewProductPage = () => {
         setNetUnit(1)
         setMinOrderQuantity(1)
         setMaxOrderQuantity(999)
-        setLowInStock(10)
         setAdditionalPhotos(null)
         setHsnCode('')
         setDescription('')
         setProductHighlights([])
-        setHightLight('')
+        setHighlightInput('')
         removePhoto()
         setAdditionalPhotos([]);
         setAdditionalPhotoPreview([]);
@@ -186,26 +186,34 @@ const AdminAddNewProductPage = () => {
         }
     }
     
-    // Adding The Highligh
-    const handleHighlight = (e)=>{
-        e.preventDefault()
-        if (highlight.trim() !== '') {
-            setProductHighlights([...product_highlights, highlight]);
-            setHightLight('')
+    const addHighlight = () => {
+        const value = highlightInput.trim();
+        if (!value) return;
+        setProductHighlights((prev) => [...prev, value]);
+        setHighlightInput("");
+    };
+
+    const removeHighlight = (index) => {
+        setProductHighlights((prev) => prev.filter((_, i) => i !== index));
+    };
+
+    const handleHighlightsKeyDown = (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            addHighlight();
         }
-    }
-    // Deleting The Highligh
-    const handleDeleteValue = (e , index) => {
-        e.preventDefault()
-        const newArray = product_highlights.filter((_, i) => i !== index);
-        setProductHighlights(newArray);
     };
 
     // Form Submission
     const handleSubmit = async(e)=>{
-        e.preventDefault()
         try {
             if(product_min_order_quantity > product_max_order_quantity){toast.error("Min value should be less than max value"); return ; }
+
+            if(!product_group || !product_category || !product_brand || !product_barcode || !product_name || !product_UOM || !product_photo){
+                toast.warn("Enter all the required fields")
+                return;
+            }
+            
             setLoading(true) 
 
             const formData = new FormData();
@@ -219,7 +227,6 @@ const AdminAddNewProductPage = () => {
             formData.append("product_net_unit", product_net_unit);
             formData.append("product_min_order_quantity", product_min_order_quantity);
             formData.append("product_max_order_quantity", product_max_order_quantity);
-            formData.append("product_low_in_stock", product_low_in_stock);
             formData.append("product_hsn_code", product_hsn_code);
             formData.append("product_description", product_description);
             formData.append("product_highlights", JSON.stringify(product_highlights));
@@ -228,12 +235,11 @@ const AdminAddNewProductPage = () => {
                 formData.append("product_additional_photos", file);
             })
 
-            console.log(formData)
-            // const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/product/add-product` , {formData})
-            // console.log("addNewProduct response",res.data)
-            // toast.success(res.data?.message)
-            // reset()
-            // navigate('/admin/products')
+            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/product/add-product` , formData)
+            console.log("addNewProduct response",res.data)
+            toast.success(res.data?.message)
+            reset()
+            navigate('/admin/products')
         } catch (error) {
             toast.error(error.response?.data?.message)
             console.log("error in addNewProduct :" , error)
@@ -251,9 +257,9 @@ const AdminAddNewProductPage = () => {
         <div className="text-gray-600 text-2xl font-semibold w-full">Create Product</div>
 
         <div className="rounded-xl container max-w-screen-xl mt-5 border shadow-lg p-8 gap-x-4 gap-y-2">
-            <form onSubmit={(e)=>handleSubmit(e)} className="w-full text-gray-700 gap-3 gap-y-2 grid grid-cols-10 ">
+            <div className="w-full text-gray-700 gap-3 gap-y-2 grid grid-cols-10 ">
                 <div className="text-xl col-span-10 font-medium text-sky-600 mt-1 mb-2">Product Details</div>
-
+                {/* Groups */}
                 <div className="col-span-3 space-y-2">
                     <label className="text-lg font-medium text-gray-600" htmlFor="product_group" >Group<span className="text-red-500 pl-0.5">*</span></label>
                     <select name="product_group" required autoFocus value={product_group} onChange={(e)=> handleGroup(e)} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium">
@@ -261,7 +267,7 @@ const AdminAddNewProductPage = () => {
                         {Groups?.map(group =>( <option key= {group._id} value={group._id} className="text-sm"> {group.group_name} </option> ))}
                     </select>
                 </div>
-                
+                {/* category */}
                 <div className="col-span-4 space-y-2">
                     <label className="text-lg font-medium text-gray-600" htmlFor="product_category" >Category<span className="text-red-500 pl-0.5">*</span></label>
                     <select name="product_category" required disabled= {!Categories.length} value={product_category} onChange={(e)=> setCategory(e.target.value)} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium">
@@ -269,7 +275,7 @@ const AdminAddNewProductPage = () => {
                         {Categories?.map(category =>( <option key= {category._id} value={category._id} className="text-sm"> {category.category_name} </option> ))}
                     </select>
                 </div>
-
+                {/* brand */}
                 <div className="col-span-3 space-y-2">
                     <label className="text-lg font-medium text-gray-600" htmlFor="product_brand" >Brand<span className="text-red-500 pl-0.5">*</span></label>
                     <select name="product_brand" required autoFocus value={product_brand} onChange={(e)=> setBrand(e.target.value)} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium">
@@ -277,19 +283,19 @@ const AdminAddNewProductPage = () => {
                         {Brands?.map(brand =>( <option key= {brand._id} value={brand._id} className="text-sm"> {brand.brand_name} </option> ))}
                     </select>
                 </div>
-
+                {/* Barcode */}
                 <div className="md:col-span-3 space-y-2 ">
                     <label className="text-lg font-medium text-gray-600" htmlFor="product_barcode">Barcode<span className="text-red-500 pl-0.5">*</span></label>
                     <input type="text" name="product_barcode" id="product_barcode" autoComplete="off" required value={product_barcode} onChange={(e)=>setBarcode((e.target.value).toUpperCase().trim())} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium"/>
                 </div>
-
+                {/* product name */}
                 <div className="md:col-span-7 space-y-2">
                     <label className="text-lg font-medium text-gray-600" htmlFor="name">Name<span className="text-red-500 pl-0.5">*</span></label>
                     <input type="text" name="name" id="name" autoComplete="off" required value={product_name} onChange={(e)=>setName(e.target.value)} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium"/>
                 </div>
 
                 <div className="text-xl col-span-10 text-sky-600 font-medium mt-5 mb-2">Quantity and Stock Details</div>
-                <div className="col-span-3 space-y-2">
+                <div className="col-span-2 space-y-2">
                     <label className="text-lg font-medium text-gray-600" htmlFor="product_UOM">Unit Of Measure<span className="text-red-500 pl-0.5">*</span></label>
                     <select name="product_UOM" required value={product_UOM} onChange={(e)=> setUOM(e.target.value)} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium">
                         <option disabled value='' />
@@ -305,7 +311,7 @@ const AdminAddNewProductPage = () => {
                     <label className="text-lg font-medium text-gray-600" htmlFor="product_net_unit">Net Unit</label>
                     <input type="number" name="product_net_unit" id="product_net_unit" value={product_net_unit} onChange={(e)=>setNetUnit(Number(e.target.value))} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium"/>
                 </div>
-                <div className="md:col-span-3 space-y-2">
+                <div className="md:col-span-2 space-y-2">
                     <label className="text-lg font-medium text-gray-600" htmlFor="product_min_order_quantity">Min OQ</label>
                     <input type="number" name="product_min_order_quantity" id="product_min_order_quantity" value={product_min_order_quantity} onChange={(e)=>setMinOrderQuantity(Number(e.target.value))} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium"/>
                 </div>
@@ -314,16 +320,12 @@ const AdminAddNewProductPage = () => {
                     <input type="number" name="product_max_order_quantity" id="product_max_order_quantity" value={product_max_order_quantity} onChange={(e)=>setMaxOrderQuantity(Number(e.target.value))} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium"/>
                 </div>
                 <div className="md:col-span-2 space-y-2">
-                    <label className="text-lg font-medium text-gray-600" htmlFor="lowInStock">Low in stock</label>
-                    <input type="number" name="lowInStock" id="lowInStock" value={product_low_in_stock} onChange={(e)=>setLowInStock(Number(e.target.value))} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium"/>
-                </div>
-                <div className="md:col-span-2 space-y-2">
                     <label className="text-lg font-medium text-gray-600" htmlFor="product_hsn_code">HSN code</label>
                     <input type="number" name="product_hsn_code" id="product_hsn_code" value={product_hsn_code} onChange={(e)=>setHsnCode(e.target.value)} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium"/>
                 </div>
 
                 <div className="text-xl col-span-10 text-sky-600 font-medium mt-5 mb-2">Additional Information</div>
-
+                {/* photo */}
                 <div className=" space-y-2 col-span-5 ">
                     <div className="text-lg font-medium text-gray-600">Photo<span className="text-red-500 pl-0.5">*</span></div>
                     <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={(e)=> handlePhoto(e.target.files[0])}/>
@@ -351,9 +353,8 @@ const AdminAddNewProductPage = () => {
                         </div>
                     )}
                 </div>
-                    
-               <div className="col-span-5 space-y-2">
-
+                {/* additional photo */}
+                <div className="col-span-5 space-y-2">
                     <div className="text-lg font-medium text-gray-600">Additional Photos</div>
                     <input ref={additionalPhotoInputRef} type="file" multiple accept="image/*" className="hidden" onChange={(e)=> handleAdditionalPhotos(e.target.files)}/>
                     {!additionalPhotoPreview.length ? (
@@ -393,34 +394,37 @@ const AdminAddNewProductPage = () => {
 
                 <div className="md:col-span-10 space-y-2">
                     <label className="text-lg font-medium text-gray-600" htmlFor="description">Description</label>
-                    <textarea name="description" id="description" value={product_description} onChange={(e)=>setDescription(e.target.value)} className="border resize-none h-28 border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium"/>
+                    <textarea placeholder="Add a Description" name="description" id="description" value={product_description} onChange={(e)=>setDescription(e.target.value)} className="border resize-none h-28 border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium"/>
                 </div>
 
                 <div className="md:col-span-10 space-y-2">
                     <label className="text-lg font-medium text-gray-600" htmlFor="highlights">Highlights</label>
-                    <input type="text" name="highlights" id="highlights" value={highlight} onChange={(e)=>setHightLight(e.target.value)} className="border border-gray-300 p-3 px-4 w-full rounded-xl text-gray-800 font-medium"/>
-                    {product_highlights.length ?
-                        <div className="flex flex-col bg-white mt-3 gap-3 border-2 rounded-lg py-2 ">
-                            {product_highlights?.map((highlight , index)=>(
-                                <div key={index} className="flex items-center justify-between px-5 hover:bg-slate-50">
-                                    <li >{highlight}</li>
-                                    <button onClick={(e) => handleDeleteValue(e , index)} className="text-red-500 hover:bg-gray-300 rounded-full p-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"clipRule="evenodd"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            ))}
+                    <div className="flex gap-2">
+                        <input type="text"
+                            value={highlightInput}
+                            onChange={(e) => setHighlightInput(e.target.value)}
+                            onKeyDown={handleHighlightsKeyDown}
+                            placeholder="Enter a highlight"
+                            className="flex-1 rounded-xl text-gray-800 font-medium border  border-gray-300 px-4 p-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                        />
+                        <button type="button" onClick={addHighlight} className="rounded-lg bg-blue-600 px-5 py-2 font-medium text-white hover:bg-blue-700">Add</button>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                    {product_highlights.map((item, index) => (
+                        <div key={index} className="flex items-center gap-2 rounded-full bg-sky-100 px-4 py-2 font-medium text-sky-600">
+                            <span>{item}</span>
+                            <button type="button" onClick={() => removeHighlight(index)} className="text-red-500 font-semibold hover:text-red-700">✕</button>
                         </div>
-                        :''
-                    }
+                    ))}
+                    </div>
                 </div>
 
                 <div className=" col-span-10 mt-10 grid grid-cols-4 gap-5">
-                    <button onClick={()=>reset()} className=" bg-red-500 text-white rounded-xl p-4 col-span-2" >Reset</button>
-                    <button type='submit' className="bg-blue-500 text-white rounded-xl p-4 col-span-2" >Submit</button> 
+                    <button type="button" onClick={()=>reset()} className=" bg-red-500 text-white rounded-xl p-4 col-span-2" >Reset</button>
+                    <button onClick={()=>handleSubmit()} className="bg-blue-500 text-white rounded-xl p-4 col-span-2" >Submit</button> 
                 </div>
-            </form>
+            </div>
         </div>
     </div>
     </div>

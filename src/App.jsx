@@ -43,7 +43,6 @@ import TestingPage from "./pages/TestingPage.jsx";
 import { ToastContainer } from 'react-toastify';
 import AdminProductViewPage from "./pages/adminPages/adminProductPages/AdminProductViewPage.jsx";
 import AdminSupplierPage from "./pages/adminPages/adminSupplierPages/AdminSupplierPage.jsx";
-import AdminCreateSupplier from "./pages/adminPages/adminSupplierPages/AdminCreateSupplier.jsx";
 import AdminSupplierViewPage from "./pages/adminPages/adminSupplierPages/AdminSupplierViewPage.jsx";
 import AdminPurchaseEntryPage from "./pages/adminPages/adminPurchasePages/AdminPurchaseEntryPage.jsx";
 import AdminAllPurchasesPage from "./pages/adminPages/adminPurchasePages/AdminAllPurchasesPage.jsx";
@@ -64,6 +63,9 @@ import AdminAddCategoryPage from './pages/adminPages/adminGroups&CategoriesPages
 import AdminEditCustomerPage from "./pages/adminPages/adminCustomerPages/AdminEditCustomerPage.jsx";
 import AdminPurchasePage from "./pages/adminPages/adminProductPages/AdminPurchasePage.jsx";
 
+import AdminCreateSupplierPage from "./pages/adminPages/adminSupplierPages/AdminCreateSupplierPage.jsx";
+
+
 
 function App() {
     const dispatch = useDispatch()
@@ -71,7 +73,6 @@ function App() {
     const handleRef2 = useRef(true)
     const handleRef3 = useRef(true)
 
-    const isAdmin = useSelector(getAdmin)
     const user = useSelector(getUser)
     const userStatus = useSelector(getUserStatus)
 
@@ -136,7 +137,6 @@ function App() {
             </Route>
 
 {/* Admin */}
-            {isAdmin &&
 
             <Route path='admin' element={ <AdminLayout /> }>
                 <Route path="home" element={<AdminHomePage />} />
@@ -187,7 +187,7 @@ function App() {
                 <Route path="supplier">
                     <Route index element={<AdminSupplierPage />}/>
                     <Route path="supplier_id/:id" element={<AdminSupplierViewPage />}/>
-                    <Route path="create-supplier" element={<AdminCreateSupplier />}/>
+                    <Route path="create-supplier" element={<AdminCreateSupplierPage />}/>
                     <Route path="edit/supplier_id/:id" element={<div>Edit Supplier</div>}/>
                 </Route>
 
@@ -209,7 +209,6 @@ function App() {
                     <Route path="edit-banner/:id" element={<AdminEditBannerPage />}/>
                 </Route>
             </Route>
-            }
 
             <Route path="testing" element={<TestingPage />} />
             <Route path="*" element={<PageNotFoundPage />} />
