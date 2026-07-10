@@ -207,7 +207,7 @@ const AdminProductPage = () => {
                                 <td className='text-gray-600 font-semibold pl-2'>{index+1}</td>
                                 <td>
                                     <div className="flex justify-center">
-                                        <img src={product?.product_photos} alt={product?.product_name} className="w-16 h-16 text-center rounded-xl object-cover"/>
+                                        <img src={product?.product_photo} alt={product?.product_name} className="w-16 h-16 text-center rounded-xl object-cover"/>
                                     </div>
                                 </td>
                                 <td className='text-start py-4 flex flex-col'>
