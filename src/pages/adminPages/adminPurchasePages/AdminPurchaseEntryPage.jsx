@@ -1,415 +1,494 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react";
+import { FiSearch, FiPlus, FiTrash2, FiX, FiEdit } from "react-icons/fi";
+import { FaIndianRupeeSign } from "react-icons/fa6";
 import axios from "axios"
-import { toast } from "react-toastify";
-import { debounce } from 'lodash';
+import { toast } from 'react-toastify'
+import {format} from'date-fns'
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../../../components/LoadingSpinner";
+import ErrorComponent from "../../../components/ErrorComponent";
+import AdminSideBar from "../../../components/admin/AdminSideBar";
+import AdminPurchaseEntrySupplierDetailsComponent from "../../../components/admin/AdminPurchaseComponents/AdminPurchaseEntrySupplierDetailsComponent";
+import AdminPurchaseEntryProductTable from "../../../components/admin/AdminPurchaseComponents/AdminPurchaseEntryProductTable";
 
-const AdminPurchaseEntryPage = () => {
+const PurchaseEntryPage = () => {
 
     const navigate = useNavigate()
-    const handleRef = useRef(true)
 
-    const [loading , setLoading] = useState(false)
-    const [error , setError ] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(false)
 
-    const [supplier_id , setSupplierId ] = useState('')
-    const [invoice_no , setInvoiceNo ] = useState('')
-    const [products , setProducts ] = useState([])
-    const [total_purchase_amount , setTotalPurchaseAmount ] = useState(0)
+    const [supplier_id, setSupplierId] = useState('')
+    const [supplier_invoice_no, setSupplierInvoiceNo] = useState('')
+    const [invoice_date, setInvoiceDate ] = useState('')
+    const [delivery_date, setDeliveryDate ] = useState('')
+    const [payment_method, setPaymentMethod ] = useState('')
+    const [paid_amount, setPaidAmount ] = useState(0)
+    const [payment_date, setPaymentDate ] = useState('')
+    const [discount_received, setDiscountReceived] = useState(0)
+    const [products, setProducts] = useState([]);
+    
+    const totals = useMemo(() => {
+        return products.reduce(
+            (acc, product) => {
+                const qty = Number(product.quantity_received);
+                const mrp = Number(product.mrp);
+                const purchaseCost = Number(product.purchase_cost);
+                const gst = Number(product.gst_percentage);
+                const otherExpenses = Number(product.other_expenses);
 
-    const [product_barcode , setProductBarcode ] = useState('')
-    const [product_name, setProductName] = useState('')
-    const [batch_no , setBatchNo ] = useState('')
-    const [quantity_recieved , setQuantityRecieved ] = useState('')
-    const [size , setSize ] = useState('')
-    const [manufacture_date , setManufactureDate ] = useState('')
-    const [expire_date , setExpireDate ] = useState('')
-    const [best_before , setBestBefore ] = useState('')
-    const [mrp , setMrp ] = useState('')
-    const [purchase_cost , setPurchaseCost ] = useState('')
-    const [gst , setGst ] = useState('')
-    const [other_expences , setOtherExpences ] = useState(0)
-    const [price , setPrice ] = useState('')
+                const totalMrp = mrp * qty;
+                const purchaseDiscount = (mrp - purchaseCost) * qty;
+                const subTotal = purchaseCost * qty;
+                const gstAmount = (subTotal * gst) / 100;
+                const otherExpenseAmount = otherExpenses * qty;
+                const grandTotal = subTotal + gstAmount + otherExpenseAmount;
 
+                acc.totalMrp += totalMrp;
+                acc.totalPurchaseDiscount += purchaseDiscount;
+                acc.subTotal += subTotal;
+                acc.totalGstAmount += gstAmount;
+                acc.totalOtherExpenses += otherExpenseAmount;
+                acc.grandTotal += grandTotal;
 
-    const [suppliers , setSuppliers ] = useState([])
-
-    const [searchedProducts , setSearchedProducts] = useState(null)
-
-    useEffect(()=>{
-        const fetchSuppliers = async()=>{
-            try {
-                setLoading(true) 
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/all-suppliers`)
-                setSuppliers(res.data.data)
-                console.log("fetchSuppliers payload :",res.data)
-            } catch (error) {
-                setError(true)
-                console.error("error in fetchSuppliers :" , error)
-            } finally { setLoading(false) }
-        }
-        if(handleRef.current){
-            fetchSuppliers()
-            handleRef.current = false
-        }
-    },[])
-
-    const reset = ()=> { 
-        setProductBarcode('')
-        setProductName('')
-        setBatchNo('')
-        setQuantityRecieved('')
-        setSize('')
-        setManufactureDate('')
-        setExpireDate('')
-        setBestBefore('')
-        setMrp('')
-        setPurchaseCost('')
-        setGst('')
-        setOtherExpences(0)
-        setPrice('')
-    }
-
-    // Enter Key handle
-    const input1Ref = useRef(null)
-    const input2Ref = useRef(null)
-    const input3Ref = useRef(null)
-    const input4Ref = useRef(null)
-    const input5Ref = useRef(null)
-    const input6Ref = useRef(null)
-    const input7Ref = useRef(null)
-    const input8Ref = useRef(null)
-    const input9Ref = useRef(null)
-    const input10Ref = useRef(null)
-    const input11Ref = useRef(null)
-    const input12Ref = useRef(null)
-    const input13Ref = useRef(null)
-    const inputaRef = useRef(null)
-    const inputbRef = useRef(null)
-    const handleKeyDown = (e, nextinputRef) => {
-        if (e.key === "Enter"){
-            e.preventDefault();
-            if(nextinputRef.current.name !== "Name"){setSearchedProducts(null)}
-            nextinputRef.current.focus()
-        }
-    }
-
-    const searchBarcode = async(e)=>{
-        if (e.key === "Enter" && product_barcode){
-            e.preventDefault()
-
-            let existingProductBarcode = []
-            products?.map(product=> existingProductBarcode = [...existingProductBarcode, product.product_barcode])
-            if( existingProductBarcode.includes(product_barcode)) { toast.warn("Product Already Added"); return }
-
-            try {
-                setLoading(true)
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/product/barcode/${product_barcode}`)
-                console.log("search barcode payload", res.data)
-                if(res.data?.data){
-                    setProductBarcode(res.data.data.product_barcode)
-                    setProductName(res.data.data.product_name)
-                } 
-            } catch (error) {
-                toast.error(error.response?.data?.message)
-                console.error("error in searchBarcode :" , error)
-            }  finally {
-                setLoading(false)
+                return acc;
+            },
+            {
+                totalMrp: 0,
+                totalPurchaseDiscount: 0,
+                subTotal: 0,
+                totalGstAmount: 0,
+                totalOtherExpenses: 0,
+                grandTotal: 0,
             }
+        );
+    }, [products]);
+
+    const [supplier, setSupplier] = useState([])
+    const [draftProduct, setDraftProduct] = useState({
+        product_id: "",
+        product_photo: null,
+        product_name: "",
+        product_barcode: "",
+        batch_no: "",
+        free_received: 0,
+        quantity_received: 0,
+        size: "",                       
+        manufacture_date: "",   
+        expiry_date: "",
+        best_before: 0,
+        mrp : 0,
+        purchase_cost: 0,                       // purchase cost of the product w/o gst and other exp
+        gst_percentage: 0,
+        other_expenses: 0,
+        selling_price: 0,
+    })
+
+    // Supplier Search
+    const [searchSupplier, setSearchSupplier] = useState("");
+    const [searchSupplierResults, setSearchSupplierResults] = useState([]);
+    const [showSupplierResults, setShowSupplierResults] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            searchSuppliers(searchSupplier);
+        }, 400); // Wait 400ms after user stops typing
+        return () => clearTimeout(timer);
+    }, [searchSupplier]);
+
+    const searchSuppliers = async (query) => {
+        if (!query.trim()) {
+            setSupplierId('')
+            setSupplier([])
+            setSearchSupplierResults([]);
+            setShowSupplierResults(false);
+            return;
         }
-    }
-
-    const searchProductByName = debounce(async (term) => {
-        if(term.length){
-            try {
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/product/name/${term}`)
-                setSearchedProducts(res?.data?.data) 
-                console.log({searchedProducts : res?.data?.data})
-            } catch (error) {
-                console.error("error in searchName :" , error)
-            }
-        }
-    },500)
-
-    const handleProductName = (e) => {
-        const term = e.target.value;
-        setProductName(term)
-        if(term.length > 2){searchProductByName(term)}
-        else{setSearchedProducts(null)}
-    }
-
-    const clickSearchedProductByName = (product)=>{
-        setProductBarcode(product?.product_barcode)
-        setProductName(product?.product_name)
-        setSearchedProducts(null)
-    }
-
-    const handleAddRow = async(e)=>{
-        e.preventDefault()
-
-        if(Number(mrp) < Number(price)){ toast.warn("PRICE Should Be Less Than MRP"); return }
-        if(quantity_recieved < 1){ 
-            toast.warn("Quantity Received Should Be Valid Number"); 
-            input4Ref.current.focus()
-            return 
-        }
-
-        let existingProductBarcode = []
-        products?.map(product=> existingProductBarcode = [...existingProductBarcode, product.product_barcode])
-        if(existingProductBarcode.includes(product_barcode)){ toast.warn("Product Already Added"); return }
-
         try {
-            setLoading(true)
-            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/product/barcode/${product_barcode}`)
-            console.log("Validating Product Payload", res.data)
-        } catch (error) {
-            toast.error("Product Not Found")
-            return
-        } finally { setLoading(false)}
+            const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/create-purchase/fetch-supplier/`, { params: {query}});
+            console.log(data)
+            setSearchSupplierResults(data.data);
+            setShowSupplierResults(true);
+        } catch (err) { console.log(err);}
+    };
 
-        setTotalPurchaseAmount(((Number(purchase_cost) + Number(other_expences) ) * Number(quantity_recieved) ) + Number(total_purchase_amount))
-        const total_purchase_cost = (Number(purchase_cost) + Number(other_expences) ) * Number(quantity_recieved)
+    const selectSupplier = (supplier) => {
+        setSearchSupplier("")
+        setSearchSupplierResults([])
+        setShowSupplierResults(false)
 
-        const data = {product_barcode, product_name, batch_no, quantity_recieved, size, manufacture_date, expire_date, best_before, mrp, purchase_cost, gst, other_expences, price, total_purchase_cost}
-        setProducts([...products , data])
-        reset()
-    }
+        setSupplier(supplier)
+        setSearchSupplier(supplier.supplier_name)
+        setSupplierId(supplier._id)
+    };
 
-    const handleDeleteProduct = (e , index) => {
-        e.preventDefault()
-        const rmPro = products.filter((_, i) => i == index)[0]
-        const newArray = products.filter((_, i) => i !== index);
-        setTotalPurchaseAmount(total_purchase_amount - (Number(rmPro.quantity_recieved) * (Number(rmPro.purchase_cost) + Number(rmPro.other_expences))))
-        setProducts(newArray);
-    }
+    // product search
+    const [search, setSearch] = useState("");
+    const [searchResults, setSearchResults] = useState([]);
+    const [showResults, setShowResults] = useState(false);
 
-    const handleCreatePurchase = async()=>{
-        const data = {supplier_id, invoice_no, products, total_purchase_amount}
-        console.log(data)
-        if(!supplier_id){inputaRef.current.focus(); return}
-        if(!invoice_no){inputbRef.current.focus(); return}
-        if(!products.length){input1Ref.current.focus(); return}
-        if(supplier_id && invoice_no && products.length ){
-            try {
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            searchProduct(search);
+        }, 400); // Wait 400ms after user stops typing
 
-                setLoading(true)
-                console.log({data})
-                const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/create-purchase`, {data})
-                console.log("CreatePurchase payload", res.data)
-                toast.success(res.data?.message)
-                reset()
-                setSupplierId('')
-                setInvoiceNo('')
-                setProducts([]) 
-                navigate('/admin/entry')
-            } catch (error) {
-                toast.error(error.response.data?.message)
-                console.error("error in CreatePurchase :" , error)
-            } finally { setLoading(false) }
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    const searchProduct = async (query) => {
+        if (!query.trim()) {
+            setSearchResults([]);
+            setShowResults(false);
+            return;
         }
+        try {
+            const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/create-purchase/search-products/`, { params: {query}});
+            console.log(data)
+            setSearchResults(data.data);
+            setShowResults(true);
+        } catch (err) { console.log(err);}
+    };
+
+    const selectSearchProduct = (product) => {
+        setSearch("")
+        setSearchResults([])
+        setShowResults(false)
+
+        const batch = product.latest_batch_details || {};
+        setDraftProduct({
+            product_id: product._id,
+            product_photo: product.product_photo,
+            product_name: product.product_name,
+            product_barcode: product.product_barcode,
+            batch_no: batch.batch_no ?? "",
+            free_received: 0,
+            quantity_received: 0,
+            size: batch.size ?? "",
+            manufacture_date: batch.manufacture_date ? format(batch.manufacture_date, "yyyy-MM-dd") :"",
+            expiry_date: batch.expiry_date ? format(batch.expiry_date , "yyyy-MM-dd") : "",
+            best_before: batch.best_before ?? 0,
+            mrp: batch.mrp ?? 0,
+            purchase_cost: batch.purchase_cost ?? 0,
+            gst_percentage: batch.gst_percentage ?? 0,
+            other_expenses: batch.other_expenses ?? 0,
+            selling_price: batch.selling_price ?? 0,
+        })
+    };
+
+    const resetDraft = ()=>{
+        setSearch("")
+        setSearchResults([])
+        setShowResults(false)
+
+        setDraftProduct({
+            product_id: "",
+            product_name: "",
+            product_barcode: "",
+            batch_no: "",
+            free_received: 0,
+            quantity_received: 0,
+            size: "",
+            manufacture_date: "",
+            expiry_date: "",
+            best_before: 0,
+            mrp : 0,
+            purchase_cost: 0,
+            gst_percentage: 0,
+            other_expenses: 0,
+            selling_price: 0,
+        })
     }
 
-    if (loading) {return <div>Loading..</div>}
-    if (error) {return <div>Error</div>}
-  return (
-    <div className="min-h-screen w-full">
-        <div className="tracking-wide font-[arial] bg-gray-200 p-5 flex justify-between">
-            <div className="flex gap-5 ">
-                <div>
-                    <label htmlFor="supplier_id">Supplier</label>
-                    <select name="supplier_id" required autoFocus value={supplier_id} onChange={(e)=> setSupplierId(e.target.value)} 
-                        ref={inputaRef}
-                        className="w-full mt-1 p-[11px] border   border-gray-400 rounded-md cursor-pointer "> 
+    const addProduct = () => {
+
+        const {product_id, product_name, product_barcode, batch_no, free_received, quantity_received, size, manufacture_date, expiry_date, best_before, mrp, purchase_cost, gst_percentage, other_expenses, selling_price} = draftProduct
+
+        // validation
+        const existingProduct = products.find( (item) => item.product_id === product_id);
+        if (existingProduct) { toast.warn("This product has already been added."); return}
+        if(!product_id || !product_barcode || !product_name || !quantity_received || !mrp || !purchase_cost || !selling_price ){ toast.warn("Kindly fill the required fields") ; return }
+        if ( !Number.isFinite(Number(mrp)) || !Number.isFinite(Number(purchase_cost)) || !Number.isFinite(Number(selling_price)) || !Number.isFinite(Number(free_received)) || !Number.isFinite(Number(quantity_received)) || !Number.isFinite(Number(gst_percentage)) || !Number.isFinite(Number(other_expenses)) ) { toast.warn("Enter valid numeric values"); return }
+        if( Number(mrp) < Number(purchase_cost) ) { toast.warn("Purchase cost should be less than mrp") ; return}
+        if( Number(mrp) < Number(selling_price) ) { toast.warn("Selling price should be less than mrp") ; return}
+        if( Number(quantity_received) <= 0 ) { toast.warn("Qty received should be more than 1") ; return}
+        if( Number(selling_price) <= 0 ) { toast.warn("Selling price should be more than 1") ; return}
+
+        // adding
+        setProducts(prev => [...prev, { ...draftProduct }]);
+
+        resetDraft()
+    }
+
+    const removeRow = (product) => {
+
+        const {product_id, product_name, product_barcode, batch_no, free_received, quantity_received, size, manufacture_date, expiry_date, best_before, mrp, purchase_cost, gst_percentage, other_expenses, selling_price} = product
+
+        setProducts(products.filter((item) => item.product_id !== product_id));
+    };
+
+    const lineTotal = (product)=>{
+        const lineAmount = Number(product.quantity_received) * Number(product.purchase_cost)
+        const gstValue = Number(lineAmount) * Number(product.gst_percentage) / 100
+        const lineTotalAmount = (Number(lineAmount) + Number(gstValue) + (Number(product.other_expenses) * product.quantity_received))
+
+        return Number(lineTotalAmount)
+    }
+   
+    const unitPerCost = (product)=>{
+        const gstValue = Number(product.purchase_cost) * Number(product.gst_percentage) / 100
+        const perProductCost = (Number(product.purchase_cost) + Number(gstValue) + Number(product.other_expenses))
+        return Number(perProductCost).toFixed(2)
+    }
+
+    const handleDraftChange = (e) => {
+        const { name, value } = e.target;
+        setDraftProduct((prev) => ( { ...prev, [name]: value, }))
+    };
+
+    const editProduct = (product)=>{
+
+        const {product_id, product_name, product_barcode, batch_no, free_received, quantity_received, size, manufacture_date, expiry_date, best_before, mrp, purchase_cost, gst_percentage, other_expenses, selling_price} = product
+
+        setDraftProduct(product)
+        setProducts(products.filter((item) => item.product_id !== product.product_id));
+
+    }
+
+    const handleSubmit = async(e)=>{
+        const data = { supplier_id, supplier_invoice_no, invoice_date, delivery_date, products, payment_method, discount_received, paid_amount, payment_date }
+        console.log({data})
+        if(!supplier_id || !supplier_invoice_no || !invoice_date || !delivery_date || !products.length){
+            toast.warn("Fill the required details ")
+            return;
+        }
+        try {
+            setLoading(true) 
+           const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/create-purchase` , data)
+            console.log("addPurchaseEntry response",res.data)
+            toast.success(res.data?.message)
+            navigate('/admin/purchase')
+        } catch (error) {
+            toast.error(error.response?.data?.message)
+            console.log("error in addPurchaseEntry :" , error)
+        } finally { setLoading(false) }
+    }
+
+    if (loading) { return <LoadingSpinner/>}
+    if (error) { return <ErrorComponent/>}
+
+    return (
+        <div className="flex min-h-screen">
+            <AdminSideBar />
+
+            <div className="flex-1 p-6 font-inter">
+
+                <h1 className="text-3xl font-bold text-gray-700">Purchase Entry</h1>
+                <p className="text-gray-500 font-medium mt-1">Create a new purchase invoice</p>
+
+                <div className="grid grid-cols-11 gap-6 mt-5">
+
+                    <AdminPurchaseEntrySupplierDetailsComponent supplier={supplier} searchSupplier={searchSupplier} setSearchSupplier={setSearchSupplier} searchSupplierResults={searchSupplierResults} showSupplierResults={showSupplierResults} selectSupplier={selectSupplier} />
+
+                    {/* Invoice & Payment Details */}
+                    <div className="bg-white col-span-6 space-y-4 gap-x-4 grid grid-cols-10 rounded-xl shadow-md border p-6">
+
+                        <h2 className="font-semibold text-lg col-span-10 text-sky-600 ">Invoice & Payment Details</h2>
+
+                        <div className="col-span-4">
+                            <label className="font-medium text-gray-600">Invoice No.</label>
+                            <input className="w-full mt-2 border text-gray-800 font-medium rounded-lg p-3" value={supplier_invoice_no} onChange={(e)=>setSupplierInvoiceNo(e.target.value)} />
+                        </div>
+
+                        <div className="col-span-3">
+                            <label className="font-medium text-gray-600">Invoice Date</label>
+                            <input type="date" className="w-full mt-2 border text-gray-800 rounded-lg p-3" value={invoice_date} onChange={(e)=>setInvoiceDate(e.target.value)} />
+                        </div>
                         
-                        <option disabled value=''  />
-                        {suppliers?.map((supplier, index) =>( 
-                            <option key ={index} value={supplier._id}>{supplier.supplier_name}</option> ))
-                        }
-                    </select>
+                        <div className="col-span-3">
+                            <label className="font-medium text-gray-600">Delivery Date</label>
+                            <input type="date" className="w-full mt-2 border text-gray-800 rounded-lg p-3" value={delivery_date} onChange={(e)=>setDeliveryDate(e.target.value)} />
+                        </div>
+
+                        <div className="col-span-3">
+                            <label className="font-medium text-gray-700">Payment Method</label>
+                            <select className="w-full mt-2 border font-medium rounded-lg p-[16px]" value={payment_method} onChange={(e)=>setPaymentMethod(e.target.value)}>
+                                <option value="" disabled />
+                                <option value={'Cash'}>Cash</option>
+                                <option value={"UPI"}>UPI</option>
+                                <option value={"Card"}>Card</option>
+                                <option value={"Bank Transfer"}>Bank Transfer</option>
+                            </select>
+                        </div>
+                       
+                        <div className="col-span-3">
+                            <label className="font-medium text-gray-600">Payment Date</label>
+                            <input type="date" className="w-full mt-2 border text-gray-800 rounded-lg p-3" value={payment_date} onChange={(e)=>setPaymentDate(e.target.value)} />
+                        </div>
+
+                        <div className="col-span-2">
+                            <label className="font-medium text-gray-600">Paid Amount</label>
+                            <input type="number" min={0} className="w-full mt-2 border text-gray-800 rounded-lg p-3" value={paid_amount} onChange={(e)=> e.target.value >= 0 ? setPaidAmount(e.target.value) : 0}/>
+                        </div>
+
+                        <div className="col-span-2">
+                            <label className="font-medium text-gray-600">Disc. Rec.</label>
+                            <input type="number" min={0} className="w-full mt-2 border text-gray-800 rounded-lg p-3" value={discount_received} onChange={(e)=> e.target.value >= 0 ? setDiscountReceived(e.target.value) : 0} />
+                        </div>
+                    </div>
                 </div>
 
-                <div>
-                    <label htmlFor="Invoice No">Invoice No</label>
-                    <input type="text" name="Invoice No" id="Invoice No" autoComplete="off" required
-                        value={invoice_no} onChange={(e)=>setInvoiceNo(e.target.value)}
-                        ref={inputbRef} onKeyDown={(e) => handleKeyDown(e, input1Ref)}
-                        className="w-full mt-1 p-2 border border-gray-400 rounded-md " />
+                <div className="grid grid-cols-12 gap-6 mt-7">
+                    {/* Add Products */}
+                    <div className="bg-white col-span-9 rounded-xl shadow-md border p-6">
+                        
+                        <h2 className="font-semibold text-lg text-sky-600 mb-4">Add Products</h2>
+                        <div className="relative">
+                            <FiSearch className="absolute top-4 left-4 text-gray-400"/>
+                            <input className=" w-full border rounded-xl pl-12 p-3"  placeholder="Search Product by Name / Barcode" value={search} onChange={(e) => setSearch(e.target.value)}/>
+                            {showResults && (
+                                <div className="mt-2 border absolute w-full bg-white rounded-xl shadow-lg max-h-72 overflow-y-auto">
+                                    {searchResults?.length === 0 ? (
+                                        <div className="p-4 text-gray-500">No Products Found</div>
+                                    ) : ( 
+                                        searchResults?.map((product, index) => (
+                                        <div key={index} className="p-3 hover:bg-blue-50 cursor-pointer items-center gap-3 flex border-b" onClick={() => selectSearchProduct(product)}>
+                                            <div>
+                                                <img src={`${import.meta.env.VITE_IMAGE_URL}${product.product_photo?.url}`} alt={product?.product_name} className="w-16 h-16 text-center rounded-xl object-cover"/>
+                                            </div>
+                                            <div>
+                                                <h3 className="font-medium">{product.product_name}</h3>
+                                                <p className="text-sm mt-1 text-gray-500">{product.product_barcode}</p>
+                                            </div>
+                                        </div>
+                                    )))}
+                                </div>
+                            )}
+                        </div>
+                        
+                        <div className='grid grid-cols-10 gap-x-5 gap-y-3 mt-5 text-gray-800 font-medium '>
+                            <div className="col-span-3">
+                                <label className="text-gray-600">Product Name</label>
+                                <input type="text" className="w-full mt-2 border rounded-lg p-3" value={draftProduct.product_name} disabled/>
+                            </div>
+                            <div className="col-span-3">
+                                <label className="text-gray-600">Product Barcode</label>
+                                <input type="text" className="w-full mt-2 border rounded-lg p-3" value={draftProduct.product_barcode} disabled/>
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-gray-600">Batch No.</label>
+                                <input type="text" className="w-full mt-2 border rounded-lg p-3" name="batch_no" value={draftProduct.batch_no} onChange={handleDraftChange}/>
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-gray-600">Size</label>
+                                <input type="text" className="w-full mt-2 border rounded-lg p-3" name="size" value={draftProduct.size} onChange={handleDraftChange}/>
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-neutral-500">Free Received</label>
+                                <input type="number" className="w-full mt-2 border rounded-lg p-3" name="free_received" value={draftProduct.free_received} onChange={(e)=> e.target.value >= 0 ? handleDraftChange(e) : 0 }/>
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-gray-600">Qty Received</label>
+                                <input type="number" className="w-full mt-2 border rounded-lg p-3" name="quantity_received" value={draftProduct.quantity_received} onChange={(e)=> e.target.value >= 0 ? handleDraftChange(e) : 0}/>
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-gray-600">Mfg. Date</label>
+                                <input type="date" className="w-full mt-2 border rounded-lg p-3" name="manufacture_date" value={draftProduct.manufacture_date} onChange={handleDraftChange}/>
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-gray-600">Exp. Date</label>
+                                <input type="date" className="w-full mt-2 border rounded-lg p-3" name="expiry_date" value={draftProduct.expiry_date} onChange={handleDraftChange}/>
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-gray-600">Best Before</label>
+                                <input type="number" className="w-full mt-2 border rounded-lg p-3" name="best_before" value={draftProduct.best_before} onChange={(e)=> e.target.value >= 0 ? handleDraftChange(e) : 0}/>
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-gray-600">MRP</label>
+                                <input type="number" className="w-full mt-2 border rounded-lg p-3" name="mrp" value={draftProduct.mrp} onChange={(e)=> e.target.value >= 0 ? handleDraftChange(e) : 0}/>
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-gray-600">Purchase Cost</label>
+                                <input type="number" className="w-full mt-2 border rounded-lg p-3" name="purchase_cost" value={draftProduct.purchase_cost} onChange={(e)=> e.target.value >= 0 ? handleDraftChange(e) : 0}/>
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-gray-600">GST %</label>
+                                <input type="number" className="w-full mt-2 border rounded-lg p-3" name="gst_percentage" value={draftProduct.gst_percentage} onChange={(e)=> e.target.value >= 0 ? handleDraftChange(e) : 0}/>
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-gray-600">Other Expenses</label>
+                                <input type="number" className="w-full mt-2 border rounded-lg p-3" name="other_expenses" value={draftProduct.other_expenses} onChange={(e)=> e.target.value >= 0 ? handleDraftChange(e) : 0}/>
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-gray-600">Selling Price</label>
+                                <input type="number" className="w-full mt-2 border rounded-lg p-3" name="selling_price" value={draftProduct.selling_price} onChange={(e)=> e.target.value >= 0 ? handleDraftChange(e) : 0}/>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between mt-5 ">
+                            <div className="text-gray-700 font-medium flex gap-4"><span>Total : ₹{lineTotal(draftProduct).toLocaleString()}</span><span>( ₹{unitPerCost(draftProduct)} )</span></div>
+                            <div className=" flex gap-5">
+                                <button onClick={()=>resetDraft()} className="flex items-center gap-2 bg-red-500 text-white px-5 py-3 rounded-lg hover:bg-red-600">Reset</button>
+                                <button onClick={()=>addProduct()} className="flex items-center gap-2 bg-sky-500 text-white px-5 py-3 rounded-lg hover:bg-sky-600"><FiPlus size={20} /> Add Product</button>
+                            </div>
+                        </div>
+                    </div>
+                    {/* Product & Price Details */}
+                    <div className="bg-white font-medium text-gray-500 text-[17px] col-span-3 rounded-xl shadow-md border p-6 pt-8">
+
+                        <h2 className="font-semibold text-lg text-sky-600 mb-5">Product & Price Details</h2>
+
+                        <div className="flex justify-between mb-3">
+                            <span>MRP Amount</span>
+                            <span className="text-slate-700 font-semibold">₹{totals.totalMrp.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between mb-3">
+                            <span>Discount</span>
+                            <span className="text-slate-700 font-semibold">- ₹{totals.totalPurchaseDiscount.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between mb-3">
+                            <span>Sub Total</span>
+                            <span className="text-slate-700 font-semibold">₹{totals.subTotal.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between mb-3">
+                            <span>GST</span>
+                            <span className="text-slate-700 font-semibold">₹{totals.totalGstAmount.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between mb-3">
+                            <span>Other exp.</span>
+                            <span className="text-slate-700 font-semibold">₹{totals.totalOtherExpenses.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between mb-3">
+                            <span>Spl. Discount</span>
+                            <span className="text-slate-700 font-semibold">- ₹{discount_received ? Number(discount_received).toLocaleString() : 0}</span>
+                        </div>
+                        <div className="flex justify-between text-xl border-t-[3px] border-dashed py-3 pb-4 ">
+                            <span>Grand Total</span>
+                            <span className="text-sky-600 font-bold">₹{(totals.grandTotal - discount_received).toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between mb-3">
+                            <span>Paid Amount</span>
+                            <span className="text-emerald-600 font-semibold">₹{paid_amount ? Number(paid_amount).toLocaleString() : 0}</span>
+                        </div>
+                        <div className="flex justify-between border-t pt-3">
+                            <span>Balance Amount</span>
+                            <span className={`font-semibold text-orange-500 ${(totals.grandTotal - discount_received - paid_amount) === 0 && "text-slate-700"} `}>₹{(totals.grandTotal - discount_received - paid_amount).toLocaleString()}</span>
+                        </div>
+                    </div>
                 </div>
+                
+                {/* Product Table */}               
+                <div className="h-[calc(100vh-40px)] border flex flex-col mt-6 rounded-xl shadow-md p-3">
+                    <AdminPurchaseEntryProductTable products={products} editProduct={editProduct} removeRow={removeRow} lineTotal={lineTotal} unitPerCost={unitPerCost} />
+                    
+                    <div className="flex justify-end gap-5 p-5 border-t">
+                        <button onClick={() => toast.warn("not creted yet")} className="bg-green-500 hover:bg-green-600 text-white p-3 px-5 rounded-xl">Save Draft</button>
+                        <button onClick={()=>handleSubmit()} className="bg-sky-500 hover:bg-sky-600 text-white p-3 px-5 rounded-xl">Submit</button>
+                    </div>
+                </div>
+
+
             </div>
-            <div className="pt-4">Total Amount : {total_purchase_amount}</div>
         </div>
+    );
+};
 
-        <form onSubmit={(e)=>handleAddRow(e)} className="grid md:grid-cols-12 p-5 gap-2 gap-x-4">
-
-            <div className="col-span-2">
-                <label htmlFor="product_barcode">Barcode</label>
-                <input type="text" name="product_barcode" id="product_barcode" autoComplete="off" required
-                    value={product_barcode} onChange={(e)=>setProductBarcode(e.target.value)}
-                    ref={input1Ref} onKeyDown={(e) => searchBarcode(e)}
-                    className="w-full mt-1 p-2 border border-gray-400 rounded-md" />
-            </div>
-
-            <div className="col-span-4 relative">
-                <label htmlFor="Name">Name</label>
-                <input type="text" name="Name" id="Name" autoComplete="off" required
-                    value={product_name} onChange={(e)=>handleProductName(e)}
-                    ref={input2Ref} onKeyDown={(e) => handleKeyDown(e, input3Ref)}
-                    className="w-full mt-1 p-2 border border-gray-400 rounded-md " />
-
-                {searchedProducts?.length && product_name ? 
-                <div className='absolute bg-blue-gray-50 w-full border flex flex-col'>
-                    {searchedProducts?.map((product, index)=>(
-                        <div key={index} onClick={()=>clickSearchedProductByName(product)} className="hover:bg-gray-100 cursor-pointer p-2">{product.product_name}</div>
-                    ))}
-                </div>
-                : <div />
-                }
-            </div>
-
-            <div className="col-span-2">
-                <label htmlFor="batch_no">Batch No</label>
-                <input type="text" name="batch_no" id="batch_no" autoComplete="off"
-                    value={batch_no} onChange={(e)=>setBatchNo(e.target.value)}
-                    ref={input3Ref} onKeyDown={(e) => handleKeyDown(e, input4Ref)}
-                    className="w-full mt-1 p-2 border border-gray-400 rounded-md " />
-            </div>
-
-            <div className="col-span-2">
-                <label htmlFor="QR">Qty Received</label>
-                <input type="number" name="QR" id="QR" autoComplete="off" required
-                    value={quantity_recieved} onChange={(e)=>setQuantityRecieved(e.target.value)}
-                    ref={input4Ref} onKeyDown={(e) => handleKeyDown(e, input5Ref)}
-                    className="w-full mt-1 p-2 border border-gray-400 rounded-md " />
-            </div>
-
-            <div className="col-span-2">
-                <label htmlFor="size">Size</label>
-                <input type="text" name="size" id="size" autoComplete="off" required
-                    value={size} onChange={(e)=>setSize(e.target.value)}
-                    ref={input5Ref} onKeyDown={(e) => handleKeyDown(e, input6Ref)}
-                    className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
-            </div>
-
-            <div className="col-span-2">
-                <label htmlFor="manufacture_date">MFD</label>
-                <input type="date" name="manufacture_date" id="manufacture_date" autoComplete="off"
-                    value={manufacture_date} onChange={(e)=>setManufactureDate(e.target.value)}
-                    ref={input6Ref} onKeyDown={(e) => handleKeyDown(e, input7Ref)}
-                    className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
-            </div>
-
-            <div className="col-span-2">
-                <label htmlFor="expire_date">EXD</label>
-                <input type="date" name="expire_date" id="expire_date" autoComplete="off"
-                    value={expire_date} onChange={(e)=>setExpireDate(e.target.value)}
-                    ref={input7Ref} onKeyDown={(e) => handleKeyDown(e, input8Ref)}
-                    className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
-            </div>
-
-            <div className="col-span-2">
-                <label htmlFor="Best Before">Best Before</label>
-                <input type="number" name="Best Before" id="Best Before" autoComplete="off"
-                    value={best_before} onChange={(e)=>setBestBefore(e.target.value)}
-                    ref={input8Ref} onKeyDown={(e) => handleKeyDown(e, input9Ref)}
-                        className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
-            </div>
-
-            <div className="col-span-2">
-                <label htmlFor="mrp">MRP</label>
-                <input type="number" name="mrp" id="mrp" autoComplete="off" required
-                value={mrp} onChange={(e)=>setMrp(e.target.value)}
-                ref={input9Ref} onKeyDown={(e) => handleKeyDown(e, input10Ref)}
-                        className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
-            </div>
-
-            <div className="col-span-2">
-                <label htmlFor="purchase_cost">Purchase Cost</label>
-                <input type="number" name="purchase_cost" id="purchase_cost" autoComplete="off" required
-                   value={purchase_cost} onChange={(e)=>setPurchaseCost(e.target.value)}
-                   ref={input10Ref} onKeyDown={(e) => handleKeyDown(e, input11Ref)}
-                        className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
-            </div>
-
-            <div className="col-span-2">
-                <label htmlFor="gst">GST</label>
-                <input type="number" name="gst" id="gst" autoComplete="off" required
-                     value={gst} onChange={(e)=>setGst(e.target.value)}
-                     ref={input11Ref} onKeyDown={(e) => handleKeyDown(e, input12Ref)}
-                        className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
-            </div>
-
-            <div className="col-span-2">
-                <label htmlFor="other_expences">Other Exp</label>
-                <input type="number" name="other_expences" id="other_expences" autoComplete="off" required
-                    value={other_expences} onChange={(e)=>setOtherExpences(e.target.value)}
-                    ref={input12Ref} onKeyDown={(e) => handleKeyDown(e, input13Ref)}
-                        className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
-            </div>
-
-            <div className="col-span-2">
-                <label htmlFor="price">Price</label>
-                <input type="number" name="price" id="price" autoComplete="off" required
-                    value={price} onChange={(e)=>setPrice(e.target.value)}
-                    ref={input13Ref} 
-                    className="w-full mt-1 p-2 border   border-gray-400 rounded-md " />
-            </div>
-           
-            <div className="col-span-2 ">
-                <button type="submit" className="bg-blue-900 text-white py-2 px-5 rounded-xl mt-7">add</button>
-            </div>
-        </form>
-        <div className="border-b-2 mb-5 px-5"/>
-        <table className="text-center border-b w-full ">
-            <thead className='sticky top-0'>
-                <tr className='text-sm bg-light-blue-600 w-full text-white font-[arial] tracking-wide'>
-                    <th className="p-3"></th>
-                    <th className="p-3">BARCODE</th>
-                    <th className="p-3">NAME</th>
-                    <th className="p-3">BATCH</th>
-                    <th className="p-3">QTY REC</th>
-                    <th className="p-3">QTY</th>
-                    <th className="p-3">MFD</th>
-                    <th className="p-3">EXD</th>
-                    <th className="p-3">BB</th>
-                    <th className="p-3">MRP</th>
-                    <th className="p-3">PUR COST</th>
-                    <th className="p-3">GST</th>
-                    <th className="p-3">OTHER EXP</th>
-                    <th className="p-3">PRICE</th>
-                    <th className="p-3">Total</th>
-                    <th className="p-3"></th>
-                </tr>
-            </thead>
-
-            <tbody>
-               {products?.map((product, index)=>(
-                <tr key={index} className="border-b border-light-blue-100">
-                    <td className="p-3">{index+1}</td>
-                    <td className="p-3">{product.product_barcode}</td>
-                    <td className="p-3 text-start">{product.product_name}</td>
-                    <td className="p-3">{product.batch_no}</td>
-                    <td className="p-3">{product.quantity_recieved}</td>
-                    <td className="p-3">{product.size}</td>
-                    <td className="p-3">{product.manufacture_date}</td>
-                    <td className="p-3">{product.expire_date}</td>
-                    <td className="p-3">{product.best_before}</td>
-                    <td className="p-3">{product.mrp}</td>
-                    <td className="p-3">{product.purchase_cost}</td>
-                    <td className="p-3">{product.gst}</td>
-                    <td className="p-3">{product.other_expences}</td>
-                    <td className="p-3">{product.price}</td>
-                    <td className="p-3">{product.total_purchase_cost}</td>
-                    <td className="p-3"> <button onClick={(e) => handleDeleteProduct(e , index)} className="text-red-500 hover:text-red-700">Remove</button></td>
-                </tr>
-               ))}
-            </tbody>
-        </table>
-        <div className="flex justify-start p-5 gap-10">
-            <div onClick={()=>handleCreatePurchase()} className="bg-blue-500 text-white py-2 px-8 rounded-xl cursor-pointer">Submit</div>
-            <div onClick={()=>toast.warn("Feature Not Yet Added")} className="bg-green-500 text-white py-2 px-5 rounded-xl cursor-pointer">Save</div>
-        </div>
-    </div>
-  )
-}
-
-export default AdminPurchaseEntryPage
+export default PurchaseEntryPage;
