@@ -1,6 +1,4 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { addCartProduct, addToCart, getAddToCartStatus, getCartNoOfProductsInCart, removeFromCart} from '../../../slices/clientSlice/CartSlice'
 import { useNavigate } from 'react-router-dom'
 import LoadingSpinner from '../../../components/LoadingSpinner'
 import { useEffect } from 'react'
@@ -12,7 +10,6 @@ import axios from 'axios'
 const CartPage = () => {
 
     const navigate = useNavigate()
-    const dispatch = useDispatch()
 
     const [loading, setLoading] = useState(false)
     const [error , setError] = useState(false)
@@ -42,9 +39,6 @@ const CartPage = () => {
 
     let mrp = 0
     let price = 0
-    let no = useSelector(getCartNoOfProductsInCart)
-
-    const cartStatus = useSelector(getAddToCartStatus)
 
     if(cart.length){
         cart?.map?.((product, index)=>{
@@ -61,7 +55,6 @@ const CartPage = () => {
             const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}cart/alter-product-cart` , {data})
             console.log("addProductCart response", res.data)
             setCart(res.data?.data?.data1)
-            dispatch(addCartProduct(res.data?.data?.data2))
         } catch (error) {
             toast.error(error.response?.data?.message)
             console.log("error in addProductCart :" , error)
@@ -77,7 +70,6 @@ const CartPage = () => {
             const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}cart/alter-product-cart` , {data})
             console.log("addProductCart response", res.data)
             setCart(res.data?.data?.data1)
-            dispatch(addCartProduct(res.data?.data?.data2))
         } catch (error) {
             toast.error(error.response?.data?.message)
             console.log("error in addProductCart :" , error)
@@ -90,7 +82,6 @@ const CartPage = () => {
             const res = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}cart/remove-product-from-cart` , {data : id})
             console.log("removeProductFromCart response", res.data)
             setCart(res.data?.data?.data1)
-            dispatch(addCartProduct(res.data?.data?.data2))
         } catch (error) {
             toast.error(error.response?.data?.message)
             console.log("error in removeProductFromCart :" , error)

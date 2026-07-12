@@ -1,7 +1,9 @@
 import axios from 'axios'
+import { lowerCase } from 'lodash'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import useUserStore from '../../store/authStore'
 
 const LoginPage = () => {
 
@@ -10,18 +12,19 @@ const LoginPage = () => {
     const [email , setEmail] = useState('')
     const [password , setPassword] = useState('')
 
-    axios.defaults.withCredentials = true
+    const login = useUserStore((state) => state.login);
+
     const loginFormSubmit = async(e)=> {
         e.preventDefault()
         try {
-            const data = {email, password }
-            console.log(`${import.meta.env.VITE_BACKEND_URL}auth/login`)
-            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}auth/login` , {data})
-            console.log(res)
-            if (res.status == 200){
-                toast.success(res.data.message)
-                navigate('/')
-                location.reload()
+            if(!email || !password){ toast.warn("fill required fields"); return }
+
+            const result = await login(email, password);
+
+            if(result.success){ 
+                navigate("/");
+            }else{
+                toast.error(result.message);
             }
         } catch (error) {
             toast.error(error.response?.data?.message)
@@ -39,16 +42,14 @@ const LoginPage = () => {
                     </div>
                     <form onSubmit={(e)=>loginFormSubmit(e)} className='grid grid-cols-1 md:grid-cols-6 pr-5 my-auto gap-5 '>
                         <div className='col-span-6'>
-                            <label htmlFor="email" className='font-sans font-semibold my-3 tracking-normal'>Email</label>
-                            <input type="text" name="email" id="email" placeholder='Email' required
-                                value={email} onChange={(e)=>setEmail(e.target.value)}
-                                className="input bg-gray-100 w-full mt-2" />
+                            <label className='text-lg font-semibold text-'>Email</label>
+                            <input type="text" required value={email} onChange={(e)=>setEmail(e.target.value.toLowerCase().trim())}
+                                className="input bg-gray-100 p-3 rounded-md w-full mt-2" />
                         </div>
                         <div className='col-span-6'>
-                            <label htmlFor="password" className='font-sans font-semibold my-3 tracking-normal'>Password</label>
-                            <input type="text" name="password" id="password" placeholder='Password'required 
-                                value={password} onChange={(e)=>setPassword(e.target.value)}
-                                className="input bg-gray-100 w-full mt-2" />
+                            <label className='my-3'>Password</label>
+                            <input type="text" required value={password} onChange={(e)=>setPassword(e.target.value)}
+                                className="input bg-gray-100 p-3 rounded-md w-full mt-2" />
                         </div>
                         <div className='col-span-6 tracking-normal underline text-sm text-red-500 py-4'>
                             <div onClick={()=>toast.warn("Forget password page not created yet")} className='p-1 hover:cursor-pointer text-end'>Forget Password</div>

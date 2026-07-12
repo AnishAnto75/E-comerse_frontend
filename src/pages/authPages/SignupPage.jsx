@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import {useNavigate} from 'react-router-dom'
 import { toast } from "react-toastify";
+import useUserStore from '../../store/authStore';
 
 const SignupPage = () => {
 
@@ -12,6 +13,8 @@ const SignupPage = () => {
     const [confirmPassword , setConfirmPassword] = useState('')
     const [gender , setGender] = useState('')
 
+    const signup = useUserStore(state => state.signup);
+
     const signupFormSubmit = async(e)=> {
         e.preventDefault()
         try {
@@ -19,10 +22,14 @@ const SignupPage = () => {
             if(!password || !email || !name || !gender){toast.error("Required all fields"); return}
             const data = {name, email, password, gender}
             console.log(data)
-            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}auth/signup`, {data})
-            if (res.status == 201){navigate('/auth/login')}
-            toast.success(res.data.message)
-            console.log("Signup response :",res)
+
+            const result = await signup(data);
+
+            if(result.success){
+                navigate("/");
+            } else{
+                toast.error(result.message);
+            }
         } catch (error){
             toast.error(error.response?.data?.message)
             console.error( "Signup response : ",error)

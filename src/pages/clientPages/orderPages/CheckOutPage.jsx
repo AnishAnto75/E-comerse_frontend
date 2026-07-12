@@ -2,9 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import {useNavigate} from 'react-router-dom'
 
 import { FaCheckCircle } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
-
-import { getCheckOutAddress , getCheckOutPaymentMethod, getCheckOutProducts, setCheckOutProducts } from "../../../slices/clientSlice/OrderSlice";
 
 import CheckOutAddressComponent from "../../../components/clientComponents/checkOutComponents/CheckOutAddressComponent";
 import CheckOutProductsComponent from "../../../components/clientComponents/checkOutComponents/CheckOutProductsComponent";
@@ -17,7 +14,6 @@ import { toast } from "react-toastify";
 const CheckOutPage = () => {
 
     const navigate = useNavigate()
-    const dispatch = useDispatch()
 
     const handleRef = useRef(true)
     
@@ -45,10 +41,6 @@ const CheckOutPage = () => {
             handleRef.current = false
         }
     } , [])
-
-    const checkOutAddress = useSelector(getCheckOutAddress)
-    const checkOutProducts = useSelector(getCheckOutProducts)
-    const checkOutPaymentMethod = useSelector(getCheckOutPaymentMethod)
 
     if(loading ){return <LoadingSpinner />}
     if(error){return <div>Error Occured Kindly refresh the page</div>}

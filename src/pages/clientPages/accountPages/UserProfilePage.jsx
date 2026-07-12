@@ -1,16 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { getUser } from '../../../slices/authSlice/authSlice'
-import AccountAddressComponent from '../../../components/clientComponents/accountComponents/AccountAddressComponent'
 
 const UserProfilePage = () => {
 
-    const dispatch = useDispatch()
     const [email , setEmail] = useState('') 
     const [name , setName] = useState('')
     const [phoneNumber , setPhoneNumber] = useState('')
-
-    const user = useSelector(getUser)
 
     const handleRef = useRef(true)
     useEffect(()=>{

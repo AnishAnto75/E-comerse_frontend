@@ -1,18 +1,10 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { getAddress } from '../../../slices/clientSlice/AddressSlice'
-import { getCheckOutAddress, setCheckOutAddress } from '../../../slices/clientSlice/OrderSlice'
 import AddNewAddressComponent from '../accountComponents/AddNewAddressComponent'
 
 const CheckOutAddressComponent = () => {
 
-    const dispatch  = useDispatch()
-    const addresses = useSelector(getAddress)
-    const checkOutAddress = useSelector(getCheckOutAddress)
 
-    const setAddress = (address)=>{
-        dispatch(setCheckOutAddress(address))
-    }
+    const addresses = []
 
   return (
      <div className='space-y-4 border-b py-2 pb-4'>

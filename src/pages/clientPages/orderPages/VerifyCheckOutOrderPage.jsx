@@ -1,8 +1,5 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react'
-import { useDispatch, useSelector } from "react-redux";
 import {useNavigate} from 'react-router-dom'
-import { emptyCart, getCart, getCartDeliveryCharge, getCartNoOfProductsInCart, } from '../../../slices/clientSlice/CartSlice.js';
-import { emptyCheckOut, getCheckOutAddress, getCheckOutPaymentMethod, getCheckOutProducts } from '../../../slices/clientSlice/OrderSlice.js'
 import axios from 'axios';
 import LoadingSpinner from '../../../components/LoadingSpinner.jsx';
 import { toast } from 'react-toastify';
@@ -10,11 +7,8 @@ import { toast } from 'react-toastify';
 const VerifyCheckOutOrderPage = () => {
 
     const navigate = useNavigate()
-    const dispatch = useDispatch()
     const handleRef = useRef(true)
     const [loading, setLoading] = useState(true)
-
-    const cart_product = useSelector(getCheckOutProducts)
 
     const product_details = cart_product?.map((product)=>{
         const data = {

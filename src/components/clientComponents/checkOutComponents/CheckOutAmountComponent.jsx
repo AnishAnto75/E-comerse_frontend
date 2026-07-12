@@ -1,11 +1,6 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
-import { getCartDeliveryCharge, getCartNoOfProductsInCart} from '../../../slices/clientSlice/CartSlice'
 
 const CheckOutAmountComponent = ({products}) => {
-
-    const deliveryCharge = useSelector(getCartDeliveryCharge)
-    const no = useSelector(getCartNoOfProductsInCart)
     
     let totalMrp = 0
     let price = 0

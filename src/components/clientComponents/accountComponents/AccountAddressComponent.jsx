@@ -1,6 +1,4 @@
 import React, { useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { changeEditAddressStatus, deleteAddress, getAddress, getEditAddressStatus } from '../../../slices/clientSlice/AddressSlice.js'
 
 import AddNewAddressComponent from './AddNewAddressComponent';
 import EditAddressComponent from './EditAddressComponent.jsx';
@@ -8,9 +6,7 @@ import { MdDelete, MdEdit } from "react-icons/md";
 
 const AccountAddressComponent = () => {
 
-    const dispatch = useDispatch()
-    
-    const addresses = useSelector(getAddress)
+    const addresses = []
 
     const [editingAddress , setEditingAddress] = useState(null)
 

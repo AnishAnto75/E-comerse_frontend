@@ -1,10 +1,7 @@
 import React, { useState } from 'react'
-import { addNewAddress } from '../../../slices/clientSlice/AddressSlice'
-import { useDispatch } from 'react-redux'
 
 const AddNewAddressComponent = () => {
     
-    const dispatch = useDispatch()
     const [newAddress , setNewAddress] = useState(false)
 
     const [name , setName] = useState('')
@@ -21,7 +18,6 @@ const AddNewAddressComponent = () => {
     const handleSubmit = (e)=>{
         e.preventDefault()
         const data = {name, phoneNo, alternatePhoneNo, pincode, houseNo, landMark, city, district, state, addressType }
-        dispatch(addNewAddress(data))
         reset()
         setNewAddress(false)
     }

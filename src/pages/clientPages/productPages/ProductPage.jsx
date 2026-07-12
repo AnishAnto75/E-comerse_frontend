@@ -1,53 +1,48 @@
-import axios from 'axios'
 import React, { useEffect, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import ProductCard from '../../../components/clientComponents/productComponents/ProductCard'
+import { toast } from 'react-toastify'
+import axios from 'axios'
+import LoadingSpinner from '../../../components/LoadingSpinner'
+import ErrorComponent from '../../../components/ErrorComponent'
 
 const ProductPage = () => {
-    
-    const {id} = useParams()
 
-    const [product , setProduct] = useState('')
     const [loading , setLoading] = useState(false)
-    const [error , setError] = useState(null)
+    const [products , setProducts ] = useState([])
+    const [error , setError] = useState(false)
     const handleRef = useRef(true)
-    
+
     useEffect(()=>{
-        if(handleRef.current){
+        const fetch = async()=>{
+            try {
+                setLoading(true)
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}user/product`)
+                console.log("fetchAllProduct payload : " , res.data)        
+                setProducts(res.data.data.products)
+            } catch (error) {
+                setError(true)
+                toast.error(error.response?.data?.message)
+                console.log("error in fetchAllProduct :" , error)
+            } finally { setLoading(false) }
+        }
+        if(handleRef.current) {
             fetch()
             handleRef.current = false
         }
-    },[])
+    } , [])
 
-    const fetch = async()=>{
-        const PRODUCT_URL = `${import.meta.env.VITE_BACKEND_URL}product/${id}`
-        try {
-            setLoading(true)
-            const res = await axios.get(PRODUCT_URL)
-            console.log(res)
-            if (res){
-                console.log(res.data)
-                setProduct(res.data.data)
-            }
-        } catch (err) {
-            console.log("error",err.response.data)
-            setError(err.response.data)
-        } finally {
-            setLoading(false)
-        }
-    }
+    if(loading){return <LoadingSpinner />}
+    if(error){return <ErrorComponent />}
+    if(!products.length){return <ErrorComponent />}
 
-    if (loading) {
-        return (
-            <div className='p-5'>loading... </div>
-        )
-    }
-    if(error){
-        return (
-            <div className='p-5'>{error.message}</div>
-        )
-    }
   return (
-    <div>{JSON.stringify(product)}</div>
+    <div className='min-h-screen'>
+        <div className='grid gap-2 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-2 p-3 overflow-auto min-w-80'>
+            {products?.map((product, index) => 
+                <ProductCard key={index} product= {product}/>
+            )}
+        </div>
+    </div>
   )
 }
 

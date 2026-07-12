@@ -1,6 +1,4 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
-import { getCart } from '../../../slices/clientSlice/CartSlice'
 
 const CheckOutProductsComponent = ({cartProducts}) => {
     return (

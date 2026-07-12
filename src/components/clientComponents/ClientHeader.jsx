@@ -1,34 +1,27 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
-import { logout , isUserValid, getUser } from "../../slices/authSlice/authSlice.js";
 import { CgProfile } from "react-icons/cg";
+import useUserStore from '../../store/authStore';
 
 const ClientHeader = () => {
-    const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    const validUser = useSelector(isUserValid)
-    const user = useSelector(getUser)
+    const isAuthenticated = useUserStore( (state) => state.isAuthenticated );
+    const user = useUserStore( (state) => state.user );
 
-
-    const logoutUser = ()=>{
-        dispatch(logout())
-    }
+    const logout = useUserStore(state => state.logout);
 
   return (
     <div className='border-b p-5 pl-4 border-gray-400 flex justify-between'>
         <Link to={'/'} className='px-3 text-xl font-[arial] font-bold tracking-wide flex items-center '>TIFTO</Link>
-        <div className={'px-3 gap-10 font-[arial] items-center flex '}>
-            <button onClick={()=>navigate('/profile')} className={`flex gap-1.5 ${!validUser && "hidden"}`}>
-                <CgProfile className='text-2xl'/> {user?.name}
-            </button>
-            {validUser ?
-                <div onClick={()=>logoutUser()}>Logout</div>  
-                :
-                <button onClick={()=>navigate('/auth/login')}>Login</button>
-            }
-        </div>
+        { isAuthenticated ?
+            <div className='flex gap-5'>
+                <div>{user.name}</div>
+                <div onClick={logout}>logout</div>
+            </div>
+            : 
+            <Link to={"/auth/login"}>Login</Link>
+        }
     </div>
   )
 }

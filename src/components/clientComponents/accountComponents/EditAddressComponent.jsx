@@ -1,13 +1,9 @@
 import React, { useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { editAddress, getEditAddressStatus } from '../../../slices/clientSlice/AddressSlice'
 
 const EditAddressComponent = ({address}) => {
-    const dispatch = useDispatch()
 
     const handleRef = useRef(true)
 
-    const editAddressStatus = useSelector(getEditAddressStatus)
 
     const [name , setName] = useState('')
     const [phoneNo , setPhoneNo] = useState('')
@@ -40,10 +36,8 @@ const EditAddressComponent = ({address}) => {
     const handleSubmit = (e)=>{
         e.preventDefault()
         const data = { name, phoneNo, alternatePhoneNo, pincode, houseNo, landMark, city, district, state, addressType , _id}
-        dispatch(editAddress(data))
     }
 
-    if(editAddressStatus == 'loading'){return <div>Loading...</div>} 
 
   return (
     <>

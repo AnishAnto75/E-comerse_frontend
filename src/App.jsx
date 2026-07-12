@@ -1,11 +1,5 @@
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
-import { useDispatch, useSelector } from 'react-redux'
-
-import { fetchUser, getAdmin, getUser, getUserStatus } from "./slices/authSlice/authSlice.js";
-
-import { addAllAddress } from "./slices/clientSlice/AddressSlice.js";
-import { addCartProduct } from "./slices/clientSlice/CartSlice.js";
 
 import LoginPage from "./pages/authPages/LoginPage.jsx";
 import SignupPage from "./pages/authPages/SignupPage.jsx";
@@ -14,7 +8,6 @@ import AdminLayout from "./layout/AdminLayout.jsx";
 import ClientLayout from "./layout/ClientLayout.jsx";
 
 import HomePage from "./pages/clientPages/HomePage.jsx";
-import AllProductPages from "./pages/clientPages/productPages/AllProductPages.jsx";
 import UserProfilePage from "./pages/clientPages/accountPages/UserProfilePage.jsx";
 
 import AdminHomePage from "./pages/adminPages/AdminHomePage.jsx";
@@ -29,7 +22,6 @@ import AdminAddNewStaffPage from "./pages/adminPages/AdminStaffPages/AdminAddNew
 import AdminAllStaffPage from "./pages/adminPages/AdminStaffPages/AdminAllStaffPage.jsx";
 import AdminStaffViewPage from "./pages/adminPages/AdminStaffPages/AdminStaffViewPage.jsx";
 
-import ProductPage from "./pages/clientPages/productPages/ProductPage.jsx";
 import CartPage from "./pages/clientPages/cartPages/CartPage.jsx";
 import CheckOutPage from "./pages/clientPages/orderPages/CheckOutPage.jsx";
 import OrderPage from "./pages/clientPages/orderPages/OrderPage.jsx";
@@ -39,7 +31,6 @@ import VerifyCheckOutOrderPage from "./pages/clientPages/orderPages/VerifyCheckO
 import PageNotFoundPage from "./pages/PageNotFoundPage.jsx";
 import TestingPage from "./pages/TestingPage.jsx";
 
-
 import { ToastContainer } from 'react-toastify';
 import AdminProductViewPage from "./pages/adminPages/adminProductPages/AdminProductViewPage.jsx";
 import AdminSupplierPage from "./pages/adminPages/adminSupplierPages/AdminSupplierPage.jsx";
@@ -47,10 +38,6 @@ import AdminSupplierViewPage from "./pages/adminPages/adminSupplierPages/AdminSu
 import AdminPurchaseEntryPage from "./pages/adminPages/adminPurchasePages/AdminPurchaseEntryPage.jsx";
 import AdminAllPurchasesPage from "./pages/adminPages/adminPurchasePages/AdminAllPurchasesPage.jsx";
 import AdminPurchaseViewPage from "./pages/adminPages/adminPurchasePages/AdminPurchaseViewPage.jsx";
-import AdminBannerPage from "./pages/adminPages/adminBannerPages/AdminBannerPage.jsx";
-import AdminCreateBannerPage from "./pages/adminPages/adminBannerPages/AdminCreateBannerPage.jsx";
-import { getAdminCreateBannerStatus } from "./slices/adminSlice/adminBannerSlice.js";
-import AdminEditBannerPage from "./pages/adminPages/adminBannerPages/AdminEditBannerPage.jsx";
 import AdminEditProductPage from "./pages/adminPages/adminProductPages/AdminEditProductPage.jsx";
 import AdminViewCustomerPage from "./pages/adminPages/adminCustomerPages/AdminViewCustomerPage.jsx";
 import AdminGroupsCategoriesPage from "./pages/adminPages/adminGroups&CategoriesPages/AdminGroupsCategoriesPage.jsx"
@@ -64,35 +51,21 @@ import AdminEditCustomerPage from "./pages/adminPages/adminCustomerPages/AdminEd
 import AdminPurchasePage from "./pages/adminPages/adminProductPages/AdminPurchasePage.jsx";
 
 import AdminCreateSupplierPage from "./pages/adminPages/adminSupplierPages/AdminCreateSupplierPage.jsx";
+import ProductPage from "./pages/clientPages/productPages/ProductPage.jsx";
+
+
+import ProductViewPage from './pages/clientPages/productPages/ProductViewPage.jsx'
+import useUserStore from "./store/authStore.js";
 
 
 
 function App() {
-    const dispatch = useDispatch()
-    const handleRef = useRef(true)
-    const handleRef2 = useRef(true)
-    const handleRef3 = useRef(true)
 
-    const user = useSelector(getUser)
-    const userStatus = useSelector(getUserStatus)
+    const initialize = useUserStore(state => state.initialize);
 
-    useEffect(()=>{
-        if(handleRef.current){
-            dispatch(fetchUser())
-            handleRef.current = false
-        }
-        if(handleRef2.current && user){
-            dispatch(addCartProduct(user.cart))
-            handleRef2.current = false
-        }
-        if(handleRef3.current && user){
-            dispatch(addAllAddress(user))
-            handleRef3.current = false
-        }
-        }, [user]
-    )
-
-    if(userStatus == 'loading'){ return <div>loading...</div> }
+    useEffect(() => {
+        initialize();
+    }, []);
 
   return (
     <>
@@ -115,8 +88,8 @@ function App() {
 
 {/* Products */}
             <Route path="products" element={<ClientLayout />} >
-                <Route index element={<AllProductPages/>}/>
-                <Route path=':id' element={<ProductPage/>}/>
+                <Route index element={<ProductPage/>}/>
+                <Route path=':id' element={<ProductViewPage/>}/>
             </Route>
 
 {/* Cart */}
@@ -151,6 +124,7 @@ function App() {
 
                 <Route path="products">
                     <Route index element={<AdminProductPage />}/>
+
                     <Route path="new-product" element={<AdminAddNewProductPage />}/>
                     <Route path="edit/:id" element={<AdminEditProductPage />}/>
                     <Route path="low-in-stock" element={<div>Low in Stock</div>}/>
@@ -161,7 +135,6 @@ function App() {
                     <Route index element={<AdminGroupsCategoriesPage  />}/>
                     <Route path="new-group" element={<AdminAddGroupPage />}/>
                     <Route path="new-category" element={<AdminAddCategoryPage />}/>
-
                 </Route>
 
                 <Route path="brands">
@@ -203,11 +176,6 @@ function App() {
 
                 <Route path="payments" element={<div>payments</div>} />
 
-                <Route path="banners">
-                    <Route index element={<AdminBannerPage />}/>
-                    <Route path="create-banner" element={<AdminCreateBannerPage />}/>
-                    <Route path="edit-banner/:id" element={<AdminEditBannerPage />}/>
-                </Route>
             </Route>
 
             <Route path="testing" element={<TestingPage />} />
