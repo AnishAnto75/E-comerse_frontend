@@ -56,15 +56,29 @@ import ProductPage from "./pages/clientPages/productPages/ProductPage.jsx";
 
 import ProductViewPage from './pages/clientPages/productPages/ProductViewPage.jsx'
 import useUserStore from "./store/authStore.js";
+import useCartStore from "./store/cartStore.js";
 
 
 
 function App() {
 
-    const initialize = useUserStore(state => state.initialize);
+    const getUser = useUserStore(state => state.getUser);
+    const fetchCartSummary = useCartStore(state=> state.fetchCartSummary)
 
     useEffect(() => {
-        initialize();
+
+    const initializeApp = async () => {
+
+            const loggedIn = await getUser();
+
+            if (loggedIn) {
+                await fetchCartSummary();
+            }
+
+        };
+
+        initializeApp();
+
     }, []);
 
   return (

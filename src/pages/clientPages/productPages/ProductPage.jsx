@@ -4,6 +4,7 @@ import { toast } from 'react-toastify'
 import axios from 'axios'
 import LoadingSpinner from '../../../components/LoadingSpinner'
 import ErrorComponent from '../../../components/ErrorComponent'
+import useCartStore from '../../../store/cartStore'
 
 const ProductPage = () => {
 
@@ -33,7 +34,7 @@ const ProductPage = () => {
 
     if(loading){return <LoadingSpinner />}
     if(error){return <ErrorComponent />}
-    if(!products.length){return <ErrorComponent />}
+    if(!products.length){return <div>No product found</div>}
 
   return (
     <div className='min-h-screen'>

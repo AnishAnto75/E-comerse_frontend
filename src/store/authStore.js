@@ -9,15 +9,17 @@ const useUserStore = create((set) => ({
     isAuthenticated: false,
     loading: false,
 
-    initialize: async () => {
+    getUser: async () => {
 
         try {
             set({ loading: true });
             const { data } = await axios.get( `${API_URL}auth/me`, { withCredentials: true} );
             console.log("initialize res : ",data)
             set({ user: data.data.user, isAuthenticated: true, loading: false });
+            return true
         } catch {
             set({ user: null, isAuthenticated: false, loading: false });
+            return false
         }
     },
 

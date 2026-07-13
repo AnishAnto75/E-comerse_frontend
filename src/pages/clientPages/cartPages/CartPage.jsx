@@ -18,25 +18,6 @@ const CartPage = () => {
 
     const handleRef = useRef(true)
 
-    useEffect(()=>{
-        const fetchCart = async()=>{
-            try {
-                setLoading(true)
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}cart/fetch-cart`)
-                console.log("fetchCart payload : " , res.data)
-                setCart(res.data?.data?.cart)
-            } catch (error) {
-                setError(true)
-                toast.error(error.response?.data?.message)
-                console.log("error in fetchCart :" , error)
-            } finally { setLoading(false) }
-        }
-        if(handleRef.current) {
-            fetchCart()
-            handleRef.current = false
-        }
-    } , [])
-
     let mrp = 0
     let price = 0
 
@@ -49,12 +30,7 @@ const CartPage = () => {
 
     const addProductCart = async(product)=>{
         try {
-            if(!product){return}
-            const data = {product_barcode : product.product_id.product_barcode , quantity : product.quantity + 1 }
-            setLoading(true) 
-            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}cart/alter-product-cart` , {data})
-            console.log("addProductCart response", res.data)
-            setCart(res.data?.data?.data1)
+           
         } catch (error) {
             toast.error(error.response?.data?.message)
             console.log("error in addProductCart :" , error)
@@ -63,13 +39,7 @@ const CartPage = () => {
 
     const minusProductCart = async(product)=>{
         try {
-            if(!product){return}
-            if(product.quantity == 1){ return }
-            const data = {product_barcode : product.product_id.product_barcode , quantity : product.quantity - 1 }
-            setLoading(true)
-            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}cart/alter-product-cart` , {data})
-            console.log("addProductCart response", res.data)
-            setCart(res.data?.data?.data1)
+          
         } catch (error) {
             toast.error(error.response?.data?.message)
             console.log("error in addProductCart :" , error)
@@ -78,10 +48,7 @@ const CartPage = () => {
     
     const removeProductFromCart = async(id)=>{
         try {
-            setLoading(true)
-            const res = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}cart/remove-product-from-cart` , {data : id})
-            console.log("removeProductFromCart response", res.data)
-            setCart(res.data?.data?.data1)
+          
         } catch (error) {
             toast.error(error.response?.data?.message)
             console.log("error in removeProductFromCart :" , error)
@@ -89,7 +56,7 @@ const CartPage = () => {
         
     }
 
-    if(cartStatus == 'loading' || loading ){return <LoadingSpinner />}
+    if( loading ){return <LoadingSpinner />}
     if(error){return <div>Error Occured Kindly refresh the page</div>}
 
     if(!cart?.length){
