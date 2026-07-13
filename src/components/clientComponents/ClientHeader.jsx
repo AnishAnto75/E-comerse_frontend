@@ -19,10 +19,10 @@ const ClientHeader = () => {
         <Link to={'/'} className='px-3 text-xl font-[arial] font-bold tracking-wide flex items-center '>TIFTO</Link>
         { isAuthenticated ?
             <div className='flex gap-5'>
-                <div className='relative'>
+                <Link to={'/cart'} className='relative'>
                     <FaShoppingCart size={28}/>
                     <div className='absolute top-[-10px] right-[-10px] text-white p-[3px] font-semibold rounded-full text-xs px-2 bg-red-500 '>{cartCount}</div>
-                </div>
+                </Link>
                 <div>{user.name}</div>
                 <div onClick={logout}>logout</div>
             </div>

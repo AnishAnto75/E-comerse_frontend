@@ -1,4 +1,4 @@
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
 
 import LoginPage from "./pages/authPages/LoginPage.jsx";
@@ -65,20 +65,21 @@ function App() {
     const getUser = useUserStore(state => state.getUser);
     const fetchCartSummary = useCartStore(state=> state.fetchCartSummary)
 
+    const location = useLocation();
+    const url = location.pathname.split("/")[1]
+
     useEffect(() => {
 
-    const initializeApp = async () => {
+        const initializeApp = async () => {
 
             const loggedIn = await getUser();
 
-            if (loggedIn) {
+            if (loggedIn && url != "cart") {
                 await fetchCartSummary();
             }
 
         };
-
         initializeApp();
-
     }, []);
 
   return (

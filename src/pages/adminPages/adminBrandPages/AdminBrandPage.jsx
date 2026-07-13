@@ -26,18 +26,7 @@ const AdminBrandPage = () => {
 
     useEffect(()=>{
         const adminFetchAllBrand = async()=>{
-            try {
-                setLoading(true)
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/brand/all-brand`)
-                console.log("adminFetchAllBrand payload : " , res.data)        
-                setBrands(res.data.data)
-                setBrandBackup(res.data.data)
-
-            } catch (error) {
-                setError(true)
-                toast.error(error.response?.data?.message)
-                console.log("error in adminFetchAllBrand :" , error)
-            } finally { setLoading(false) }
+            return
         }
         
         if(handleRef.current) {

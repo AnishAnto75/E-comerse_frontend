@@ -28,16 +28,7 @@ const AdminProductPage = () => {
 
     useEffect(()=>{
         const fetchForGroupsCategoriesPage = async()=>{
-            try {
-                setLoading(true)
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product-group/all-groups`)
-                console.log("fetchForGroupCategoriesPage payload : " , res.data)        
-                setGroups(res.data?.data)
-            } catch (error) {
-                setError(true)
-                toast.error(error.response?.data?.message)
-                console.log("error in fetchForGroupCategoriesPage :" , error)
-            } finally { setLoading(false) }
+           return
         }  
         if(handleRef.current) {
             fetchForGroupsCategoriesPage()

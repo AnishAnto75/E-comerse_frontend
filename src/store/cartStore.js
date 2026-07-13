@@ -8,10 +8,10 @@ const useCartStore = create((set, get) => ({
     cartCount: 0,
     loading: false,
     
+    // fetch cart withot populate
     fetchCartSummary: async () => {
         try {
             const res = await axios.get( `${API}user/cart`, { withCredentials: true });
-            console.log("fetchCartSummary res: ", res)
             set({
                 cart: res.data.data.products,
                 cartCount: res.data.data.cartCount,
@@ -25,11 +25,12 @@ const useCartStore = create((set, get) => ({
         }
     },
 
-    // Fetch full cart
-    fetchCart: async () => {
+    // Fetch full cart with populate
+    fetchFullCart: async () => {
         try {
             set({ loading: true });
-            const res = await axios.get(`${API}user/cart/cart-page`, { withCredentials: true, });
+            const res = await axios.get(`${API}user/cart/full-cart`, { withCredentials: true, });
+            console.log(res)
             set({
                 cart: res.data.data.products,
                 cartCount: res.data.data.products.length,
@@ -37,7 +38,7 @@ const useCartStore = create((set, get) => ({
             });
             return true;
         } catch (error) { 
-            console.log("error in fetchCart : ",error);
+            console.error("error in fetchFullCart : ",error);
             set({ loading: false });
             return false;
         }

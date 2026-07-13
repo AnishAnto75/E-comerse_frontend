@@ -4,6 +4,8 @@ import {BrowserRouter} from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
 import { ThemeProvider } from "@material-tailwind/react";
+import "@fontsource/manrope"
+import "@fontsource/geist"
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>

@@ -6,6 +6,9 @@ import { toast } from 'react-toastify'
 import { useRef } from 'react'
 import { useState } from 'react'
 import axios from 'axios'
+import useCartStore from '../../../store/cartStore'
+import { FaIndianRupeeSign } from 'react-icons/fa6'
+import { IoArrowDown } from 'react-icons/io5'
 
 const CartPage = () => {
 
@@ -14,19 +17,28 @@ const CartPage = () => {
     const [loading, setLoading] = useState(false)
     const [error , setError] = useState(false)
 
-    const [cart , setCart] = useState([])
-
     const handleRef = useRef(true)
+
+    const cart = useCartStore(state => state.cart)
+    const fetchFullCart = useCartStore(state => state.fetchFullCart)
+    const cartLoading = useCartStore(state => state.loading)
+     
+    
+    useEffect(() => {
+        const initialize = async () => {
+            const res = await fetchFullCart();
+            if (!res) {setError(true)}
+        };
+        if(handleRef.current){
+            initialize();
+        }
+    }, []);
+
+    console.log("cart page",cart)
+
 
     let mrp = 0
     let price = 0
-
-    if(cart.length){
-        cart?.map?.((product, index)=>{
-            mrp += (product?.product_id?.product_inventory_id?.product_stock[0]?.mrp * product.quantity) 
-            price += (product?.product_id?.product_inventory_id?.product_stock[0]?.price * product.quantity) 
-        })
-    }
 
     const addProductCart = async(product)=>{
         try {
@@ -56,7 +68,12 @@ const CartPage = () => {
         
     }
 
-    if( loading ){return <LoadingSpinner />}
+    const discountCalculator = (product) => {
+        const discount = ((product.mrp - product.selling_price) / product.mrp) * 100 
+        return discount.toFixed(0)
+    }
+
+    if( loading || cartLoading){return <LoadingSpinner />}
     if(error){return <div>Error Occured Kindly refresh the page</div>}
 
     if(!cart?.length){
@@ -72,50 +89,39 @@ const CartPage = () => {
     }
 
   return (
-    <div className='overflow-x-auto m-3 font-inter'>
-        <div className='text-3xl font-medium text-center mx-2 mb-5'>Cart</div>
-        <table className='w-full'>
-            <thead>
-                <tr className='text-center bg-blue-400 text-white text-sm w-full'>
-                    <th className='p-4'>INDEX</th>
-                    <th className='p-4'>Brand</th>
-                    <th className='p-4'>Name</th>
-                    <th className='p-4'>MRP</th>
-                    <th className='p-4'>PRICE</th>
-                    <th className='p-4'>OPTIONS</th>
-                    <th className='p-4'>DELETE</th>
-                </tr>
-            </thead>
-            <tbody>
-            {cart?.map((product , index) => 
-                <tr key={index} className='text-center border-b border-blue-100'>
-                    <td className='p-3'>{index+1}</td>
-                    <td className='p-3'>{product?.product_id?.product_brand?.Brand_name}</td>
-                    <td className='p-3'>{product?.product_id?.product_name}</td>
-                    <td className='p-3'>{product?.product_id?.product_inventory_id?.product_stock[0]?.mrp}</td>
-                    <td className='p-3'>{product?.product_id?.product_inventory_id?.product_stock[0]?.price}</td>
-                    <td >
-                        <div className='border-2 border-blue-600 rounded-lg flex max-w-28'>
-                            <button onClick={()=>minusProductCart(product)} className="bg-blue-600 rounded-tl-md rounded-bl-md max-w-8 px-3 p-1 text-white hover:bg-gray-700">-</button>
-                            <div className='p-1 w-full'>{product.quantity}</div>             
-                            <button onClick={()=>addProductCart(product)} className="hero bg-blue-600 rounded-tr-md rounded-br-md max-w-8 px-3 p-1 text-white hover:bg-gray-700">+</button>
+    <div className='flex justify-center min-h-screen'>
+    <div className='overflow-x-auto p-10 max-w-[1920px] w-full '>
+        <div className='text-2xl font-medium text-gray-900'>My Shopping Cart</div>
+        <div className='flex gap-8'>
+            <div className='w-full mt-5 space-y-3 p-5 rounded-lg border'>
+                { cart.map((product, index)=>(
+                    <div key={index} className=' rounded-md flex bg-white shadow '>
+                        <div className='h-36 min-w-36 '>
+                            <img src={`${import.meta.env.VITE_IMAGE_URL}${product.product_photo?.url}`} alt={product.product_name} className="w-full h-full object-contain p-2" />
                         </div>
-                    </td>
-                    <td><button onClick={()=> removeProductFromCart(product?.product_id?._id)} className="rounded-xl bg-red-500 text-sm text-white p-2 px-4 hover:bg-red-700">Delete</button></td>
-                </tr>            
-            )}  
-            </tbody>
-        </table>
-        <div className='text-xl flex justify-between mx-10 my-5'>
-            <p>Total Price : {mrp}</p> 
-            <p>Discount : {mrp-price}</p>
-            <p>Price : {price}</p>
-            <p>No of Products : {no}</p>
+                        <div className='w-full px-3 pt-5'>
+                            <div className=' text-xl font-medium text-gray-700 '>{product.product_name}</div>
+                            <div className=' font-medium text-gray-500 mt-1 '>{product.size}{product.product_UOM}</div>
+                            <div className='flex gap-2 mt-3 items-center font'>
+                                <span className='text-xl font-semibold text-green-500 flex items-center'><IoArrowDown size={28}  />{discountCalculator(product)}%</span>
+                                <span className='text-lg font-semibold text-gray-500 line-through flex items-center'><FaIndianRupeeSign size={17} />{product.mrp}</span>
+                                <span className='text-xl font-semibold flex items-center text-gray-700'><FaIndianRupeeSign size={20} />{product.selling_price}</span>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+            <div className='min-w-80 rounded-lg p-5 border mt-5'>
+                <div>Order Summary</div>
+            </div>
+
         </div>
         <div>
-            <button onClick={()=>navigate('/checkout')} className='text-2xl text-white bg-green-500 px-4 rounded-2xl p-2 hover:bg-green-600'>Checkout</button>
+            {/* <button onClick={()=>navigate('/checkout')} className='text-2xl text-white bg-green-500 px-4 rounded-2xl p-2 hover:bg-green-600'>Checkout</button> */}
         </div>
     </div>
+    </div>
+
   )
 }
 
