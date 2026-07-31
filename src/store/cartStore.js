@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const API = import.meta.env.VITE_BACKEND_URL;
 
@@ -12,13 +13,14 @@ const useCartStore = create((set, get) => ({
     fetchCartSummary: async () => {
         try {
             const res = await axios.get( `${API}user/cart`, { withCredentials: true });
+            console.log("fetchCartSummary Data : ",res.data)
             set({
                 cart: res.data.data.products,
                 cartCount: res.data.data.cartCount,
             });
         } catch (error) {
             console.error("fetchCartSummary error: ", error)
-            set({
+            set({ 
                 cart: [],
                 cartCount: 0,
             });
@@ -30,7 +32,7 @@ const useCartStore = create((set, get) => ({
         try {
             set({ loading: true });
             const res = await axios.get(`${API}user/cart/full-cart`, { withCredentials: true, });
-            console.log(res)
+            console.log("fetchFullCart Data : ",res.data)
             set({
                 cart: res.data.data.products,
                 cartCount: res.data.data.products.length,
@@ -68,25 +70,53 @@ const useCartStore = create((set, get) => ({
             return false;
         }
     },
+    
+    minusToCart: async (data) => {
 
-    // Change quantity locally
-    updateQuantity: (product_id, quantity) => {
+        try {
+            set({ loading: true });
+            const res = await axios.post( `${API}user/cart/minus`, data , { withCredentials: true } );
+            console.log("minusToCart res :",res)
+            const { product_id, updated_quantity, cartCount } = res.data.data;
+            const cart = [...get().cart];
 
-        set((state) => ({
-            cart: state.cart.map((item) => 
-                item.product_id === product_id ? { ...item, quantity } : item
-            ),
-        }));
+            const index = cart.findIndex( (item) => item.product_id === product_id  );
+
+            if (index >= 0) { cart[index].quantity = updated_quantity }
+            else { cart.push({ product_id , quantity: updated_quantity }) }
+
+            set({ cart, cartCount , loading: false});
+            return true;
+
+        } catch (error) {
+            set({ loading: false });
+            toast.error(error.response?.data?.message)
+            console.error("minusToCart error",error);
+            return false;
+        }
     },
 
-    // Remove product locally
-    removeFromCart: (product_id) => {
+    removeProductFromCart: async (data) => {
 
-        set((state) => ({
-            cart: state.cart.filter( (item) => item.product_id !== product_id),
-            cartCount: state.cart.length - 1,
-        }));
+        try {
+            set({ loading: true });
 
+            const res = await axios.post( `${API}user/cart/remove`, data , { withCredentials: true } );
+            console.log("removeProductFromCart res:", res);
+
+            const { cartCount } = res.data.data;
+            const cart = get().cart.filter( (item) => item.product_id !== data.product_id );
+            
+            set({ cart, cartCount, loading: false });
+            toast.success("Product removed from cart");
+            return true;
+
+        } catch (error) {
+            set({ loading: false });
+            toast.error( error.response?.data?.message || "Failed to remove product");
+            console.error("removeProductFromCart error:", error);
+            return false;
+        }
     },
 
     // Clear cart

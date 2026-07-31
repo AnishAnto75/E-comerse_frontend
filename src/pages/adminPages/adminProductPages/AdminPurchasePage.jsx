@@ -208,7 +208,183 @@ const AdminPurchasePage = () => {
                     staff_id: "STF0627732539"
                 },
                 createdAt: "2026-04-19T18:42:43.932Z"
-            }
+            },
+            {
+                _id: "69e5222309d99ca0d29455ef",
+                supplier_id: {
+                    "_id": "69da818e3233da093c184147",
+                    supplier_id: "SUP0411345754",
+                    supplier_name: "Nila agencies",
+                    supplier_phone: "9080996465",
+                },
+                invoice_no: "nila-5",
+                products: [
+                    {
+                        "product_barcode": "CO",
+                        "quantity_recieved": 51,
+                    }
+                ],
+                total_purchase_amount: 1071,
+                added_by: {
+                    staff_username: "Anish",
+                    staff_id: "STF0627732539"
+                },
+                createdAt: "2026-04-19T18:42:43.932Z"
+            },
+            {
+                _id: "69e5222309d99ca0d29455ef",
+                supplier_id: {
+                    "_id": "69da818e3233da093c184147",
+                    supplier_id: "SUP0411345754",
+                    supplier_name: "Nila agencies",
+                    supplier_phone: "9080996465",
+                },
+                invoice_no: "nila-5",
+                products: [
+                    {
+                        "product_barcode": "CO",
+                        "quantity_recieved": 51,
+                    }
+                ],
+                total_purchase_amount: 1071,
+                added_by: {
+                    staff_username: "Anish",
+                    staff_id: "STF0627732539"
+                },
+                createdAt: "2026-04-19T18:42:43.932Z"
+            },
+            {
+                _id: "69e5222309d99ca0d29455ef",
+                supplier_id: {
+                    "_id": "69da818e3233da093c184147",
+                    supplier_id: "SUP0411345754",
+                    supplier_name: "Nila agencies",
+                    supplier_phone: "9080996465",
+                },
+                invoice_no: "nila-5",
+                products: [
+                    {
+                        "product_barcode": "CO",
+                        "quantity_recieved": 51,
+                    }
+                ],
+                total_purchase_amount: 1071,
+                added_by: {
+                    staff_username: "Anish",
+                    staff_id: "STF0627732539"
+                },
+                createdAt: "2026-04-19T18:42:43.932Z"
+            },
+            {
+                _id: "69e5222309d99ca0d29455ef",
+                supplier_id: {
+                    "_id": "69da818e3233da093c184147",
+                    supplier_id: "SUP0411345754",
+                    supplier_name: "Nila agencies",
+                    supplier_phone: "9080996465",
+                },
+                invoice_no: "nila-5",
+                products: [
+                    {
+                        "product_barcode": "CO",
+                        "quantity_recieved": 51,
+                    }
+                ],
+                total_purchase_amount: 1071,
+                added_by: {
+                    staff_username: "Anish",
+                    staff_id: "STF0627732539"
+                },
+                createdAt: "2026-04-19T18:42:43.932Z"
+            },
+            {
+                _id: "69e5222309d99ca0d29455ef",
+                supplier_id: {
+                    "_id": "69da818e3233da093c184147",
+                    supplier_id: "SUP0411345754",
+                    supplier_name: "Nila agencies",
+                    supplier_phone: "9080996465",
+                },
+                invoice_no: "nila-5",
+                products: [
+                    {
+                        "product_barcode": "CO",
+                        "quantity_recieved": 51,
+                    }
+                ],
+                total_purchase_amount: 1071,
+                added_by: {
+                    staff_username: "Anish",
+                    staff_id: "STF0627732539"
+                },
+                createdAt: "2026-04-19T18:42:43.932Z"
+            },
+            {
+                _id: "69e5222309d99ca0d29455ef",
+                supplier_id: {
+                    "_id": "69da818e3233da093c184147",
+                    supplier_id: "SUP0411345754",
+                    supplier_name: "Nila agencies",
+                    supplier_phone: "9080996465",
+                },
+                invoice_no: "nila-5",
+                products: [
+                    {
+                        "product_barcode": "CO",
+                        "quantity_recieved": 51,
+                    }
+                ],
+                total_purchase_amount: 1071,
+                added_by: {
+                    staff_username: "Anish",
+                    staff_id: "STF0627732539"
+                },
+                createdAt: "2026-04-19T18:42:43.932Z"
+            },
+            {
+                _id: "69e5222309d99ca0d29455ef",
+                supplier_id: {
+                    "_id": "69da818e3233da093c184147",
+                    supplier_id: "SUP0411345754",
+                    supplier_name: "Nila agencies",
+                    supplier_phone: "9080996465",
+                },
+                invoice_no: "nila-5",
+                products: [
+                    {
+                        "product_barcode": "CO",
+                        "quantity_recieved": 51,
+                    }
+                ],
+                total_purchase_amount: 1071,
+                added_by: {
+                    staff_username: "Anish",
+                    staff_id: "STF0627732539"
+                },
+                createdAt: "2026-04-19T18:42:43.932Z"
+            },
+            {
+                _id: "69e5222309d99ca0d29455ef",
+                supplier_id: {
+                    "_id": "69da818e3233da093c184147",
+                    supplier_id: "SUP0411345754",
+                    supplier_name: "Nila agencies",
+                    supplier_phone: "9080996465",
+                },
+                invoice_no: "nila-5",
+                products: [
+                    {
+                        "product_barcode": "CO",
+                        "quantity_recieved": 51,
+                    }
+                ],
+                total_purchase_amount: 1071,
+                added_by: {
+                    staff_username: "Anish",
+                    staff_id: "STF0627732539"
+                },
+                createdAt: "2026-04-19T18:42:43.932Z"
+            },
         ]
        
     }
