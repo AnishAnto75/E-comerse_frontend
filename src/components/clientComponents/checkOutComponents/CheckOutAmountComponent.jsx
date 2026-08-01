@@ -5,6 +5,9 @@ const CheckOutAmountComponent = ({products}) => {
     let totalMrp = 0
     let price = 0
 
+    const deliveryCharge = 1
+    const no = 1
+
     if(products.length){
         products?.map?.((product, index)=>{
             totalMrp += (product?.product_id?.product_inventory_id?.product_stock[0]?.mrp * product.quantity) 

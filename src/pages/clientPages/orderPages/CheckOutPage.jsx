@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {useNavigate} from 'react-router-dom'
 
-import { FaCheckCircle } from "react-icons/fa";
+import { FaCheckCircle, FaRegCheckCircle } from "react-icons/fa";
 
 import CheckOutAddressComponent from "../../../components/clientComponents/checkOutComponents/CheckOutAddressComponent";
 import CheckOutProductsComponent from "../../../components/clientComponents/checkOutComponents/CheckOutProductsComponent";
@@ -10,6 +10,7 @@ import CheckOutPaymentMethodComponent from "../../../components/clientComponents
 import axios from "axios";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import { toast } from "react-toastify";
+import { FaCheck } from "react-icons/fa6";
 
 const CheckOutPage = () => {
 
@@ -22,40 +23,26 @@ const CheckOutPage = () => {
     const [loading, setLoading] = useState(false)
     const [error , setError] = useState(false)
 
-    const [cartProducts , setCartProducts] = useState([])
+    const checkOutAddress = 1
+    const checkOutProducts = 1
+    const checkOutPaymentMethod = 1
+    const deliveryCharge = 1
 
-    useEffect(()=>{
-        const fetchCart = async()=>{
-            try {
-                setLoading(true)
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}cart/fetch-cart`)
-                console.log("fetchCart payload : " , res.data)
-                setCartProducts(res.data?.data?.cart)
-            } catch (error) {
-                setError(true)
-                console.log("error in fetchCart :" , error)
-            } finally { setLoading(false) }
-        }
-        if(handleRef.current) {
-            fetchCart()
-            handleRef.current = false
-        }
-    } , [])
+    const [cartProducts , setCartProducts] = useState([])
 
     if(loading ){return <LoadingSpinner />}
     if(error){return <div>Error Occured Kindly refresh the page</div>}
 
     return (
-    <div className='flex flex-col md:flex-row md:p-5 p-2 gap-5 justify-center min-h-screen font-sans'>
-        <div className='md:w-3/5 w-full rounded-md space-y-1'>
+    <div className="flex justify-center">
+    <div className='flex mt-10 gap-10 max-w-screen-2xl w-full '>
+        <div className='rounded-md space-y-1 w-full'>
 
-            <div className="border-2 p-4 rounded">
+            <div className="border p-5 w-full rounded-t-lg">
                 <div onClick={()=>setCheckedAccordion(1)} className="flex cursor-pointer">
-                    <span className='text-xl flex gap-1'>
-                        Delivery Address <FaCheckCircle className={`h-4 text-blue-400 mt-0.5 ${checkOutAddress ? "block" : "hidden"}`}/> 
-                    </span>
+                    <div className='text-xl text-gray-800 flex gap-1 font-medium'> Delivery Address {checkOutAddress && <FaCheckCircle size={18} className='text-sky-500'/> }</div>
                 </div>
-                { checkedAccordion == 1 &&
+                { checkedAccordion === 1 &&
                     <div>
                         <div className="border-b my-2"/>
                         <CheckOutAddressComponent /> 
@@ -100,6 +87,7 @@ const CheckOutPage = () => {
         <div className='md:w-1/4 w-full p-5 md:h-60 rounded-md shadow-md md:block sticky top-2 '>
             <CheckOutAmountComponent products = {cartProducts}/>
         </div>
+    </div>
     </div>
   )
 }

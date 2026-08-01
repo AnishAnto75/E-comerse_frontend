@@ -41,12 +41,9 @@ const CartPage = () => {
 
         return cart.reduce((acc, item) => {
 
-            const price = item.selling_price;
-            const qty = item.quantity;
-
-            acc.totalItems += qty;
-            acc.mrpAmount += item.mrp * qty;
-            acc.discount += (item.mrp * qty) - (item.selling_price * qty) ;
+            acc.totalItems += item.quantity;
+            acc.mrpAmount += item.mrp * item.quantity;
+            acc.discount += (item.mrp * item.quantity) - (item.selling_price * item.quantity) ;
             return acc;
         }, {
             totalItems : 0,
@@ -55,8 +52,6 @@ const CartPage = () => {
         });
 
     }, [cart]);
-
-    console.log(orderSummary)
 
     const deliveryCharges = (orderSummary.mrpAmount - orderSummary.discount) >= 500 ? 0 : 50
     const grandTotal = (orderSummary.mrpAmount - orderSummary.discount) + deliveryCharges
@@ -90,7 +85,7 @@ const CartPage = () => {
         return discount.toFixed(0)
     }
 
-    // if( loading || cartLoading){return <LoadingSpinner />}
+    if( loading || cartLoading){return <LoadingSpinner />}
     if(error){return <div>Error Occured Kindly refresh the page</div>}
 
     if(!cart?.length){
@@ -107,17 +102,17 @@ const CartPage = () => {
 
   return (
     <div className='flex justify-center'>
-    <div className='overflow-x-auto p-10 max-w-[1920px] w-full '>
+    <div className='overflow-x-auto pt-8 max-w-screen-2xl w-full '>
         <div className='text-2xl font-medium text-gray-900 flex items-center gap-3'>
             <Link to={'/products'} className=' cursor-pointer'><FaArrowLeftLong /></Link>
             <div>My Shopping Cart</div>
         </div>
         <div className='flex gap-8'>
-            <div className="h-[calc(100vh-181px)] w-full shadow-md flex flex-col border p-5 pr-2 mt-5 rounded-lg ">
+            <div className="h-[calc(100vh-185px)] w-full flex flex-col border p-5 pr-2 mt-5 rounded-lg ">
                 <div className="flex-1 overflow-y-auto ">
                     <div className='w-full space-y-3 pr-3 '>
                         { cart.map((product, index)=>(
-                            <div key={index} className='rounded-md grid grid-cols-12 bg-white shadow '>
+                            <div key={index} className='rounded-md grid grid-cols-12 bg-white border '>
                                 <div className='col-span-10 flex'>
                                     <div onClick={()=>navigate(`/products/${product.product_barcode}`)} className='h-36 min-w-36 cursor-pointer'>
                                         <img src={`${import.meta.env.VITE_IMAGE_URL}${product.product_photo?.url}`} alt={product.product_name} className="w-full h-full object-contain p-2" />
@@ -135,7 +130,7 @@ const CartPage = () => {
                                 <div className='col-span-2 flex justify-center items-center gap-5 '>
                                     <div className='flex rounded-lg'>
                                         <div onClick={()=>minusProductCart(product)} className='w-8 py-1 bg-sky-600 rounded-l-lg text-white cursor-pointer flex items-center justify-center'><FaMinus /></div>
-                                        <div className='w-8 py-1 text-center'>{product.quantity}</div>
+                                        <div className='w-8 py-1 text-center bg-sky-50'>{product.quantity}</div>
                                         <div onClick={()=>addProductCart(product)} className='w-8 py-1 bg-sky-600 rounded-r-lg text-white cursor-pointer flex items-center justify-center'><FaPlus /></div>
                                     </div>
                                     <div onClick={()=>removeFromCart(product)} className='text-red-500 hover:bg-red-100 p-2 cursor-pointer rounded-full'><FaTrash size={22}/></div>
@@ -165,7 +160,7 @@ const CartPage = () => {
                 </div>
                 <div className='text-green-500 text-center mt-2 font-semibold'>You have saved (₹{savedAmount}) from this order</div>
 
-                <div className='bg-green-500 text-white p-3 text-center rounded-xl tracking-wide text-lg mt-5 cursor-pointer'>Place Order</div>
+                <div onClick={()=>navigate("/checkout")} className='bg-green-500 text-white p-3 text-center rounded-xl tracking-wide text-lg mt-5 cursor-pointer'>Place Order</div>
 
             </div>
         </div>

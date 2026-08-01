@@ -7,7 +7,6 @@ const ClientLayout = () => {
   return (
     <>
         <ClientHeader />
-
         <Outlet />
     </>
   )

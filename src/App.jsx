@@ -8,7 +8,7 @@ import AdminLayout from "./layout/AdminLayout.jsx";
 import ClientLayout from "./layout/ClientLayout.jsx";
 
 import HomePage from "./pages/clientPages/HomePage.jsx";
-import UserProfilePage from "./pages/clientPages/accountPages/UserProfilePage.jsx";
+import ProfilePage from "./pages/clientPages/accountPages/ProfilePage.jsx";
 
 import AdminHomePage from "./pages/adminPages/AdminHomePage.jsx";
 import AdminDashboardPage from "./pages/adminPages/AdminDashboardPage.jsx";
@@ -57,13 +57,14 @@ import ProductPage from "./pages/clientPages/productPages/ProductPage.jsx";
 import ProductViewPage from './pages/clientPages/productPages/ProductViewPage.jsx'
 import useUserStore from "./store/authStore.js";
 import useCartStore from "./store/cartStore.js";
-
+import useAddressStore from "./store/addressStore.js";
 
 
 function App() {
 
     const getUser = useUserStore(state => state.getUser);
     const fetchCartSummary = useCartStore(state=> state.fetchCartSummary)
+    const fetchAddresses = useAddressStore(state=> state.fetchAddresses)
 
     const location = useLocation();
     const url = location.pathname.split("/")[1]
@@ -74,9 +75,9 @@ function App() {
 
             const loggedIn = await getUser();
 
-            if (loggedIn && url != "cart") {
-                await fetchCartSummary();
-            }
+            if (loggedIn && url != "cart") { await fetchCartSummary();}
+
+            if (loggedIn ) { await fetchAddresses();}
 
         };
         initializeApp();
@@ -90,38 +91,52 @@ function App() {
         <Route path="/">
             <Route index element={<HomePage />} />
 
-{/* Auth */}
             <Route path="auth">
                 <Route path="login" element={<LoginPage />} />
                 <Route path="signup" element={<SignupPage />} />
             </Route>
 
-{/* User Profile */}
             <Route path="profile" element={<ClientLayout />}>
-                <Route index element={<UserProfilePage/>}/>
+                <Route index element={<ProfilePage/>}/>
             </Route>
 
-{/* Products */}
             <Route path="products" element={<ClientLayout />} >
                 <Route index element={<ProductPage/>}/>
                 <Route path=':id' element={<ProductViewPage/>}/>
             </Route>
 
-{/* Cart */}
             <Route path="cart" element={<ClientLayout />} >
                 <Route index element={<CartPage/>}/>
             </Route>
 
-{/* Checkout */}
             <Route path="checkout" element={<ClientLayout />} >
                 <Route index element={<CheckOutPage/>}/>
                 <Route path="verify_checkout_order" element={<VerifyCheckOutOrderPage />} />
             </Route>
 
-{/* Order */}
             <Route path="order" element={<ClientLayout />} >
                 <Route index element={<OrderPage/>}/>
                 <Route path=":id" element={<OrderViewPage/>}/>
+            </Route>
+
+            <Route path="wishlist" element={<ClientLayout />} >
+                <Route index element={<div>wishlist</div>}/>
+            </Route>
+
+            <Route path="review-rating" element={<ClientLayout />} >
+                <Route index element={<div>Reviews & Ratings</div>}/>
+            </Route>
+
+            <Route path="coupons" element={<ClientLayout />} >
+                <Route index element={<div>coupons</div>}/>
+            </Route>
+
+            <Route path="contact-us" element={<ClientLayout />} >
+                <Route index element={<div>contact us</div>}/>
+            </Route>
+            
+            <Route path="settings" element={<ClientLayout />} >
+                <Route index element={<div>Settings</div>}/>
             </Route>
 
 {/* Admin */}
