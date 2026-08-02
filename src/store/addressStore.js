@@ -32,15 +32,8 @@ const useAddressStore = create((set, get) => ({
             const res = await axios.post( `${API}user/address/add`, data , { withCredentials: true } );
             console.log("addAddress res :",res.data?.data)
             toast.success(res.data?.message)
-            const newAddress = res.data?.data;
             const address = [...get().address];
-
-            console.log(address)
-
-            address.push(newAddress)
-
-            console.log({address})
-
+            address.push(res.data?.data)
             set({ address, loading: false});
             return true;
 
@@ -48,6 +41,26 @@ const useAddressStore = create((set, get) => ({
             set({ loading: false });
             console.log("addAddress error",error);
             toast.error(error.response?.data?.message)
+            return false;
+        }
+    },
+
+    deleteAddress: async (_id) => {
+        try {
+            set({ loading: true });
+
+            await axios.patch(`${API}user/address/delete`, { _id }, { withCredentials: true });
+            const address = get().address.filter( (item) => item._id !== _id );
+
+            set({ address, loading: false })
+
+            toast.success("Address deleted successfully");
+            return true;
+
+        } catch (error) {
+            set({ loading: false });
+            console.error("deleteAddress error:", error);
+            toast.error(error.response?.data?.message || "Failed to delete address");
             return false;
         }
     },
