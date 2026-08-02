@@ -20,12 +20,7 @@ const AccountAddressComponent = () => {
     const deleteAddress = async()=>{
         console.log(deletingAddress)
         const res = await delAddress(deletingAddress._id)
-        console.log({res})
         if(res){ setDeletingAddress(null)}
-    }
-
-    if(addressLoading){
-        return ( <div className='bg-red- flex h-[32rem] items-center justify-center'><LoadingComponent height={28} width={28} /></div>)
     }
 
   return (
@@ -37,29 +32,17 @@ const AccountAddressComponent = () => {
                 <EditAddressComponent address = {editingAddress} />
                 <button onClick={()=>setEditingAddress(null)} className="font-medium text-gray-600 py-1.5 rounded-md absolute right-24 bottom-[26px] hover:text-cyan-500 px-5" >Cancel</button>
             </div>
-        : 
+        :
         <div>
-            {deletingAddress &&
-                <div className="fixed inset-0 overflow-y-auto z-50">
-                    <div onClick={()=>setDeletingAddress(null)} className="fixed inset-0 bg-black bg-opacity-30 transition-opacity"/>
-                    <div className="flex min-h-screen items-center justify-center p-4 text-center">
-                        <div className='bg-white z-50 text-lg font-medium p-10 shadow w-1/2 max-w-screen-sm  rounded-xl'>
-                            <div className='text-start text-2xl tracking-wide uppercase'>Deletion Confirmation</div>
-                            <div className='text-lg mt-5 text-start text-gray-700 pl-5 '>Do you want to delete this address </div>
-                            <div className='flex gap-5 mt-5 justify-end'>
-                                <button onClick={()=>setDeletingAddress(null)} className='bg-sky-500 p-3 px-5 tracking-wide rounded-xl text-white'>Cancel</button>
-                                <button onClick={()=>deleteAddress()} className='bg-red-500 p-3 px-5 tracking-wide rounded-xl text-white'>Delete</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-            <AddNewAddressComponent />
+            <AddNewAddressComponent page={"profile"}/>
             <div className='pt-5 '>
-                {addresses.length ?
+                { addressLoading ?
+                    <div className='h-96'><LoadingComponent height={28} width={28}/></div>
+                :
+                addresses.length ?
                     <div className=' border border-gray-100 rounded-md'>
                         {addresses?.map((address, index) => (
-                            <div className={` ${(index % 2 == 0 )  && "bg-gray-50"} border-b border-gray-100 flex rounded justify-between`} key={index}>     
+                            <div className={` ${(index % 2 == 0 )  && "bg-gray-50"} border-b border-gray-100 flex rounded justify-between`} key={address._id}>     
                                 <div className='p-5 w-4/5 font-medium text-gray-800'>
                                     <div className='flex gap-3'>
                                         <div className='bg-sky-100 p-1 px-2 tracking-wide font-semibold text-sky-700 capitalize rounded'>{address.address_type}</div>
@@ -86,6 +69,21 @@ const AccountAddressComponent = () => {
                     <div className='flex justify-center items-center h-96 text-xl font-medium text-gray-400'>NO ADDRESS CREATED YET</div>
                 }
             </div>
+            {deletingAddress &&
+                <div className="fixed inset-0 overflow-y-auto z-50">
+                    <div onClick={()=>setDeletingAddress(null)} className="fixed inset-0 bg-black bg-opacity-30 transition-opacity"/>
+                    <div className="flex min-h-screen items-center justify-center p-4 text-center">
+                        <div className='bg-white z-50 text-lg font-medium p-10 shadow w-1/2 max-w-screen-sm  rounded-xl'>
+                            <div className='text-start text-2xl tracking-wide uppercase'>Deletion Confirmation</div>
+                            <div className='text-lg mt-5 leading-8 text-start text-gray-700'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Are you sure you want to delete this address? This action cannot be undone.</div>
+                            <div className='flex gap-5 mt-10 justify-end'>
+                                <button onClick={()=>setDeletingAddress(null)} className='bg-sky-500 p-3 px-5 tracking-wide rounded-xl text-white'>Cancel</button>
+                                <button onClick={()=>deleteAddress()} className='bg-red-500 p-3 px-5 tracking-wide rounded-xl text-white'>Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
         }
     </>

@@ -7,10 +7,12 @@ const CheckOutAddressComponent = () => {
     const addresses = []
 
   return (
-     <div className='space-y-4 border-b py-2 pb-4'>
-        <AddNewAddressComponent />
+     <div className='space-y-4 mt-5 py-2 pb-4 min-h-96'>
+        <div className='mt-[-15px] mr-2'>
+            <AddNewAddressComponent page={'checkout'} />
+        </div>
         {addresses?.map((address , index)=>(
-            <div className='shadow flex break-words bg-white rounded-xl' key={index}>
+            <div className='shadow flex break-words bg-white rounded-xl' key={address._id}>
                 <div className='min-w-14 max-w-14 content-center text-center'>
                     <input type="checkbox" checked= {address?._id == checkOutAddress?._id} onChange={()=>setAddress(address)}  className=" h-5 w-5 ml-2 mt-3 cursor-pointer " />
                 </div>

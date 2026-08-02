@@ -54,10 +54,10 @@ const ProfilePage = () => {
 
   return (
       <div className="flex justify-center">
-        <div className=" max-w-[1920px] px-5  w-full m-14">
+        <div className=" max-w-[1920px] px-5 w-full m-14">
             <div className="grid gap-4 gap-y-2 grid-cols-8">
                 <div className='border max-h-[650px] shadow rounded-lg p-5 col-span-2 '>
-                    <div className='flex items-center gap-4 border-b-[3px] rounded-xl  pb-5'>
+                    <div className='flex items-center gap-4 border-b-[3px] rounded-xl pb-5'>
                         <div className='bg-sky-50 p-3 text-sky-500 rounded-full'><IoMdPerson size={50} /></div>
                         <div className='text-gray-700'>
                             <span className='text-lg tracking-wide font-medium '>Hello!</span>

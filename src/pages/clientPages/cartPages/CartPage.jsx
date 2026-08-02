@@ -31,6 +31,7 @@ const CartPage = () => {
         const initialize = async () => {
             const res = await fetchFullCart();
             if (!res) {setError(true)}
+            handleRef.current = false
         };
         if(handleRef.current){
             initialize();
@@ -102,7 +103,7 @@ const CartPage = () => {
 
   return (
     <div className='flex justify-center'>
-    <div className='overflow-x-auto pt-8 max-w-screen-2xl w-full '>
+    <div className='pt-8 max-w-screen-2xl w-full '>
         <div className='text-2xl font-medium text-gray-900 flex items-center gap-3'>
             <Link to={'/products'} className=' cursor-pointer'><FaArrowLeftLong /></Link>
             <div>My Shopping Cart</div>
