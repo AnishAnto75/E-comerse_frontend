@@ -17,11 +17,11 @@ const ProductCard = ({product}) => {
 
     const navigate = useNavigate()
     
-    const cart = useCartStore(state => state.cart);
+    const cartSummary = useCartStore(state => state.cartSummary);
     const addToCart = useCartStore(state => state.addToCart);
     const cartLoading = useCartStore(state => state.loading);
 
-    const cartIds = useMemo( () => new Set(cart.map(item => item.product_id)), [cart]);
+    const cartIds = useMemo( () => new Set(cartSummary.map(item => item.product_id)), [cartSummary]);
     const inCart = cartIds.has(product._id);
 
     const addCart = async(_id)=>{

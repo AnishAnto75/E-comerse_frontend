@@ -6,6 +6,7 @@ const API = import.meta.env.VITE_BACKEND_URL;
 
 const useCartStore = create((set, get) => ({
     cart: [],
+    cartSummary: [],
     cartCount: 0,
     loading: false,
     
@@ -15,15 +16,17 @@ const useCartStore = create((set, get) => ({
             const res = await axios.get( `${API}user/cart`, { withCredentials: true });
             console.log("fetchCartSummary Data : ",res.data)
             set({
-                cart: res.data.data.products,
-                cartCount: res.data.data.cartCount,
+                cartSummary: res.data?.data?.cart,
+                cartCount: res.data?.data?.cartCount,
             });
+            return true
         } catch (error) {
             console.error("fetchCartSummary error: ", error)
             set({ 
-                cart: [],
+                cartSummary: [],
                 cartCount: 0,
             });
+            return false
         }
     },
 
@@ -34,8 +37,8 @@ const useCartStore = create((set, get) => ({
             const res = await axios.get(`${API}user/cart/full-cart`, { withCredentials: true, });
             console.log("fetchFullCart Data : ",res.data)
             set({
-                cart: res.data.data.products,
-                cartCount: res.data.data.products.length,
+                cart: res.data?.data?.cart,
+                cartCount: res.data?.data?.cartCount,
                 loading: false,
             });
             return true;
@@ -48,20 +51,22 @@ const useCartStore = create((set, get) => ({
 
     // Add product
     addToCart: async (data) => {
-
         try {
             set({ loading: true });
             const res = await axios.post( `${API}user/cart/add`, data , { withCredentials: true } );
             console.log("addToCart res :",res)
             const { product_id, updated_quantity, cartCount } = res.data.data;
+
             const cart = [...get().cart];
+            const cartIndex = cart.findIndex( (item) => item.product_id._id === product_id || item.product_id === product_id)
+            if (cartIndex >= 0) { cart[cartIndex].quantity = updated_quantity}
+            
+            const cartSummary = [...get().cartSummary];
+            const summaryIndex = cartSummary.findIndex( (item) => item.product_id === product_id );
+            if (summaryIndex >= 0) { cartSummary[summaryIndex].quantity = updated_quantity }
+            else { cartSummary.push({ product_id , quantity: updated_quantity })}
 
-            const index = cart.findIndex( (item) => item.product_id === product_id  );
-
-            if (index >= 0) { cart[index].quantity = updated_quantity }
-            else { cart.push({ product_id , quantity: updated_quantity }) }
-
-            set({ cart, cartCount , loading: false});
+            set({cart, cartSummary, cartCount , loading: false});
             return true;
 
         } catch (error) {
@@ -83,7 +88,6 @@ const useCartStore = create((set, get) => ({
             const index = cart.findIndex( (item) => item.product_id === product_id  );
 
             if (index >= 0) { cart[index].quantity = updated_quantity }
-            else { cart.push({ product_id , quantity: updated_quantity }) }
 
             set({ cart, cartCount , loading: false});
             return true;
@@ -106,8 +110,9 @@ const useCartStore = create((set, get) => ({
 
             const { cartCount } = res.data.data;
             const cart = get().cart.filter( (item) => item.product_id !== data.product_id );
+            const cartSummary = get().cartSummary.filter( (item) => item.product_id !== data.product_id );
             
-            set({ cart, cartCount, loading: false });
+            set({ cart, cartSummary, cartCount, loading: false });
             toast.success("Product removed from cart");
             return true;
 
