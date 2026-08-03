@@ -26,7 +26,6 @@ import CartPage from "./pages/clientPages/cartPages/CartPage.jsx";
 import CheckOutPage from "./pages/clientPages/orderPages/CheckOutPage.jsx";
 import OrderPage from "./pages/clientPages/orderPages/OrderPage.jsx";
 import OrderViewPage from "./pages/clientPages/orderPages/OrderViewPage.jsx";
-import VerifyCheckOutOrderPage from "./pages/clientPages/orderPages/VerifyCheckOutOrderPage.jsx";
 
 import PageNotFoundPage from "./pages/PageNotFoundPage.jsx";
 import TestingPage from "./pages/TestingPage.jsx";
@@ -111,7 +110,6 @@ function App() {
 
             <Route path="checkout" element={<ClientLayout />} >
                 <Route index element={<CheckOutPage/>}/>
-                <Route path="verify_checkout_order" element={<VerifyCheckOutOrderPage />} />
             </Route>
 
             <Route path="order" element={<ClientLayout />} >

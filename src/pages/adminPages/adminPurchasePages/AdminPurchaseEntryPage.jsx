@@ -142,7 +142,7 @@ const PurchaseEntryPage = () => {
             return;
         }
         try {
-            const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/create-purchase/search-products/`, { params: {query}});
+            const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/create-purchase/search-products/`, { params: {query} ,  withCredentials: true } );
             console.log(data)
             setSearchResults(data.data);
             setShowResults(true);
@@ -263,7 +263,7 @@ const PurchaseEntryPage = () => {
         }
         try {
             setLoading(true) 
-           const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/create-purchase` , data)
+           const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/create-purchase` , data, {withCredentials: true})
             console.log("addPurchaseEntry response",res.data)
             toast.success(res.data?.message)
             navigate('/admin/purchase')

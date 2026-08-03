@@ -10,6 +10,7 @@ import useCartStore from '../../../store/cartStore'
 import { FaArrowLeftLong, FaIndianRupeeSign, FaMinus, FaPlus, FaTrash, FaTrashCan } from 'react-icons/fa6'
 import { IoArrowDown } from 'react-icons/io5'
 import { BiPlus } from 'react-icons/bi'
+import useUserStore from '../../../store/authStore'
 
 const CartPage = () => {
 
@@ -19,6 +20,8 @@ const CartPage = () => {
     const [error , setError] = useState(false)
 
     const handleRef = useRef(true)
+
+    const isAuthenticated = useUserStore(state => state.isAuthenticated)
 
     const cart = useCartStore(state => state.cart)
     const fetchFullCart = useCartStore(state => state.fetchFullCart)
@@ -89,13 +92,25 @@ const CartPage = () => {
     if( loading || cartLoading){return <LoadingSpinner />}
     if(error){return <div>Error Occured Kindly refresh the page</div>}
 
+
+
+    if(!isAuthenticated){
+        return(
+            <div className='min-h-screen justify-center flex'> 
+                <div className='flex max-w-screen-2xl border-x w-full items-center flex-col justify-center gap-5'>
+                    <div className='text-3xl font-semibold text-gray-600'>Login to add product</div>
+                    <button className='bg-sky-500 p-3 px-5 font-medium rounded-xl text-white' onClick={()=>navigate('/auth/login')}>Login</button>
+                </div>
+            </div>
+        )
+    }
+
     if(!cart?.length){
         return(
-            <div className='min-h-screen flex'> 
-                <button className='btn btn-neutral m-3' onClick={()=>navigate('/')}>back</button>
-                <div className='flex flex-col hero justify-center gap-5'>
-                    <span className='block text-2xl font-[arial]'>No Product In Cart</span>
-                    <button className='block btn btn-info text-white' onClick={()=>navigate('/product')}>Add Products</button>
+            <div className='min-h-screen justify-center flex'> 
+                <div className='flex max-w-screen-2xl border-x w-full items-center flex-col justify-center gap-5'>
+                    <div className='text-3xl font-semibold text-gray-600'>No Product In Cart</div>
+                    <button className='bg-sky-500 p-3 px-5 font-medium rounded-xl text-white' onClick={()=>navigate('/products')}>Add Products</button>
                 </div>
             </div>
         )

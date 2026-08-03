@@ -1,22 +1,37 @@
-import axios from 'axios'
 import React, { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import LoadingSpinner from '../../../components/LoadingSpinner.jsx'
-import {toast} from 'react-toastify'
+import AccountAddressComponent from '../../../components/clientComponents/accountComponents/AccountAddressComponent'
+import { IoMdPerson } from 'react-icons/io'
+import useUserStore from '../../../store/authStore'
+import { useNavigate , Link, useLocation } from 'react-router-dom'
+import PageNotFoundPage from '../../PageNotFoundPage'
+import LoadingSpinner from '../../../components/LoadingSpinner'
+import { CgProfile } from 'react-icons/cg'
+import ClientSidebar from '../../../components/clientComponents/ClientSidebar'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
-const OrderPage = () => {
-
+const ProfilePage = () => {
+    
     const navigate = useNavigate()
-    const [loading , setLoading] = useState(false)
-    const [orders , setOrders ] = useState([])
-    const [error , setError] = useState(false)
-    const handleRef = useRef(true) 
 
-    useEffect(()=>{
-        const fetch = async()=>{
+    const handleRef = useRef(true)
+    
+    const location = useLocation();
+    const url = location.pathname.split("/")[1]
+    
+    const isAuthenticated = useUserStore( (state) => state.isAuthenticated );
+    const userLoading = useUserStore( (state) => state.loading );
+    const user = useUserStore( (state) => state.user );
+
+    const [orders , setOrders ] = useState([])
+    const [loading , setLoading] = useState(false)
+    const [error , setError] = useState(false)
+
+    useEffect(() => {
+        const initialize = async() => {
             try {
                 setLoading(true)
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}order/get-orders`)
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}user/order` ,{withCredentials:true})
                 console.log("fetchAllOrders payload : " , res.data)        
                 setOrders(res.data?.data)
             } catch (error) {
@@ -24,71 +39,50 @@ const OrderPage = () => {
                 toast.error(error.response?.data?.message)
                 console.log("error in fetchAllOrders :" , error)
             } finally { setLoading(false) }
-        }
-        
-        if(handleRef.current) {
-            fetch()
-            handleRef.current = false
-        }
-    } , [])
 
-    const findOrderStatus = (order_status)=> {
-        const placed = order_status.placed
-        const confirmed = order_status.confirmed 
-        const out = order_status.out
-        const delivered = order_status.delivered 
-        const canceled = order_status.canceled 
-        return canceled.status ? "Canceled" : delivered.status ? "Delivered" : out.status ? "Out" : confirmed.status ? "Confirmed" : placed.status ? "Placed" : "NaN"    
+        };
+        if(handleRef.current && isAuthenticated){
+            initialize();
+        }
+    }, [isAuthenticated]);
+
+    const handleSubmit = (e)=>{
+        e.preventDefault()
+        const data = {name, phoneNumber}    
+        return
     }
 
-    const getStatusColor = (order_status)=>{
-        const placed = order_status.placed
-        const confirmed = order_status.confirmed 
-        const out = order_status.out
-        const delivered = order_status.delivered 
-        const canceled = order_status.canceled 
-        return canceled.status ? "text-red-500" : delivered.status ? "text-green-500" : out.status ? "text-gray-600" : confirmed.status ? "text-gray-600" : placed.status ? "text-yellow-500" : ''    
-    }
+    console.log(orders)
 
-    if(loading){return <LoadingSpinner/>}
-    if(error){return <div>Error Occured Kindly refresh the page</div>}
+    if(userLoading) { return <LoadingSpinner />}
+    if(!isAuthenticated){return <PageNotFoundPage />}
 
   return (
-    <div className='w-full'>
-        <div className='bg-gray-100 min-h-screen w-full'>
-            <div className='p-5 items-center justify-center  '>
-                <div className="overflow-auto h-full w-full bg-white rounded-2xl border-2">
-                    <table className="table table-zebra text-center ">
-                        <thead>
-                            <tr className='text-sm bg-gray-600 text-white'>
-                                <th>S.No</th>
-                                <th className='p-5'>Order ID</th>
-                                <th>Customer Name</th>
-                                <th>Order Status</th>
-                                <th>NOP</th>
-                                <th>View</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {orders?.map((order , index) =>
-                            <tr key={index}>
-                                <th className='border-r'>{index+1}</th>
-                                <td>{order.order_id}</td>
-                                <td>{order.delivery_address.name}</td>
-                                <td className={`${getStatusColor(order?.order_status)}`}>{findOrderStatus(order?.order_status)}</td>
-                                <td>{order.no_of_product ? order.no_of_product : "Nil"}</td>
-                                <td className='rounded-xl flex p-0 '>
-                                    <button onClick={()=>navigate(`/order/${order.order_id}`)} className='bg-slate-500 text-white font-[arial]  rounded-xl hero m-1  p-2'>view</button>
-                                </td>
-                            </tr>
-                        )}
-                        </tbody>
-                    </table>
+      <div className="flex justify-center">
+        <div className=" max-w-[1920px] px-5 w-full m-14">
+            <div className="grid gap-4 gap-y-2 grid-cols-8">
+
+                <ClientSidebar />
+                <div className="col-span-6 border min-h-[calc(100vh-181px)] shadow rounded-lg p-8 text-gray-800">
+                    <div className='text-2xl font-medium tracking-wide pb-6 text-sky-800'>Orders</div>
+                    {orders.length ? 
+                        <div className='space-y-2'>
+                            { orders.map(order => 
+                                <div className='border p-5 rounded' key={order._id}>
+                                    <div>{order._id}</div>
+                                </div>
+                            )}
+                        </div>
+                        :
+                        <div className='flex h-96 justify-center items-center'>
+                            <div className='text-2xl text-gray-500 font-semibold'>No orders yet</div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
-
     </div>
-  )}
+    )
+}
 
-export default OrderPage
+export default ProfilePage

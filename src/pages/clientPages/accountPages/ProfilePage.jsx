@@ -6,6 +6,7 @@ import { useNavigate , Link, useLocation } from 'react-router-dom'
 import PageNotFoundPage from '../../PageNotFoundPage'
 import LoadingSpinner from '../../../components/LoadingSpinner'
 import { CgProfile } from 'react-icons/cg'
+import ClientSidebar from '../../../components/clientComponents/ClientSidebar'
 
 const ProfilePage = () => {
     
@@ -56,24 +57,7 @@ const ProfilePage = () => {
       <div className="flex justify-center">
         <div className=" max-w-[1920px] px-5 w-full m-14">
             <div className="grid gap-4 gap-y-2 grid-cols-8">
-                <div className='border max-h-[650px] shadow rounded-lg p-5 col-span-2 '>
-                    <div className='flex items-center gap-4 border-b-[3px] rounded-xl pb-5'>
-                        <div className='bg-sky-50 p-3 text-sky-500 rounded-full'><IoMdPerson size={50} /></div>
-                        <div className='text-gray-700'>
-                            <span className='text-lg tracking-wide font-medium '>Hello!</span>
-                            <span className='line-clamp-1 font-semibold text-xl capitalize'>{user.name}</span>
-                        </div>
-                    </div>
-                    <div className='text-xl font-medium text-gray-800 mt-8 gap-2 flex flex-col'>
-                        <Link to={"/profile"} className={`p-3 cursor-pointer rounded-lg flex items-center gap-2 ${url === "profile" ? "bg-sky-500 text-white" : "hover:bg-gray-100"}`}><CgProfile size={25} /> Profile Information</Link>
-                        <Link to={"/order"} className={`p-3 cursor-pointer rounded-lg flex items-center gap-2 ${url === "order" ? "bg-sky-500 text-white" : "hover:bg-gray-100"}`}>Orders</Link>
-                        <Link to={"/wishlist"} className={`p-3 cursor-pointer rounded-lg flex items-center gap-2 ${url === "wishlist" ? "bg-sky-500 text-white" : "hover:bg-gray-100"}`}>Wishlist</Link>
-                        <Link to={"/coupons"} className={`p-3 cursor-pointer rounded-lg flex items-center gap-2 ${url === "coupons" ? "bg-sky-500 text-white" : "hover:bg-gray-100"}`}>Coupons</Link>
-                        <Link to={"/review-rating"} className={`p-3 cursor-pointer rounded-lg flex items-center gap-2 ${url === "review-rating" ? "bg-sky-500 text-white" : "hover:bg-gray-100"}`}>My reviews & ratings</Link>
-                        <Link to={"/contact-us"} className={`p-3 cursor-pointer rounded-lg flex items-center gap-2 ${url === "contact-us" ? "bg-sky-500 text-white" : "hover:bg-gray-100"}`}>Contact Us</Link>
-                        <Link to={"/settings"} className={`p-3 cursor-pointer rounded-lg flex items-center gap-2 ${url === "settings" ? "bg-sky-500 text-white" : "hover:bg-gray-100"}`}>Settings</Link>
-                    </div>
-                </div>
+                <ClientSidebar />
                 <div className="col-span-6 border min-h-[calc(100vh-190px)] shadow rounded-lg p-8 text-gray-800">
                     <div className='text-2xl font-medium tracking-wide pb-6 text-sky-800'>Profile Information</div>
                     <div className='grid grid-cols-6 gap-5 font-medium text-lg'>

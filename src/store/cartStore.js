@@ -71,7 +71,7 @@ const useCartStore = create((set, get) => ({
 
         } catch (error) {
             set({ loading: false });
-            console.log("add to cart error",error);
+            console.error("add to cart error",error);
             return false;
         }
     },
@@ -128,6 +128,7 @@ const useCartStore = create((set, get) => ({
     clearCart: () => {
         set({
             cart: [],
+            cartSummary: [],
             cartCount: 0,
         });
     },
