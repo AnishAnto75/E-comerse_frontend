@@ -25,7 +25,7 @@ const ClientSidebar = () => {
         </div>
         <div className='text-xl font-medium text-gray-800 mt-8 gap-2 flex flex-col'>
             <Link to={"/profile"} className={`p-3 cursor-pointer rounded-lg flex items-center gap-2 ${url === "profile" ? "bg-sky-500 text-white" : "hover:bg-gray-100"}`}><CgProfile size={25} /> Profile Information</Link>
-            <Link to={"/order"} className={`p-3 cursor-pointer rounded-lg flex items-center gap-2 ${url === "order" ? "bg-sky-500 text-white" : "hover:bg-gray-100"}`}>Orders</Link>
+            <Link to={"/orders"} className={`p-3 cursor-pointer rounded-lg flex items-center gap-2 ${url === "orders" ? "bg-sky-500 text-white" : "hover:bg-gray-100"}`}>Orders</Link>
             <Link to={"/wishlist"} className={`p-3 cursor-pointer rounded-lg flex items-center gap-2 ${url === "wishlist" ? "bg-sky-500 text-white" : "hover:bg-gray-100"}`}>Wishlist</Link>
             <Link to={"/coupons"} className={`p-3 cursor-pointer rounded-lg flex items-center gap-2 ${url === "coupons" ? "bg-sky-500 text-white" : "hover:bg-gray-100"}`}>Coupons</Link>
             <Link to={"/review-rating"} className={`p-3 cursor-pointer rounded-lg flex items-center gap-2 ${url === "review-rating" ? "bg-sky-500 text-white" : "hover:bg-gray-100"}`}>My reviews & ratings</Link>

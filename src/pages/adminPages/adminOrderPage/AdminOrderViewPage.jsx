@@ -24,7 +24,7 @@ const AdminOrderViewPage = () => {
         const fetchOrder = async()=>{
             try {
                 setLoading(true)
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/order/order_id/${id}`)
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/order/order_id/${id}` , {withCredentials: true})
                 setOrder(res.data.data)
                 console.log("fetchOrder response : ",res.data)
             } catch (error) {
@@ -46,28 +46,28 @@ const AdminOrderViewPage = () => {
   return (
     <div className='flex'>
     <AdminSideBar/>
-    <div className='w-full md:max-w-[calc(100%-208px)] min-h-screen flex'>
-        <div className='w-full p-2'>
-            <div className='text-sm tracking-wider font-roboto border border-gray-400 w-40 p-1 text-center rounded text-gray-700 '>{order?.order_id}</div>
+    <div className='w-full font-inter md:max-w-[calc(100%-245px)] p-5 bg-slate-50'>
+        <div className='text-xl font-semibold text-gray-600 mt-1 tracking-wide'>#{order.order_id}</div>
 
-            <div className='h-36 p-2 mt-3 flex gap-1 overflow-scroll overflow-x-auto border '>
-                {order?.product_details?.map((product , index)=>(
-                    <img key={index} src={"https://images.unsplash.com/photo-1600185365483-26d7a4cc7519"} alt={product.product_name} className=' object-contain  h-full w-32'/>
+        <div className='bg-white p-8 mt-5 rounded-xl w-full'>
+            <div className='flex overflow-scroll overflow-x-auto border bg-white rounded '>
+                {order.items?.map((item , index)=>(
+                    <img key={index} src={`${import.meta.env.VITE_IMAGE_URL}${item.product_photo}`} alt={item.product_name} className=' object-contain h-36 max-h-36 w-36 min-w-36 p-2 border-r'/>
                 ))}
             </div>
+        </div>
 
-            <div className='mt-5 p-2 bg-gray-50 '>
-                <AdminOrderStatusComponent order={order} />
-            </div>
+        <div className='mt-5 bg-white '>
+            <AdminOrderStatusComponent order={order} />
+        </div>
 
-            <div className='mt-3 '>
-                <AdminOrderProductCard order={order} />
-            </div>
-            <div className='mt-5 mb-10 flex gap-3 '>
-                <AdminOrderAmountComponent order={order} />
-                <AdminOrderDeliveryAddressComponent delivery_address={order?.delivery_address} />
-                <AdminOrderUserComponent user={order.user_id}/>
-            </div>
+        <div className='mt-3 bg-white'>
+            <AdminOrderProductCard order={order} />
+        </div>
+        <div className='mt-5 mb-10 flex gap-3 '>
+            <AdminOrderAmountComponent order={order} />
+            <AdminOrderDeliveryAddressComponent delivery_address={order?.delivery_address} />
+            <AdminOrderUserComponent user={order.user_id}/>
         </div>
     </div>
     </div>

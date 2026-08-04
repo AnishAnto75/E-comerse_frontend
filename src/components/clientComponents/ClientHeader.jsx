@@ -34,7 +34,7 @@ const ClientHeader = () => {
                         <div className='mt-3 p-3 px-5 w-72 rounded-lg border font-medium text-lg bg-white'>
                             <div className='text-xl p-2 font-bold text-sky-700'>Your Account</div>
                             <Link to={'/profile'} className=" w-full p-2 text-left hover:bg-gray-100 rounded-xl mb-0.5 flex items-center gap-2"><CgProfile size={25}/>My Profile</Link>
-                            <Link to={'/order'} className=" w-full p-2 text-left hover:bg-gray-100 rounded-xl mb-0.5 flex items-center gap-2"><BsBox size={25}/>Orders</Link>
+                            <Link to={'/orders'} className=" w-full p-2 text-left hover:bg-gray-100 rounded-xl mb-0.5 flex items-center gap-2"><BsBox size={25}/>Orders</Link>
                             <Link to={'/cart'} className=" w-full p-2 text-left hover:bg-gray-100 rounded-xl mb-0.5 flex items-center gap-2"><IoCartOutline size={25}/>Cart</Link>
                             <Link to={'/wishlist'} className=" w-full p-2 text-left hover:bg-gray-100 rounded-xl mb-0.5 flex items-center gap-2"><BiHeart size={25}/>Wishlist</Link>
                             <Link to={'/settings'} className=" w-full p-2 text-left hover:bg-gray-100 rounded-xl mb-0.5 flex items-center gap-2"><IoSettingsOutline size={25}/>Settings</Link>

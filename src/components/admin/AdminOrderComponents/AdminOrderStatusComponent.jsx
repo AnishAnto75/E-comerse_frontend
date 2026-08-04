@@ -6,6 +6,7 @@ import LoadingSpinner from '../../LoadingSpinner';
 import { debounce } from 'lodash';
 import AdminOrderSeeAllUpdateComponent from './AdminOrderSeeAllUpdateComponent';
 import { Button } from '@material-tailwind/react';
+import { BiX } from 'react-icons/bi';
 
 const AdminOrderStatusComponent = ({order}) => {
 
@@ -22,15 +23,22 @@ const AdminOrderStatusComponent = ({order}) => {
 
 // Cancel
     const [isCancelModal, setCancelModal] = useState(false);                        
-    const [reason_for_cancel, setReasonForCancel] = useState('')                    // request payload
+    const [reason_for_cancel, setReasonForCancel] = useState('')
     const input1Ref = useRef(null)                                                  //focus in reason_for_cancel
 
     const cancelOrder = async() =>{
-        if(reason_for_cancel.length < 10){ 
+        if(reason_for_cancel.trim().length < 10){ 
             input1Ref.current.focus(); 
-            toast.info("Minimum 10 character")
+            toast.warn("Minimum 10 character")
             return
         }
+        if ( order.current_status == "delivered" ){ toast.warn("Order Already Delivered "); return }
+        if ( order.current_status == "cancelled" ){ toast.warn("Order Already Cancelled"); return }
+        
+        toast.success("backend not done")
+        return
+
+        // not done yet
         try {
             setLoading(true)
             const res = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}admin/order/update/cancel/${order.order_id}`, {data : {reason_for_cancel}})
@@ -164,13 +172,13 @@ const AdminOrderStatusComponent = ({order}) => {
     }  
 
     const getStatusColor = () => {
-        if (canceled.status ) return 'bg-red-500'
-        if (!delivered.status ) return 'bg-blue-500'
+        // if (canceled.status ) return 'bg-red-500'
+        // if (!delivered.status ) return 'bg-blue-500'
         return 'bg-green-500'
     }
     const getProgressWidth = () => {
-        if (canceled.status){ return '100%' }
-        return delivered.status ? "100%" : out.status? "80%" : confirmed.status? "55%" : placed.status? "25%" : '0%'
+        // if (canceled.status){ return '100%' }
+        // return delivered.status ? "100%" : out.status? "80%" : confirmed.status? "55%" : placed.status? "25%" : '0%'
     }
 
     if(loading) return <LoadingSpinner/>
@@ -179,35 +187,38 @@ const AdminOrderStatusComponent = ({order}) => {
         <div className='w-full'>
         <div className='relative'>
             <div className=' md:text-center px-2 md:pt-5 md:pb-8 text-gray-800 '>Order Status</div>
-            { !delivered.status && !canceled.status && <div className='absolute top-2 right-2'> <Button onClick={()=> setCancelModal(true)} size='sm' variant='text' color='red'>Cancel</Button></div>}
+            { order.current_status != "delivered" && order.current_status != "cancelled" &&
+                <div className='absolute top-5 right-5'> <button onClick={()=> setCancelModal(true)} className=' text-red-500 font-medium border-[3px] rounded-lg px-2 py-1 border-red-100' >Cancel</button></div>
+            }
 
-            {/* Cancel Modal */}
-            {isCancelModal && !delivered.status && (
+            {isCancelModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
-                    <button onClick={() => {setCancelModal(false); setReasonForCancel('')}} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
-                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/></svg>
+                <div className="bg-white rounded-lg w-full max-w-screen-md p-6 relative font-medium">
+                    <button onClick={() => {setCancelModal(false); setReasonForCancel('')}} className="absolute bg-red-50 text-red-500 p-1 rounded-full top-6 right-6 hover:text-red-700">
+                        <BiX size={25}/>
                     </button>
-                    <h2 className="text-lg font-poppins mb-4">Cancel Order</h2>
-                    <p className="text-gray-700 mb-1 tracking-wider ">What is the reason for cancel ?</p>
-                    <input type="text" name='reason_for_cancel' id='reason_for_cancel' autoComplete='off' ref={input1Ref}
-                        value={reason_for_cancel} onChange={(e)=>setReasonForCancel(e.target.value)}
-                        className='border border-gray-300 text-gray-800 outline-none focus:border-blue-500 rounded-md p-2 w-full text-sm'/>
-                    <div className="mt-6 text-end space-x-2"> 
-                        <Button variant='text' color='red' size='sm' onClick={()=> {setCancelModal(false); setReasonForCancel('')}} >Close</Button>
-                        <Button variant='gradient' color='blue' size='sm' onClick={cancelOrder}>Cancel Order</Button>
+                    <h2 className="text-xl font-semibold text-gray-500 mb-4">Cancel Order</h2>
+                    <p className="text-gray-700 mb-1 text-lg ">Reason for cancel ?</p>
+                    <input type="text" autoComplete='off' ref={input1Ref} value={reason_for_cancel} onChange={(e)=>setReasonForCancel(e.target.value)}className='border text-gray-800 outline-none rounded-md p-2 w-full'/>
+                    <div className="mt-6 flex justify-end space-x-2">
+                        <button className='bg-sky-500 p-2 px-3 rounded-xl text-white hover:bg-sky-600' onClick={()=>cancelOrder()}>Cancel Order</button>
                     </div>
                 </div>
             </div>
             )}
         </div>   
 
+
+
+
+        // not done
+
         <div className="m-4 px-10">
             <div className="flex justify-between items-center mb-4">
                 {/* placed */}
                 <div className={`flex flex-col items-center`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${ placed.status ? getStatusColor() : 'bg-gray-300'}`}>
-                    {placed.status && ( <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>)}
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${ getStatusColor() }`}>
+                        <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
                     </div>
                     <span className="mt-2 text-sm text-gray-600">Placed</span>
                     {placed.date && (<span className="mt-1 text-xs text-gray-500 flex flex-wrap items-center">
@@ -216,12 +227,15 @@ const AdminOrderStatusComponent = ({order}) => {
                 </div>
 
                 {/* Confirmed */}
-                <div className={`flex-col items-center ${!confirmed.status && canceled.status ? "hidden" : "flex"}`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${ confirmed.status ? getStatusColor() : 'bg-gray-300'}`}>
-                        {confirmed.status && (<svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>)}
+                {/* <div className={`flex-col items-center ${!confirmed.status && canceled.status ? "hidden" : "flex"}`}> */}
+                <div className={`flex-col items-center flex`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${ getStatusColor() } `}>
+                        {/* {confirmed.status && (<svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>)} */}
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
                     </div>
                     <span className="mt-2 text-sm text-gray-600">Confirmed</span>
-                    {!confirmed.status && 
+                    {/* {!confirmed.status &&  */}
+                    { 
                         <span onClick={()=> setConfirmedModal(true)} className='text-sm cursor-pointer p-1 text-green-500 hover:text-emerald-500 font-poppins'>Update</span> 
                     }
                     {isConfirmedModal && 
@@ -238,16 +252,18 @@ const AdminOrderStatusComponent = ({order}) => {
                             </div>
                         </div>
                     }
-                    {confirmed.date && (<span className="mt-1 text-xs text-gray-500 flex flex-wrap items-center"><span className='pr-1 hero'>{date(confirmed.date)}</span><span className='hero'>{time(confirmed.date)}</span></span>)}
+                    {/* {confirmed.date && (<span className="mt-1 text-xs text-gray-500 flex flex-wrap items-center"><span className='pr-1 hero'>{date(confirmed.date)}</span><span className='hero'>{time(confirmed.date)}</span></span>)} */}
                 </div>
 
                 {/* Out */}
-                <div className={`flex-col items-center ${!out.status && canceled.status ? "hidden" : "flex"}`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${ out.status ? getStatusColor() : 'bg-gray-300'}`}>
-                        {out.status && (<svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>)}
+                <div className={`flex-col items-center flex `}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${ getStatusColor() }`}>
+                        {/* {out.status && (<svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>)} */}
+                        {(<svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>)}
                     </div>
                     <span className="mt-2 text-sm text-gray-600">Out for Delivery</span>
-                    {!out.status && confirmed.status &&
+                    {/* {!out.status && confirmed.status && */}
+                    {
                         <span onClick={()=> setOutModal(true)} className='text-sm cursor-pointer p-1 text-green-500 hover:text-emerald-500 font-poppins'>Update</span>
                     }
                     {isOutModal &&
@@ -275,16 +291,19 @@ const AdminOrderStatusComponent = ({order}) => {
                             </div>
                         </div>
                     }
-                    {out.date && (<span className="mt-1 text-xs text-gray-500 flex flex-wrap items-center"><span className='pr-1 hero'>{date(out.date)}</span><span className='hero'>{time(out.date)}</span></span>)}
+                    {/* {out.date && (<span className="mt-1 text-xs text-gray-500 flex flex-wrap items-center"><span className='pr-1 hero'>{date(out.date)}</span><span className='hero'>{time(out.date)}</span></span>)} */}
                 </div>
 
                 {/* Delivered */}
-                <div className={`flex-col items-center ${canceled.status ? "hidden" : "flex"}`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${ delivered.status ? getStatusColor() : 'bg-gray-300'}`}>
-                        {delivered.status && (<svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>)}
+                {/* <div className={`flex-col items-center ${canceled.status ? "hidden" : "flex"}`}> */}
+                <div className={`flex-col items-center flex`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center getStatusColor() `}>
+                        {/* {delivered.status && (<svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>)} */}
+                        {(<svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>)}
                     </div>
                     <span className="mt-2 text-sm text-gray-600">Delivered</span>
-                    { !delivered.status && out.status && confirmed.status && 
+                    {/* { !delivered.status && out.status && confirmed.status &&  */}
+                    {  
                         <div>
                             <span onClick={()=> setDeliveredModal(true)} className='text-sm cursor-pointer p-1 text-green-500 hover:text-emerald-500 font-poppins'>Update</span> 
 
@@ -303,18 +322,22 @@ const AdminOrderStatusComponent = ({order}) => {
                             </div>
                         </div>
                     }
-                    {delivered.date && (<span className="mt-1 text-xs text-gray-500 flex flex-wrap items-center"><span className='pr-1 hero'>{date(delivered.date)}</span><span className='hero'>{time(delivered.date)}</span></span>)}
+                    {/* {delivered.date && (<span className="mt-1 text-xs text-gray-500 flex flex-wrap items-center"><span className='pr-1 hero'>{date(delivered.date)}</span><span className='hero'>{time(delivered.date)}</span></span>)} */}
                 </div>
 
                 {/* Canceled */}
-                <div className={`flex-col items-center ${delivered.status ? "hidden" : !canceled.status ? "hidden" : "flex"}`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${ canceled.status ? getStatusColor() : 'bg-gray-300'}`}>
-                    {canceled.status && (
+                {/* <div className={`flex-col items-center ${delivered.status ? "hidden" : !canceled.status ? "hidden" : "flex"}`}> */}
+                <div className={`flex-col items-center `}>
+                    {/* <div className={`w-8 h-8 rounded-full flex items-center justify-center ${ canceled.status ? getStatusColor() : 'bg-gray-300'}`}> */}
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-gray-300`}>
+                    {/* {canceled.status && ( */}
+                    {
                         <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" > <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-                    )}
+                    }
                     </div>
                     <span className="mt-2 text-sm text-gray-600">Canceled</span>
-                    {canceled.date && (<span className="mt-1 text-xs text-gray-500 flex flex-wrap items-center"><span className='pr-1 hero'>{date(canceled.date)}</span><span className='hero'>{time(canceled.date)}</span></span>)}
+                    {/* {canceled.date && (<span className="mt-1 text-xs text-gray-500 flex flex-wrap items-center"><span className='pr-1 hero'>{date(canceled.date)}</span><span className='hero'>{time(canceled.date)}</span></span>)} */}
+                    {/* {(<span className="mt-1 text-xs text-gray-500 flex flex-wrap items-center"><span className='pr-1 hero'>{date(canceled.date)}</span><span className='hero'>{time(canceled.date)}</span></span>)} */}
                 </div>
             </div>
         </div>
@@ -332,7 +355,7 @@ const AdminOrderStatusComponent = ({order}) => {
         <div className='border-t p-2 mx-5 relative'>
             <button onClick={()=>setAllUpdates(false)} className='absolute top-2 right-1 hover:bg-gray-200 rounded-full p-1'><svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/></svg></button>
             <div className='text-blue-gray-800 pt-3'>All Updates</div>
-            <AdminOrderSeeAllUpdateComponent order_status={order_status}/>
+            {/* <AdminOrderSeeAllUpdateComponent order_status={order_status}/> */}
         </div>
         }
         </div>
