@@ -46,7 +46,7 @@ const AdminOrderViewPage = () => {
   return (
     <div className='flex'>
     <AdminSideBar/>
-    <div className='w-full font-inter md:max-w-[calc(100%-245px)] p-5 bg-slate-50'>
+    <div className='w-full font-inter font-medium text-gray-800 md:max-w-[calc(100%-245px)] p-5 bg-slate-50'>
         <div className='text-xl font-semibold text-gray-600 mt-1 tracking-wide'>#{order.order_id}</div>
 
         <div className='bg-white p-8 mt-5 rounded-xl w-full'>
@@ -57,14 +57,11 @@ const AdminOrderViewPage = () => {
             </div>
         </div>
 
-        <div className='mt-5 bg-white '>
-            <AdminOrderStatusComponent order={order} />
-        </div>
+        <AdminOrderStatusComponent order={order} />
 
-        <div className='mt-3 bg-white'>
-            <AdminOrderProductCard order={order} />
-        </div>
-        <div className='mt-5 mb-10 flex gap-3 '>
+        <AdminOrderProductCard order={order} />
+        
+        <div className='my-5 flex gap-3 '>
             <AdminOrderAmountComponent order={order} />
             <AdminOrderDeliveryAddressComponent delivery_address={order?.delivery_address} />
             <AdminOrderUserComponent user={order.user_id}/>

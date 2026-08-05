@@ -47,7 +47,7 @@ import AdminViewBrandPage from './pages/adminPages/adminBrandPages/AdminViewBran
 import AdminAddGroupPage from "./pages/adminPages/adminGroups&CategoriesPages/AdminAddGroupPage.jsx";
 import AdminAddCategoryPage from './pages/adminPages/adminGroups&CategoriesPages/AdminAddCategoryPage.jsx'
 import AdminEditCustomerPage from "./pages/adminPages/adminCustomerPages/AdminEditCustomerPage.jsx";
-import AdminPurchasePage from "./pages/adminPages/adminProductPages/AdminPurchasePage.jsx";
+import AdminPurchasePage from "./pages/adminPages/adminPurchasePages/AdminPurchasePage.jsx";
 
 import AdminCreateSupplierPage from "./pages/adminPages/adminSupplierPages/AdminCreateSupplierPage.jsx";
 import ProductPage from "./pages/clientPages/productPages/ProductPage.jsx";

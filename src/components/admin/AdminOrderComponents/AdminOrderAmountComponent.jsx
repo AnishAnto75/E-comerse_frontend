@@ -5,15 +5,15 @@ const AdminOrderAmountComponent = ({order}) => {
     const discount = order?.total_mrp - order?.total_price
     
   return (
-    <div className=' bg-gray-50 text-gray-700 w-full min-w-64 text-sm p-3'>
-        <div className='text-base text-gray-600 font-sans font-medium mb-3 '>Price Details </div> 
+    <div className=' bg-white rounded-xl w-full p-5 text-lg '>
+        <div className='mb-3 text-xl text-sky-800 '>Price Details </div> 
         <div className='space-y-2'>
             <div className='flex justify-between'>
-                <span>Mrp ({order.total_no_of_product})</span>
-                <span>{order?.total_mrp}</span>
+                <span>Mrp</span>
+                <span >{order?.total_mrp}</span>
             </div>
             <div className='flex justify-between'>
-                <span>Price ({order.total_no_of_product})</span>
+                <span>Price</span>
                 <span>{order?.total_price}</span>
             </div>
             <div className='flex justify-between'>
@@ -22,9 +22,9 @@ const AdminOrderAmountComponent = ({order}) => {
             </div>
             <div className='flex justify-between'>
                 <span>Discount</span>
-                <span>{discount ? `-  ${discount}` : discount === 0 ? 0 : ''}</span>
+                <span>{discount ? `- ${discount}` : 0}</span>
             </div>
-            <div className='flex justify-between text-gray-700 font-sans border-t border-gray-400 pt-2 font-medium'>
+            <div className='flex justify-between border-t-[3px] pt-2 text-xl text-gray-700 font-semibold'>
                 <span>Total Amount</span>
                 <span>{order?.total_amount}</span>
             </div>

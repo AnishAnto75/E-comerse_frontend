@@ -1,5 +1,6 @@
 import { Avatar } from '@material-tailwind/react'
 import { format } from 'date-fns'
+import { BiRupee } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 
 const AdminOrderProductCard = ({order}) => {
@@ -7,54 +8,50 @@ const AdminOrderProductCard = ({order}) => {
     const navigate = useNavigate()
 
     const date = (date)=>{
-        if(isNaN(Date.parse(date))){ return }
+        if(isNaN(Date.parse(date))){ return "---" }
         const dat = format(new Date(date) , "dd-MM-yyyy")
         return dat
     }
 
-    const products = order?.product_details
+    const products = order?.items
 
   return (
-    <table className="w-full table-auto">
-        <thead>
-            <tr className='border-y text-gray-600 text-sm border-blue-gray-100 bg-blue-gray-50/35 text-center tracking-wider  '>
-                <th className="p-4 font-normal pl-9 text-start"></th>
-                <th className="p-4 font-normal">Batch No</th>
-                <th className="p-4 font-normal">Mfd/Exp</th>
-                <th className="p-4 font-normal">Mrp/Price</th>
-                <th className="p-4 font-normal">NOQ</th>
-            </tr>
-        </thead>
-        <tbody className=''>
-            {products?.map(({ no_of_product, product_barcode, product_batch_no, product_expire_date, product_id, product_manufacture_date, product_mrp, product_name, product_price  }, index) => (
-                <tr key={index} className={`hover:bg-gray-50 text-center text-sm text-blue-gray-600 border-t border-blue-gray-50`} onClick={()=>navigate(`/admin/products/${product_barcode}`)}>
-                    <td className='p-4'>
-                        <div className="flex items-center gap-3">
-                            <Avatar src={product_id?.product_photos ? product_id?.product_photos : '/3-08.webp'} alt={product_name} size="sm" />
-                            <div className="flex flex-col text-sm text-start text-blue-gray-700 ">
-                                <div>{product_name}</div>
-                                <div className="text-blue-gray-500">{product_barcode}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td className='p-4'>{product_batch_no}</td>
-                    <td className='tracking-wider p-4'>
-                        <div>{date(product_manufacture_date)}</div>
-                        <div>{date(product_expire_date)}</div>
-                    </td>
-                    <td className='p-4'>{product_mrp} / {product_price}</td>
-                    <td className="p-4 ">{no_of_product}</td>
+    <div className='w-full mt-5 bg-white p-5 rounded-xl'>
+        <table className="table-auto mt-5 w-full">
+            <thead>
+                <tr className='text-gray-700 tracking-wide '>
+                    <th className="p-4 rounded-l-xl bg-slate-50"></th>
+                    <th className="p-4 text-start bg-slate-50">ITEM</th>
+                    <th className="p-4 bg-slate-50">BATCH NO</th>
+                    <th className="p-4 bg-slate-50">SIZE</th>
+                    <th className="p-4 bg-slate-50">MFD</th>
+                    <th className="p-4 bg-slate-50">EXP</th>
+                    <th className="p-4 bg-slate-50">MRP</th>
+                    <th className="p-4 bg-slate-50">PRICE</th>
+                    <th className="p-4 bg-slate-50">QUANTITY</th>
+                    <th className="p-4 rounded-r-xl bg-slate-50">TOTAL</th>
                 </tr>
-            ))}
-            <tr className={`text-center text-sm border-y border-blue-gray-100 text-blue-gray-600 `}>
-                <td className='p-4' />
-                <td className='p-4' />
-                <td />
-                <td className='p-4'>{order?.total_mrp} / {order?.total_price}</td>
-                <td className="p-4 ">{order?.total_no_of_product}</td>
-            </tr>
-        </tbody>
-    </table>       
+            </thead>
+            <tbody>
+                {products?.map(( product, index) => (
+                    <tr key={index} className={`hover:bg-gray-100 text-center border-b ${products.length == (index+1) && "border-b-0"}`} onClick={()=>navigate(`/admin/products/${product_barcode}`)}>
+                        <td className='w-24 h-24 p-2 bg-white'>
+                            <img key={index} src={`${import.meta.env.VITE_IMAGE_URL}${product.product_photo}`} alt={product.product_name} className=' object-contain h-full w-full'/>
+                        </td>
+                        <td className='p-4 text-start'>{product.product_name}</td>
+                        <td className='p-4'>{product.batch_no || "---"}</td>
+                        <td className='p-4'>{product.size}{product.product_UOM}</td>
+                        <td className='p-4'>{date(product.manufacture_date)}</td>
+                        <td className='p-4'>{date(product.expiry_date)}</td>
+                        <td className='p-4'>&#8377;{product.mrp}</td>
+                        <td className='p-4'>&#8377;{product.unit_price}</td>
+                        <td className="p-4">{product.quantity}</td>
+                        <td className="p-4">&#8377;{product.subtotal}</td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>       
+    </div>
   )
 }
 

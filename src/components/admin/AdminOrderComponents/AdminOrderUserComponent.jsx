@@ -6,25 +6,25 @@ const AdminOrderUserComponent = ({user}) => {
     const navigate = useNavigate()
 
   return (
-    <div className='bg-gray-50 text-gray-700 w-full p-3 content-center'>
-    <div className='text-base text-gray-600 font-sans font-medium mb-2 '>Customer Details</div> 
-    <table className='border-separate border-spacing-2 text-sm '>
+    <div className=' w-full p-5 bg-white rounded-xl'>
+        <div className='mb-3 text-xl text-sky-800 '>Customer Details</div> 
+    <table className='border-separate border-spacing-3 text-lg '>
         <tbody>
             <tr>
                 <td>Name</td>
-                <td>: {user?.name ? user?.name : "NaN"}</td>
+                <td className=' capitalize'>: &nbsp; {user?.name || "---"}</td>
             </tr>
             <tr>
                 <td>Phone No &nbsp;&nbsp;</td>
-                <td>: {user?.phoneNumber ? user?.phoneNumber : "NaN"}</td>
+                <td>: &nbsp; {user?.phoneNumber || "---"}</td>
             </tr>
             <tr>
                 <td>Email</td>
-                <td>: {user?.email ? user?.email : "NaN"}</td>
+                <td>: &nbsp; {user?.email || "---"}</td>
             </tr>
             <tr>
                 <td>User Id</td>
-                <td>: <span onClick={()=>navigate(`/admin/customer/customer_id/${user?.user_id}`)} className='underline underline-offset-2 cursor-pointer hover:text-blue-500'>{user?.user_id}</span></td>
+                <td>: &nbsp; <span onClick={()=>navigate(`/admin/customer/customer_id/${user?.user_id}`)} className='underline underline-offset-2 cursor-pointer hover:text-blue-500'>{user?.user_id}</span></td>
             </tr>
         </tbody>
     </table>  

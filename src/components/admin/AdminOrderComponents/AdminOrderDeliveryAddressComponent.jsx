@@ -1,26 +1,17 @@
 import React from 'react'
 
-const AdminOrderDeliveryAddressComponent = ({delivery_address}) => {
+const AdminOrderDeliveryAddressComponent = ({delivery_address: address}) => {
   return (
-    <div className=' bg-gray-50 text-gray-700 w-full text-sm p-3'>
-        <div className='text-base text-gray-600 font-sans font-medium mb-3 '>Delivery Address </div> 
-        <div className='px-2 tracking-wider'>
-            <div className='pb-2'><span className='bg-gray-300/75 p-1 text-xs font-roboto font-medium uppercase rounded '>{delivery_address.addressType}</span></div>
-            <div className='gap-1 flex pb-1'>
-                <span>{delivery_address?.name ? delivery_address?.name : "NaN"},</span>
-                <span>{delivery_address?.phoneNo ? delivery_address?.phoneNo : "NaN"}</span>
+    <div className=' bg-white rounded-xl w-full p-5 text-lg'>
+        <div className='mb-3 text-xl text-sky-800 '>Delivery Address</div> 
+        <div >     
+            <span className='bg-sky-100 p-1 px-2 tracking-wide font-semibold text-sky-700 capitalize rounded'>{address.address_type}</span>
+            <div className='space-x-1 text-[19px] mt-3 font-semibold  '>
+                <span>{address.name}</span> <span>( {address.phone_number} )</span>
             </div>
-            <div>
-                {delivery_address?.houseNo && `${delivery_address.houseNo}, `}
-                {delivery_address?.landMark && `${delivery_address.landMark}, `}
-                {delivery_address?.city && `${delivery_address.city},`}
-            </div>
-            <div>
-                {delivery_address?.district && `${delivery_address.district}, `}
-                {delivery_address?.state && `${delivery_address.state}`} 
-                <span className='font-medium font-sans'> -{delivery_address?.pincode}</span> 
-            </div>
-            {delivery_address?.alternatePhoneNo && <div><span className='font-sans text-gray-600 font-medium '>Alternate Phone: </span>{delivery_address.alternatePhoneNo}</div>}
+            <div className='mt-2 mb-1'>{address.house_no && `${address.house_no}, `} {address.landmark && `${address.landmark}, `} {address.area && `${address.area}, `} {address.city && `${address.city}, `} </div>
+            <div className='mb-1'>{address.district && `${address.district}, `} {address.state && `${address.state}`} {address.pincode && `- ${address.pincode}`}</div> 
+            <div>{address.alternate_phone_number && `Alternate Phone : ${address.alternate_phone_number}`}</div>
         </div>
     </div>
     )
