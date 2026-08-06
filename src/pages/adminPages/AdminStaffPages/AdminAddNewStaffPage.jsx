@@ -1,282 +1,418 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import axios from "axios"
-import { useNavigate } from "react-router-dom"
-import { toast } from "react-toastify"
+import { toast } from "react-toastify";
+import {Button} from '@material-tailwind/react'
+import LoadingSpinner from "../../../components/LoadingSpinner";
+import ErrorComponent from "../../../components/ErrorComponent";
+import { useNavigate, Link } from "react-router-dom";
+import AdminSideBar from "../../../components/admin/AdminSideBar";
+import { IoMdClose } from "react-icons/io";
+import { FiUploadCloud, FiX } from "react-icons/fi";
+import { FaArrowLeftLong } from "react-icons/fa6";
 
-const AdminAddNewProductPage = () => {
+const AdminAddNewStaffPage = () => {
 
-    const [loading , setLoading] = useState(false)
-
-    const input1Ref = useRef(null)
-    const input2Ref = useRef(null)
-    const input3Ref = useRef(null)
-    const input4Ref = useRef(null)
-    const input5Ref = useRef(null)
-    const input6Ref = useRef(null)
-    const input7Ref = useRef(null)
-    const input8Ref = useRef(null)
-    const input9Ref = useRef(null)
-    const input10Ref = useRef(null)
-    const input11Ref = useRef(null)
-    const input12Ref = useRef(null)
-    const input13Ref = useRef(null)
-    const input14Ref = useRef(null)
-    const input15Ref = useRef(null)
-    const input16Ref = useRef(null)
-    const handleKeyDown = (e, nextInputRef) => {
-        if (e.key === "Enter") {
-            e.preventDefault()
-            nextInputRef.current.focus()
-        }
-    }
-
-    const [staff_username , setStaffUserName ] = useState('')
-    const [staff_email , setStaffEmail ] = useState('')
-    const [staff_password , setStaffPassword ] = useState('')
-    const [staff_type , setStaffType ] = useState('')
-    const [staff_photo , setStaffPhoto ] = useState('')
-    const [staff_phone_number , setStaffPhoneNmber ] = useState('')
-    const [staff_alternate_phone_number , setStaffAlternatePhoneNumber ] = useState('')
-    const [staff_qualification , setStaffQualification ] = useState('')
-    const [staff_pancard_number , setStaffPancardNumber ] = useState('')
-    const [staff_aadhar_number , setStaffAadharNumber ] = useState('')
-    const [staff_DOB , setStaffDOB ] = useState('')
-    const [staff_account_number , setStaffAccountNumber ] = useState('')
-    const [houseNo , setHouseNo] = useState('')
-    const [city , setCity] = useState('')
-    const [pincode , setPincode ] = useState('')
-    const [district , setDistrict ] = useState('')
-    const [address , setAddress ] = useState('')
-   
-    const types = ["delivery", "staff", "manager", "general_manager", "admin" ]
-
-    const data =  {
-        staff_username , 
-        staff_email , 
-        staff_password , 
-        staff_type , 
-        staff_photo , 
-        staff_phone_number , 
-        staff_alternate_phone_number , 
-        staff_qualification , 
-        staff_pancard_number , 
-        staff_aadhar_number , 
-        staff_DOB ,
-        staff_account_number ,
-        staff_addresses : {
-            houseNo,
-            city , 
-            pincode , 
-            district , 
-            address 
-        }
-    }
+    const navigate = useNavigate()
     
+    const [loading , setLoading] = useState(false)
+    const [error , setError ] = useState(false)
+
+    const [name, setName] = useState('')
+    const [email, setEmail] = useState('')
+    const [gender, setGender] = useState('male')
+    const [department, setDepartment] = useState('')
+    const [role, setRole] = useState('')
+    const [salary, setSalary] = useState('')
+    const [phone_number, setPhoneNumber] = useState('')
+    const [alternate_phone_number, setAlternatePhoneNumber] = useState('')
+    const [qualification, setQualification] = useState('')
+    const [pancard_number, setPancardNumber] = useState('')
+    const [aadhar_number, setAadharNumber] = useState('')
+    const [DOB, setDOB] = useState('')
+    const [emergency_name, setEmergencyName] = useState('')
+    const [emergency_number, setEmergencyNumber] = useState('')
+    const [emergency_relation, setEmergencyRelation] = useState('')
+    const [photo , setPhoto] = useState(null)
+    const [account_number, setAccountNumber] = useState('')
+    const [branch_name, setBranchName ] = useState('')
+    const [ifsc, setIfsc ] = useState('')
+    const [account_holder, setAccountHolder ] = useState('')
+    const [bank_name, setBankName] = useState('')
+    const [house_no, setHouseNo] = useState('')
+    const [area, setArea] = useState('')
+    const [landmark, setLandmark] = useState('')
+    const [city, setCity] = useState('')
+    const [district, setDistrict] = useState('')
+    const [state, setState] = useState('')
+    const [pincode, setPincode] = useState('')
+    const [joining_date, setJoiningDate] = useState('')
+    
+    const photoInputRef = useRef(null);
+    const [previewPhoto, setPreviewPhoto] = useState("");
+    const [photoDragActive, setPhotoDragActive] = useState(false);
+    const handlePhoto = (file) => {
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+            alert("Please select a valid image.");
+            return;
+        }
+        if (file.size > MAX_FILE_SIZE) {
+            toast.error("Image size must be less than 5 MB.");
+            return;
+        }
+        setPhoto(file);
+        setPreviewPhoto(URL.createObjectURL(file));
+    };
+    const handleDropPhoto = (e) => {
+        e.preventDefault();
+        setPhotoDragActive(false);
+
+        const file = e.dataTransfer.files[0];
+        handlePhoto(file);
+    };
+    const handlePhotoChange = (e) => {
+        const file = e.target.files[0];
+        handlePhoto(e.target.files[0]);
+    };
+    const removePhoto = () => {
+        setPhoto(null);
+        setPreviewPhoto("");
+
+        if (photoInputRef.current) {photoInputRef.current.value = "";}
+    };
+
     const reset = ()=>{
-        setStaffUserName('')
-        setStaffEmail('')
-        setStaffPassword('')
-        setStaffType('')
-        setStaffPhoto('')
-        setStaffPhoneNmber('')
-        setStaffAlternatePhoneNumber('')
-        setStaffQualification('')
-        setStaffPancardNumber('')
-        setStaffAadharNumber('')
-        setStaffDOB('')
-        setStaffAccountNumber('')
+        setEmail('')
+        setGender('male')
+        setDepartment('')
+        setRole('')
+        setSalary('')
+        setPhoneNumber('')
+        setAlternatePhoneNumber('')
+        setQualification('')
+        setPancardNumber('')
+        setAadharNumber('')
+        setDOB('')
+        setEmergencyName('')
+        setEmergencyNumber('')
+        setEmergencyRelation('')
+        setPhoto(null)
+        setAccountNumber('')
+        setBranchName('')
+        setIfsc('')
+        setAccountHolder('')
+        setBankName('')
         setHouseNo('')
+        setArea('')
+        setLandmark('')
         setCity('')
-        setPincode('')
         setDistrict('')
-        setAddress('')
+        setState('')
+        setPincode('')
+        removePhoto()
     }
 
+    // Form Submission
     const handleSubmit = async(e)=>{
-        e.preventDefault()
         try {
-            setLoading(true) 
-            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/staff/add-staff` , {data})
-            console.log(" addNewStaff response :",res.data)
+            if(!name || !gender || !department || !role || !phone_number || !house_no || !landmark || !photo || !area || !city || !district || !state || !pincode || !joining_date ){
+                toast.warn("Fill all the require fields")
+                return
+            }
+            const emergency_contact = {
+                name: emergency_name,
+                phone_number: emergency_number,
+                relation: emergency_relation
+            }
+            const bank_details = { bank_name, account_number, branch_name, ifsc, account_holder }
+            const address = { house_no, landmark, area, city, district, state, pincode}
+            setLoading(true)
+
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("email", email);
+            formData.append("gender", gender);
+            formData.append("department", department);
+            formData.append("role", role);
+            formData.append("salary", salary);
+            formData.append("phone_number", phone_number);
+            formData.append("alternate_phone_number", alternate_phone_number);
+            formData.append("qualification", qualification);
+            formData.append("pancard_number", pancard_number);
+            formData.append("aadhar_number", aadhar_number);
+            formData.append("DOB", DOB);
+            formData.append("emergency_contact", JSON.stringify(emergency_contact) );
+            formData.append("photo", photo);
+            formData.append("bank_details", JSON.stringify(bank_details));
+            formData.append("address", JSON.stringify(address));
+            formData.append("joining_date", joining_date);
+
+            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/staff/create` , formData, {withCredentials: true})
+            console.log("addStaff response",res.data)
             toast.success(res.data?.message)
             reset()
+            navigate('/admin/staff')
+
         } catch (error) {
-            toast.error(error.response.data?.message)
-            console.error( "addNewStaff error : ",error)
+            toast.error(error.response?.data?.message)
+            console.log("error in addStaff :" , error)
         } finally { setLoading(false) }
     }
 
-  if (loading){return <div>Loading..</div>}
-
+  if (loading ) { return <LoadingSpinner/>}
+  if (error) { return <ErrorComponent/>}
   return (
-    <div className="w-full">
-        <div className="bg-slate-200 flex flex-col px-5 min-h-screen w-full p-5 ">
-            <div className='font-[arial] pb-5 hero text-3xl text-gray-600'>Add Staff</div>
-            <form onSubmit={(e)=>handleSubmit(e)} className="w-full h-full hero ">
-                <div className="bg-gray-50 rounded-xl shadow-lg p-4 md:p-8 container max-w-screen-lg ">
-                    <div className="grid gap-4 gap-y-2 text-base grid-cols-1 lg:grid-cols-1">
-                        <div className="lg:col-span-10">
-                            <div className="grid gap-3 gap-y-2 md:gap-5 md:gap-y-5 text-md grid-cols-1 md:grid-cols-10 text-gray-500 tracking-wide font-[arial]">
+    <div className="flex">
+    <AdminSideBar />
+    <div className="p-10 text-lg font-medium text-gray-800 bg-slate-50">
 
-                            <div className="col-span-10 text-2xl underline underline-offset-4">Staff Details</div>
-                            <div className="md:col-span-3">
-                                <label htmlFor="Username">Username</label>
-                                <input type="text" name="Username" id="Username" autoComplete="off" required
-                                    value={staff_username} onChange={(e)=>setStaffUserName(e.target.value)}
-                                    ref={input1Ref} onKeyDown={(e) => handleKeyDown(e, input2Ref)}
-                                    className="input input-bordered w-full mt-1" />
+        <div className='text-2xl flex items-center gap-3 mb-5'>
+            <Link to={'/admin/staff'} className=' cursor-pointer'><FaArrowLeftLong /></Link>
+            <div>Create Staff</div>
+        </div>
+        <div className="bg-white shadow-md p-10 rounded-xl">
+            <div className="text-xl font-medium text-sky-600 mt-1 mb-5">Staff Details</div>
+            <div className="flex gap-2 items-center">
+                {/* Photo */}
+                <div className="mt-2">
+                    <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={(e)=> handlePhoto(e.target.files[0])}/>
+                    {!previewPhoto ? (
+                        <div onClick={() => photoInputRef.current.click()}
+                            onDragOver={(e) => { 
+                                e.preventDefault(); 
+                                setPhotoDragActive(true) 
+                            }}
+                            onDragLeave={() => setPhotoDragActive(false)}
+                            onDrop={handleDropPhoto}
+                            className={`flex flex-col h-80 w-80 items-center justify-center gap-3 rounded-xl border p-10 cursor-pointer transition-all duration-300 border-gray-200 ${ photoDragActive ? " bg-gray-50" : " hover:bg-gray-50"}`}
+                        >
+                            <div className="text-2xl font-semibold text-gray-500 tracking-wider pb-5">Staff Photo<span className="text-red-400 pl-0.5">*</span></div>
+                            <FiUploadCloud size={60} className={photoDragActive ? "text-blue-500" : "text-gray-400"}/>
+                            <h2 className="text-lg font-semibold text-gray-700">Drag & Drop Image</h2>
+                            <p className="text-gray-500">or click to browse</p>
+                            <p className="text-sm text-gray-400">PNG, JPG, JPEG</p>
+                        </div>
+                    ) : (
+                        <div className="relative min-h-80 max-h-80 min-w-80 max-w-80">
+                            <img src={previewPhoto} alt="Preview" className=" h-full w-full rounded-xl border object-cover p-2" />
+                            <button type="button" onClick={removePhoto} className="absolute right-3 top-3 rounded-full bg-red-500 p-2 text-white shadow-lg transition hover:bg-red-600">
+                                <FiX size={18} />
+                            </button>
+                        </div>
+                    )}
+                </div>
+                <div className="gap-5 gap-y-[25px] grid grid-cols-6 px-5">
+                    {/* name */}
+                    <div className="md:col-span-2 space-y-2">
+                        <label>Name<span className="text-red-500 pl-0.5">*</span></label>
+                        <input type="text" autoComplete="off" value={name} onChange={(e)=>setName(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                    </div>
+
+                    {/* Phone Number */}
+                    <div className="md:col-span-2 space-y-3">
+                        <label>Phone Number<span className="text-red-500 pl-0.5">*</span></label>
+                        <input type="text" autoComplete="off" required value={phone_number} onChange={(e)=>setPhoneNumber(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                    </div>
+
+                    {/* Gender */}
+                    <div className="col-span-2">
+                        <div>Gender<span className="text-red-500 pl-0.5">*</span></div>
+                        <div className='flex mt-3 gap-5 p-3'>
+                            <div className='flex justify-center items-center gap-1'>
+                                <input type="radio" id="male" name="gender" value="male" onChange={(e)=>setGender(e.target.value)} checked={gender === "male"} className='h-6 w-6'/>
+                                <label htmlFor="male">Male</label>
                             </div>
-
-                            <div className="md:col-span-4">
-                                <label htmlFor="staff_email">Email</label>
-                                <input type="text" name="staff_email" id="staff_email" autoComplete="off" required
-                                    value={staff_email} onChange={(e)=>setStaffEmail(e.target.value)}
-                                    ref={input2Ref} onKeyDown={(e) => handleKeyDown(e, input3Ref)}
-                                    className="input input-bordered w-full mt-1" />
+                            <div className='flex justify-center items-center gap-1'>
+                                <input type="radio" id="female" name="gender"  value="female" onChange={(e)=>setGender(e.target.value)} checked={gender === "female"} className='h-6 w-6'/>
+                                <label htmlFor="female">Female</label>
                             </div>
-
-                            <div className="md:col-span-3 ">
-                                <label htmlFor="staff_password">Password</label>
-                                <input type="text" name="staff_password" id="staff_password" autoComplete="off" required
-                                    value={staff_password} onChange={(e)=>setStaffPassword(e.target.value)}
-                                    ref={input3Ref} onKeyDown={(e) => handleKeyDown(e, input4Ref)}
-                                    className="input input-bordered w-full mt-1" />
-                            </div>
-
-                            <div className="md:col-span-3 ">
-                                <label htmlFor="staff_type">Staff Type</label>
-                                <select name="staff_type" id="staff_type" required 
-                                    value={staff_type} onChange={(e)=> setStaffType(e.target.value)} 
-                                    ref={input4Ref} onKeyDown={(e) => handleKeyDown(e, input5Ref)}
-                                    className="select select-bordered w-full mt-1 ">
-                                    <option disabled value='' />
-                                    {types.map((name, index) =>( <option key ={index} value={name}>{name}</option> ))}
-                                </select>
-                            </div>
-
-                            <div className="md:col-span-3">
-                                <label htmlFor="staff_phone_number">Phone Number</label>
-                                <input type="number" name="staff_phone_number" id="staff_phone_number" autoComplete="off" required
-                                    value={staff_phone_number} onChange={(e)=>setStaffPhoneNmber(e.target.value)}
-                                    ref={input5Ref} onKeyDown={(e) => handleKeyDown(e, input6Ref)}
-                                    className="input input-bordered w-full mt-1 " />
-                            </div>
-
-                            <div className="md:col-span-4 ">
-                                <label htmlFor="staff_alternate_phone_number">Alternate Phn no</label>
-                                <input type="number" name="staff_alternate_phone_number" id="staff_alternate_phone_number" autoComplete="off"
-                                    value={staff_alternate_phone_number} onChange={(e)=>setStaffAlternatePhoneNumber((e.target.value))}
-                                    ref={input6Ref} onKeyDown={(e) => handleKeyDown(e, input7Ref)}
-                                    className="input input-bordered w-full mt-1" />
-                            </div>
-
-                            <div className="md:col-span-2 ">
-                                <label htmlFor="staff_DOB">Date of Birth</label>
-                                <input type="date" name="staff_DOB" id="staff_DOB"
-                                    value={staff_DOB} onChange={(e)=>setStaffDOB(e.target.value)}
-                                    ref={input7Ref} onKeyDown={(e) => handleKeyDown(e, input8Ref)}
-                                    className="input input-bordered w-full mt-1" />
-                            </div>
-
-                            <div className="md:col-span-5 ">
-                                <label htmlFor="photos">Photo</label>
-                                <input type="file" name="photos" id="photos"
-                                    accept="image/png, image/jpeg" onChange={(e)=>setStaffPhoto(e.target.files[0])}
-                                    className="file-input file-input-bordered w-full mt-1 " />
-                            </div>
-
-                            <div className="md:col-span-3 ">
-                                <label htmlFor="staff_qualification">Qualification</label>
-                                <input type="text" name="staff_qualification" id="staff_qualification" autoComplete="off"
-                                    value={staff_qualification} onChange={(e)=>setStaffQualification(e.target.value)}
-                                    ref={input8Ref} onKeyDown={(e) => handleKeyDown(e, input9Ref)}
-                                    className="input input-bordered w-full mt-1" />
-                            </div>
-
-                            <div className="divider m-0 col-span-10"/>
-                            <div className="col-span-10 text-2xl underline underline-offset-4">Accounts and Cards</div>
-
-                            <div className="md:col-span-3">
-                                <label htmlFor="staff_pancard_number">Pancard Number</label>
-                                <input type="text" name="staff_pancard_number" id="staff_pancard_number" autoComplete="off"
-                                    value={staff_pancard_number} onChange={(e)=>setStaffPancardNumber(e.target.value)}
-                                    ref={input9Ref} onKeyDown={(e) => handleKeyDown(e, input10Ref)}
-                                    className="input input-bordered w-full mt-1" />
-                            </div>
-                            
-                            <div className="md:col-span-3">
-                                <label htmlFor="staff_aadhar_number">Aadhar Number</label>
-                                <input type="text" name="staff_aadhar_number" id="staff_aadhar_number" autoComplete="off"
-                                    value={staff_aadhar_number} onChange={(e)=>setStaffAadharNumber(e.target.value)}
-                                    ref={input10Ref} onKeyDown={(e) => handleKeyDown(e, input11Ref)}
-                                    className="input input-bordered w-full mt-1" />
-                            </div>
-
-                            <div className="md:col-span-4">
-                                <label htmlFor="staff_account_number">Account Number</label>
-                                <input type="text" name="staff_account_number" id="staff_account_number" autoComplete="off"
-                                    value={staff_account_number} onChange={(e)=>setStaffAccountNumber(e.target.value)}
-                                    ref={input11Ref} onKeyDown={(e) => handleKeyDown(e, input12Ref)}
-                                    className="input input-bordered w-full mt-1" />
-                            </div>
-
-                            <div className="divider m-0 col-span-10"/>
-                            <div className="col-span-10 text-2xl underline underline-offset-4">Address</div>
-
-                            <div className="md:col-span-3">
-                                <label htmlFor="houseNo">House No</label>
-                                <input type="text" name="houseNo" id="houseNo" autoComplete="off"
-                                    value={houseNo} onChange={(e)=>setHouseNo(e.target.value)}
-                                    ref={input12Ref} onKeyDown={(e) => handleKeyDown(e, input13Ref)}
-                                    className="input input-bordered w-full mt-1" />
-                            </div>
-
-                            <div className="md:col-span-4">
-                                <label htmlFor="staff_city">City</label>
-                                <input type="text" name="staff_city" id="staff_city" autoComplete="off"
-                                    value={city} onChange={(e)=>setCity(e.target.value)}
-                                    ref={input13Ref} onKeyDown={(e) => handleKeyDown(e, input14Ref)}
-                                    className="input input-bordered w-full mt-1" />
-                            </div>
-
-                            <div className="md:col-span-3 ">
-                                <label htmlFor="staff_pincode">Pincode</label>
-                                <input type="number" name="staff_pincode" id="staff_pincode" autoComplete="off"
-                                    value={pincode} onChange={(e)=>setPincode(e.target.value)}
-                                    ref={input14Ref} onKeyDown={(e)=> handleKeyDown(e, input15Ref)}
-                                    className="input input-bordered w-full mt-1" />
-                            </div>
-
-                            <div className="md:col-span-4">
-                                <label htmlFor="staff_district">District</label>
-                                <input type="text" name="staff_district" id="staff_district" autoComplete="off"
-                                    value={district} onChange={(e)=>setDistrict(e.target.value)}
-                                    ref={input15Ref} onKeyDown={(e) => handleKeyDown(e, input16Ref)}
-                                    className="input input-bordered w-full mt-1" />
-                            </div>
-
-                            <div className="md:col-span-6 ">
-                                <label htmlFor="staff_address">Address</label>
-                                <input type="text" name="staff_address" id="staff_address" autoComplete="off"
-                                    value={address} onChange={(e)=>setAddress(e.target.value)}
-                                    ref={input16Ref}
-                                    className="input input-bordered w-full mt-1" />
-                            </div>
-
-                            <div className="md:col-span-10 mt-10 flex gap-1">
-                                <div onClick={()=>reset()} className="bg-red-500 hero hover:bg-red-400 text-white font-bold py-2 px-4 rounded-md w-full" >
-                                    Reset</div> 
-                                <button type='submit' className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded-md w-full" >
-                                    Submit</button> 
-                            </div>
+                            <div className='flex justify-center items-center gap-1'>
+                                <input type="radio" id="others" name="gender" value="others" onChange={(e)=>setGender(e.target.value)} checked={gender === "others"} className='h-6 w-6'/>
+                                <label htmlFor="others">Others</label>
                             </div>
                         </div>
+                    </div>   
+
+                    {/* email */}
+                    <div className="md:col-span-2 space-y-2">
+                        <label>Email</label>
+                        <input type="text" autoComplete="off" value={email} onChange={(e)=>setEmail(e.target.value)} 
+                        className="border p-3 px-4 w-full rounded-xl"/>
+                    </div>
+                
+                    {/* Alternate Phone Number */}
+                    <div className="md:col-span-2 space-y-2 ">
+                        <label>Alternate Phone Number</label>
+                        <input type="text" autoComplete="off" required value={alternate_phone_number} onChange={(e)=>setAlternatePhoneNumber(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                    </div>
+
+                    {/* DOB */}
+                    <div className="md:col-span-2 space-y-2 ">
+                        <label className="text-lg font-medium text-gray-600">DOB</label>
+                        <input type="Date" autoComplete="off" required value={DOB} onChange={(e)=>setDOB(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                    </div>
+
+                    {/* Pan Card No. */}
+                    <div className="md:col-span-2 space-y-2 ">
+                        <label>Pan Card No.</label>
+                        <input type="text" autoComplete="off" required value={pancard_number} onChange={(e)=>setPancardNumber(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                    </div>
+                    
+                    {/* Aadhar Card No. */}
+                    <div className="md:col-span-2 space-y-2 ">
+                        <label>Aadhar Card No.</label>
+                        <input type="text" autoComplete="off" required value={aadhar_number} onChange={(e)=>setAadharNumber(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                    </div>
+                    
+                    {/* Qualification */}
+                    <div className="md:col-span-2 space-y-2 ">
+                        <label>Qualification</label>
+                        <input type="text" autoComplete="off" required value={qualification} onChange={(e)=>setQualification(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div className="flex mt-5 gap-5">
+            <div className=" w-full p-10 bg-white shadow-md rounded-xl">
+                <div className="text-xl text-sky-600 ">Work Details</div>
+                <div className="space-y-3 mt-6">
+                    {/* Department */}
+                    <div className="col-span-3 space-y-2">
+                        <label >Department<span className="text-red-500 pl-0.5">*</span></label>
+                        <select  autoFocus value={department} onChange={(e)=> setDepartment(e.target.value)} className="border p-3 px-4 w-full rounded-xl font-medium">
+                            <option disabled value='' />
+                            <option value={"sales"}>Sales</option>
+                            <option value={"inventory"}>Inventory</option>
+                            <option value={"delivery"}>Delivery</option>
+                            <option value={"administration"}>Administration</option>
+                        </select>
+                    </div>
+                    {/* Role */}
+                    <div className="col-span-3 space-y-2">
+                        <label>Role<span className="text-red-500 pl-0.5">*</span></label>
+                        <select autoFocus value={role} onChange={(e)=> setRole(e.target.value)} className="border p-3 px-4 w-full rounded-xl">
+                            <option disabled value='' />
+                            <option value={"delivery"}>Delivery</option>
+                            <option value={"staff"}>Staff</option>
+                            <option value={"bpo"}>BPO</option>
+                            <option value={"assistant_manager"}>Assistant Manager</option>
+                            <option value={"manager"}>Manager</option>
+                            <option value={"general_manager"}>General Manager</option>
+                            <option value={"admin"}>Admin</option>
+                        </select>
+                    </div>
+                    {/* Salary */}
+                    <div className="md:col-span-2 space-y-2">
+                        <label>Salary</label>
+                        <input type="number" value={salary} onChange={(e)=>setSalary(Number(e.target.value))} className="border p-3 px-4 w-full rounded-xl"/>
+                    </div>
+                    {/* Joining Date */}
+                    <div className="md:col-span-2 space-y-2">
+                        <label>Joining Date<span className="text-red-500 pl-0.5">*</span></label>
+                        <input type="Date" autoComplete="off" required value={joining_date} onChange={(e)=>setJoiningDate(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
                     </div>
                 </div>
-            </form>
+            </div>
+
+            <div className="p-10 bg-white shadow-md rounded-xl w-full">
+                <div className="text-xl text-sky-700 ">Emergency Contact</div>
+                <div className="space-y-[17px] mt-6">
+                    {/* Emergency Name */}
+                    <div className="md:col-span-3 space-y-2 ">
+                        <label>Name</label>
+                        <input type="text" autoComplete="off" required value={emergency_name} onChange={(e)=>setEmergencyName(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                    </div>
+                    {/* Emergency Number */}
+                    <div className="md:col-span-3 space-y-2 ">
+                        <label className="text-lg font-medium text-gray-600">Phone No.</label>
+                        <input type="text" autoComplete="off" required value={emergency_number} onChange={(e)=>setEmergencyNumber(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                    </div>
+                    {/* Emergency Relation */}
+                    <div className="md:col-span-3 space-y-2 ">
+                        <label className="text-lg font-medium text-gray-600">Relation</label>
+                        <select  autoFocus value={emergency_relation} onChange={(e)=> setEmergencyRelation(e.target.value)} className="border p-3 px-4 w-full rounded-xl">
+                            <option disabled value='' />
+                            <option value={"spouse"}>Spouse</option>
+                            <option value={"father"}>Father</option>
+                            <option value={"mother"}>Mother</option>
+                            <option value={"guardian"}>Guardian</option>
+                            <option value={"sibling"}>Sibling</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div className="grid grid-cols-5 mt-5 gap-5">
+            <div className=" col-span-2 grid grid-cols-10 gap-3 p-10 shadow-md bg-white rounded-xl ">
+                <div className="text-xl col-span-10 text-sky-600 mb-4">Bank Details</div>
+                <div className="md:col-span-6 space-y-2">
+                    <label>Bank Name</label>
+                    <input type="text" value={bank_name} onChange={(e)=>setBankName(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                </div>
+                <div className="md:col-span-4 space-y-2">
+                    <label>Account no.</label>
+                    <input type="text" value={account_number} onChange={(e)=>setAccountNumber(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                </div>
+                <div className="md:col-span-5 space-y-2">
+                    <label>Branch Name</label>
+                    <input type="text" value={branch_name} onChange={(e)=>setBranchName(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                </div>
+                <div className="md:col-span-5 space-y-2">
+                    <label>IFSC</label>
+                    <input type="text" value={ifsc} onChange={(e)=>setIfsc(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                </div>
+                <div className="md:col-span-10 space-y-2">
+                    <label>Account Holder Name</label>
+                    <input type="text" value={account_holder} onChange={(e)=>setAccountHolder(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                </div>
+            </div>
+
+            <div className=" col-span-3 grid grid-cols-6 gap-3 bg-white shadow-md rounded-xl p-10 ">
+                <div className="text-xl col-span-6 text-sky-600 mb-4 ">Address Details</div>
+                <div className="md:col-span-3 space-y-2">
+                    <label>House No<span className="text-red-500 pl-0.5">*</span></label>
+                    <input type="text" value={house_no} onChange={(e)=>setHouseNo(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                </div>
+                <div className="md:col-span-3 space-y-2">
+                    <label>Landmark</label>
+                    <input type="text" value={landmark} onChange={(e)=>setLandmark(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                </div>
+                <div className="md:col-span-3 space-y-2">
+                    <label>Area<span className="text-red-500 pl-0.5">*</span></label>
+                    <input type="text" value={area} onChange={(e)=>setArea(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                </div>
+                <div className="md:col-span-3 space-y-2">
+                    <label>City<span className="text-red-500 pl-0.5">*</span></label>
+                    <input type="text" value={city} onChange={(e)=>setCity(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                </div>
+                <div className="md:col-span-2 space-y-2">
+                    <label>District<span className="text-red-500 pl-0.5">*</span></label>
+                    <input type="text" value={district} onChange={(e)=>setDistrict(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                </div>
+                <div className="md:col-span-2 space-y-2">
+                    <label>State<span className="text-red-500 pl-0.5">*</span></label>
+                    <input type="text" value={state} onChange={(e)=>setState(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                </div>
+                <div className="md:col-span-2 space-y-2">
+                    <label>Pincode<span className="text-red-500 pl-0.5">*</span></label>
+                    <input type="text" value={pincode} onChange={(e)=>setPincode(e.target.value)} className="border p-3 px-4 w-full rounded-xl"/>
+                </div>
+            </div>
+        </div>
+
+        <div className=" col-span-10 mt-5 grid grid-cols-2 gap-5">
+            <div className="flex items-center justify-center">
+                <button type="button" onClick={()=>reset()} className=" text-red-500 hover:text-red-600 rounded-xl " >Reset</button>
+            </div>
+            <button onClick={()=>handleSubmit()} className="bg-blue-500 text-white rounded-xl p-4" >Submit</button> 
         </div>
     </div>
-    )
+    </div>
+  )
 }
 
-export default AdminAddNewProductPage
+export default AdminAddNewStaffPage

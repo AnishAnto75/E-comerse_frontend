@@ -33,7 +33,7 @@ const AdminOrderStatusComponent = ({order}) => {
 
     const cancelOrder = async() =>{
         if(reason_for_cancel.trim().length < 10){ 
-            input1Ref.current.focus(); 
+            input1Ref.current.focus();
             toast.warn("Minimum 10 character")
             return
         }
@@ -238,7 +238,7 @@ const AdminOrderStatusComponent = ({order}) => {
                         <p className="mb-2 text-xl ">Reason for cancel ?</p>
                         <input type="text" autoComplete='off' ref={input1Ref} value={reason_for_cancel} onChange={(e)=>setReasonForCancel(e.target.value)}className='border text-gray-800 outline-none rounded-md p-2 w-full'/>
                         <div className="mt-6 flex justify-end space-x-2">
-                            <button className='bg-sky-500 p-2 px-3 rounded-xl text-white hover:bg-sky-600' onClick={()=>cancelOrder()}>Cancel Order</button>
+                            <button className='bg-sky-500 p-2 px-3 rounded-xl text-white hover:bg-sky-600' onClick={()=>cancelOrder()}>Cancel</button>
                         </div>
                     </div>
                 </div>
