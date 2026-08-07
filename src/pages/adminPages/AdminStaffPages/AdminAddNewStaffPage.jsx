@@ -82,6 +82,20 @@ const AdminAddNewStaffPage = () => {
         if (photoInputRef.current) {photoInputRef.current.value = "";}
     };
 
+    const departmentRoles = {
+        administration: ["admin", "general_manager", "manager", "assistant_manager", "staff", "bpo"],
+        sales: ["manager", "assistant_manager", "staff", "bpo"],
+        inventory: ["manager", "assistant_manager", "staff"],
+        delivery: ["delivery", "staff"]
+    };
+    const validDepartments = [ "administration", "sales", "inventory", "delivery"]
+    const [validRoles, setValidRoles] = useState([])
+    const handleDepartment = (dept)=>{
+        setDepartment(dept)
+        const roles = departmentRoles[dept]
+        setValidRoles(roles)
+    }
+
     const reset = ()=>{
         setEmail('')
         setGender('male')
@@ -120,6 +134,8 @@ const AdminAddNewStaffPage = () => {
                 toast.warn("Fill all the require fields")
                 return
             }
+            if (!departmentRoles[department]?.includes(role)) { toast.warn("Invalid role for selected department."); return}
+            
             const emergency_contact = {
                 name: emergency_name,
                 phone_number: emergency_number,
@@ -147,6 +163,8 @@ const AdminAddNewStaffPage = () => {
             formData.append("bank_details", JSON.stringify(bank_details));
             formData.append("address", JSON.stringify(address));
             formData.append("joining_date", joining_date);
+
+            console.log(formData)
 
             const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/staff/create` , formData, {withCredentials: true})
             console.log("addStaff response",res.data)
@@ -282,26 +300,17 @@ const AdminAddNewStaffPage = () => {
                     {/* Department */}
                     <div className="col-span-3 space-y-2">
                         <label >Department<span className="text-red-500 pl-0.5">*</span></label>
-                        <select  autoFocus value={department} onChange={(e)=> setDepartment(e.target.value)} className="border p-3 px-4 w-full rounded-xl font-medium">
+                        <select autoFocus value={department} onChange={(e)=> handleDepartment(e.target.value)} className="border p-3 px-4 w-full rounded-xl capitalize">
                             <option disabled value='' />
-                            <option value={"sales"}>Sales</option>
-                            <option value={"inventory"}>Inventory</option>
-                            <option value={"delivery"}>Delivery</option>
-                            <option value={"administration"}>Administration</option>
+                            {validDepartments.map((dept, index) => <option key={index} value={dept} className="capitalize">{dept}</option>)}
                         </select>
                     </div>
                     {/* Role */}
                     <div className="col-span-3 space-y-2">
                         <label>Role<span className="text-red-500 pl-0.5">*</span></label>
-                        <select autoFocus value={role} onChange={(e)=> setRole(e.target.value)} className="border p-3 px-4 w-full rounded-xl">
+                        <select disabled={!validRoles.length} autoFocus value={role} onChange={(e)=> setRole(e.target.value)} className="border p-3 px-4 w-full rounded-xl capitalize">
                             <option disabled value='' />
-                            <option value={"delivery"}>Delivery</option>
-                            <option value={"staff"}>Staff</option>
-                            <option value={"bpo"}>BPO</option>
-                            <option value={"assistant_manager"}>Assistant Manager</option>
-                            <option value={"manager"}>Manager</option>
-                            <option value={"general_manager"}>General Manager</option>
-                            <option value={"admin"}>Admin</option>
+                            {validRoles.map((role, index) => <option key={index} value={role} className="capitalize">{role}</option>)}
                         </select>
                     </div>
                     {/* Salary */}
