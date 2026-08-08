@@ -4,7 +4,7 @@ import { FaIndianRupeeSign, FaMoneyBillTrendUp } from 'react-icons/fa6'
 
 const AdminSupplierSummaryCardsComponent = ({data}) => {
   return (
-    <div className="grid grid-cols-4 gap-6">
+    <div className="grid grid-cols-3 gap-6">
         <div className='bg-white rounded-2xl  border-t-4 border-indigo-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
             <div className="flex justify-between items-center">
                 <div>
@@ -35,17 +35,6 @@ const AdminSupplierSummaryCardsComponent = ({data}) => {
                 </div>
                 <div className={`bg-red-50 h-[58px] p-4 rounded-2xl`}>
                     <FaUserSlash size={26} className="text-red-600"/>
-                </div>
-            </div>
-        </div>
-        <div className='bg-white rounded-2xl border-t-4 border-amber-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
-            <div className="flex justify-between items-center">
-                <div>
-                    <p className="text-amber-500 font-semibold">TOTAL PURCHASE VALUE</p>
-                    <h2 className='text-3xl mt-2 font-bold text-amber-500 flex items-center'><FaIndianRupeeSign size={26} />{data.total_purchase_value?.toLocaleString()}</h2>
-                </div>
-                <div className={`bg-amber-50 h-[58px] p-4 rounded-2xl`}>
-                    <FaMoneyBillTrendUp size={26} className="text-amber-500"/>
                 </div>
             </div>
         </div>

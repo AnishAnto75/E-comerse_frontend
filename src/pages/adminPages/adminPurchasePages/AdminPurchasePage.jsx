@@ -5,7 +5,6 @@ import { format } from 'date-fns'
 import { toast } from 'react-toastify'
 import { FaSearch } from 'react-icons/fa'
 import AdminSideBar from '../../../components/admin/AdminSideBar'
-import AdminSupplierTopRequestedComponent from '../../../components/admin/AdminSupplierComponent.jsx/AdminSupplierTopRequestedComponent'
 import AdminPurchaseChartComponent from '../../../components/admin/AdminPurchaseComponents/AdminPurchaseChartComponent'
 
 const AdminPurchasePage = () => {
@@ -432,7 +431,7 @@ const AdminPurchasePage = () => {
 
             <AdminPurchaseChartComponent totalPurchaseInvoice={totalPurchaseInvoice} totalPurchaseValue={totalPurchaseValue} totalRevenue={totalRevenue} />
 
-            <AdminSupplierTopRequestedComponent requested_products={requested_products} />
+            {/* <AdminSupplierTopRequestedComponent requested_products={requested_products} /> */}
 
             <div className="h-[calc(100vh-40px)] border flex flex-col mt-8 rounded-2xl shadow-md p-5">
                 <div className="flex flex-col xl:flex-row gap-4 justify-between">

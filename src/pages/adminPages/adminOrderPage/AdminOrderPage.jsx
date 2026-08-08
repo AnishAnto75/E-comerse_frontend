@@ -12,6 +12,9 @@ import { CiFilter } from 'react-icons/ci'
 import { IoCloseSharp, IoFilter } from 'react-icons/io5'
 import { toast } from 'react-toastify'
 import AdminOrderPreviewComponent from '../../../components/admin/AdminOrderComponents/AdminOrderPreviewComponent'
+import { useRef } from 'react'
+import { useEffect } from 'react'
+import axios from 'axios'
 
 const AdminOrderPage = () => {
     const navigate = useNavigate()
@@ -19,244 +22,52 @@ const AdminOrderPage = () => {
     const [loading , setLoading] = useState(false)
     const [error , setError ] = useState(false)
     const [selected_order, setSelectedOrder ] = useState(null)
-    
-    const data = {
-        totalOrders:{
-            value: 1648,
-            increment: 25,
-            chartData: [
-                {
-                    name: 'Mar',
-                    orders: 4000,
-                },
-                {
-                    name: 'Apr',
-                    orders: 3000,
-                },
-                {
-                    name: 'May',
-                    orders: 2000,
-                },
-                {
-                    name: 'Jun',
-                    orders: 2780,
-                },
-                {
-                    name: 'Jul',
-                    orders: 1890,
-                },
-                {
-                    name: 'Aug',
-                    orders: 2390,
-                },
-                {
-                    name: 'Sep',
-                    orders: 3490,
-                },
-            ]
-        },
-        totalRevenue:{
-            value: 161238152,
-            increment: -25,
-            chartData: [
-                {
-                    name: 'Mar',
-                    revenue: 2000,
-                },
-                {
-                    name: 'Apr',
-                    revenue: 3000,
-                },
-                {
-                    name: 'May',
-                    revenue: 2000,
-                },
-                {
-                    name: 'Jun',
-                    revenue: 2780,
-                },
-                {
-                    name: 'Jul',
-                    revenue: 1890,
-                },
-                {
-                    name: 'Aug',
-                    revenue: 2390,
-                },
-                {
-                    name: 'Sep',
-                    revenue: 3490,
-                },
-            ]
-        },
-        pendingOrders: {
-            value: 400,
-            increment: 5,
-            chartData: [
-                {
-                    name: "Pending Orders",
-                    placed: 900,
-                    confirmed: 580,
-                    out: 20,
-                },
-            ]
-        },
-        orders:[
-            {
-                order_id : "ORD062792963341",
-                delivery_address : {
-                    name: "Anish",
-                    phoneNo: "78745245225",
-                    pincode:854526
-                },
-                total_no_of_products: "5",
-                total_amount : 8452,
-                payment_method: "UPI",
-                order_status: {
-                    placed: {
-                        status: true,
-                        date: "2026-06-27T12:58:48.408Z"
-                    },
-                    confirmed: {
-                        status: false
-                    },
-                    out: {
-                        status: false
-                    },
-                    delivered: {
-                        "status": false
-                    },
-                    canceled: {
-                        "status": false
-                    }
-                },
-                order_rating: 5
-            },
-            {
-                order_id : "ORD062738902526",
-                delivery_address : {
-                    name: "Anish",
-                    phoneNo: "78745245225",
-                    pincode:854526
-                },
-                total_no_of_products: "5",
-                total_amount : 8452,
-                payment_method: "UPI",
-                order_status: {
-                    placed: {
-                        status: true,
-                        date: "2026-06-27T12:58:48.408Z"
-                    },
-                    confirmed: {
-                        status: true
-                    },
-                    out: {
-                        status: true
-                    },
-                    delivered: {
-                        "status": false
-                    },
-                    canceled: {
-                        "status": false
-                    }
-                },
-                order_rating: 5
-            },
-            {
-                order_id : "ORD062710921516",
-                delivery_address : {
-                    name: "Anish",
-                    phoneNo: "78745245225",
-                    pincode:854526
-                },
-                total_no_of_products: "5",
-                total_amount : 8452,
-                payment_method: "UPI",
-                order_status: {
-                    placed: {
-                        status: true,
-                        date: "2026-06-27T12:58:48.408Z"
-                    },
-                    confirmed: {
-                        status: true
-                    },
-                    out: {
-                        status: false
-                    },
-                    delivered: {
-                        "status": false
-                    },
-                    canceled: {
-                        "status": false
-                    }
-                },
-                order_rating: 5
-            },
-            {
-                order_id : "ORD062790229407",
-                delivery_address : {
-                    name: "Anish",
-                    phoneNo: "78745245225",
-                    pincode:854526
-                },
-                total_no_of_products: "2",
-                total_amount : 8452,
-                payment_method: "UPI",
-                order_status: {
-                    placed: {
-                        status: true,
-                        date: "2026-06-27T12:58:48.408Z"
-                    },
-                    confirmed: {
-                        status: false
-                    },
-                    out: {
-                        status: false
-                    },
-                    delivered: {
-                        "status": false
-                    },
-                    canceled: {
-                        "status": false
-                    }
-                },
-                order_rating: 5
-            },           
-        ]
+
+    const [data, setData] = useState(null)
+
+    const handleRef = useRef(true)
+    useEffect(()=>{
+        const fetch = async()=>{
+            try {
+                setLoading(true)
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/order/order_page`, {withCredentials: true})
+                console.log("fetchOrderPage payload : " , res.data)
+                setData(res.data.data)
+            } catch (error){
+                setError(true)
+                toast.error("Internal Server Error")
+                console.error("error in fetchOrderPage :" , error)
+            } finally { setLoading(false) }
+        }
+        if(handleRef.current) {
+            fetch()
+            handleRef.current = false
+        }
+    } , [])
+
+
+    const getStatusColor = (status)=>{
+        return status === 'cancelled' ? "bg-red-500" : status === 'delivered' ? "bg-green-500" : "bg-sky-500"
     }
 
-    const findOrderStatus = (order_status)=> {
-        const placed = order_status.placed
-        const confirmed = order_status.confirmed 
-        const out = order_status.out
-        const delivered = order_status.delivered 
-        const canceled = order_status.canceled  
-        return canceled.status ? {value: "Canceled", color:"bg-red-500"} : 
-            delivered.status ? {value: "Delivered", color:"bg-green-500"} : 
-            out.status ? {value: "Out", color:"bg-green-500"} : 
-            confirmed.status ? {value: "Confirmed", color:"bg-blue-500"} : 
-            placed.status ? {value: "Placed", color:"bg-blue-500"} : 
-            {value: "NaN", color:"yellow", date: "NaN"}
+    const getPaymentColor = (status) => {
+        return status === "Pending" ? "bg-amber-500" : status === "Paid" ? "bg-green-500" : status === "Failed" ? "bg-red-500" : status === "Refunded" && "bg-sky-500"
     }
 
-    const totalOrders = data.totalOrders
-    const totalRevenue = data.totalRevenue
-    const pendingOrders = data.pendingOrders
-    const orders = data.orders
+    const pendingOrders = data?.pendingOrders
+    const orders = data?.orders
 
     if(loading){return <LoadingSpinner/>}
-    if(error){return <ErrorComponent/>}
+    if(error || !data){return <ErrorComponent/>}
 
     return (
     <div className='flex'>
         <AdminSideBar />
-        <div className='w-full p-5 font-inter'>
-            {/* This page is running by sample data */}
-            <div className='text-3xl text-red-500'>This page is running by sample data</div>
-            <div className='text-3xl tracking-tight text-gray-800 font-semibold pt-1'>Orders</div>
-            <div className='py-[10px] text-gray-500 tracking-tight font-medium'>Manage your recent orders and get through it</div>
+        <div className='w-full p-5 font-inter text-gray-800 text-lg font-medium pt-7'>
+            <div className='text-3xl font-semibold'>Orders</div>
+            <div className='py-2 text-gray-600'>Manage your recent orders and get through it</div>
             
-            <AdminOrderHeaderComponent totalOrders={totalOrders} totalRevenue={totalRevenue} pendingOrders={pendingOrders}/>
+            <AdminOrderHeaderComponent pendingOrders={pendingOrders}/>
 
             <div className='flex justify-between pt-5'>
                 {/* Search Orders */}
@@ -276,6 +87,7 @@ const AdminOrderPage = () => {
                             <th className='py-4 text-start'>Order Id</th>
                             <th className='py-4 text-start'>Customer</th>
                             <th className='py-4'>Quantity</th>
+                            <th className='py-4'>Payment</th>
                             <th className='py-4'>Amount</th>
                             <th className='py-4'>Status</th>
                             <th className='py-4'>Ratings</th>
@@ -283,39 +95,44 @@ const AdminOrderPage = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {orders?.map((order, index) =>{
-                            const status = findOrderStatus(order.order_status)
-                            return(
-                            <tr key={index} onClick={()=>setSelectedOrder(order.order_id)} className={`text-center border-b-[3px] border-gray-50 text-gray-800 text-base ${ selected_order == order.order_id ? "bg-gray-50" : ''}`}>
+                        {orders?.map((order, index) =>(
+                            <tr key={index} onClick={()=>setSelectedOrder(order.order_id)} className={`text-center border-b-[3px] border-gray-50 text-gray-800 ${ selected_order == order.order_id ? "bg-gray-50" : ''}`}>
                                 <td className='text-gray-600 font-semibold'>{index+1})</td>
                                 <td className='text-start py-4'>
-                                    <span className='text-lg text-gray-700 block pb-0.5 font-semibold'>#{order.order_id}</span>
-                                    <span className='text-gray-500 text-[17px]'>{format(new Date(order.order_status?.placed?.date) , "dd/MM - p")}</span>
+                                    <span className='block font-semibold'>#{order.order_id}</span>
+                                    <span className='text-gray-500'>{format(new Date(order.createdAt) , "dd / MM / yy - p")}</span>
                                 </td>
-                                <td className='flex flex-col text-start py-4 font-medium '>
-                                    <span className='text-lg text-gray-800 pb-0.5'>{order?.delivery_address?.name}</span>
-                                    <span className='text-gray-500'>{order?.delivery_address?.phoneNo}</span>
+                                <td className='flex flex-col text-start py-4 '>
+                                    <span>{order?.delivery_address?.name}</span>
+                                    <span className='text-gray-500'>{order?.delivery_address?.phone_number}</span>
                                 </td>
-                                <td className='py-4 font-medium text-lg text-gray-700'>{order.total_no_of_products} items</td>
+                                <td className='py-4 '>{order.total_quantity} items</td>
+                                <td className='justify-items-center py-4'>
+                                    <span className={`${getPaymentColor(order.payment.status)} p-2 block capitalize w-28 text-center text-white tracking-wide rounded-2xl`}>{order.payment.status}</span>
+                                </td>
                                 <td className='flex flex-col py-4'>
-                                    <span className='text-lg text-gray-800 pb-0.5 font-medium items-center flex justify-center'><FaIndianRupeeSign size={16} />{order?.total_amount?.toLocaleString()}</span>
-                                    <span className='text-gray-500'>{order.payment_method}</span>
+                                    <span className=' items-center flex justify-center'><FaIndianRupeeSign size={16} />{order?.total_amount?.toLocaleString()}</span>
+                                    <span className='text-gray-500'>{order.payment.method}</span>
                                 </td>
                                 <td className='justify-items-center py-4'>
-                                    <span className={`${status.color} p-2 block w-28 text-center text-white tracking-wide rounded-2xl`}>{status.value}</span>
+                                    <span className={`${getStatusColor(order.current_status)} p-2 block capitalize w-28 text-center text-white tracking-wide rounded-2xl`}>{order.current_status}</span>
                                 </td>
                                 <td>
-                                    <span className='flex gap-0.5 py-4 items-center justify-center'>
-                                        <IoIosStar className='h-5 w-5 text-amber-500'/>
-                                        <span className='text-[18px] text-gray-600 font-medium'>{order.order_rating}</span>
-                                    </span>
+                                    { order.rating ?
+                                        <span className='flex gap-0.5 py-4 items-center justify-center'>
+                                            <IoIosStar className='h-5 w-5 text-amber-500'/>
+                                            <span className='text-[18px] text-gray-600 font-medium'>{order.rating.score}</span>
+                                        </span>
+                                    : 
+                                    <span className='font-bold'>---</span>
+                                    }
                                 </td>
                                 <td className='text-center h-full align-middle'>
-                                    <FaEye onClick={() => navigate(`/admin/orders/order_id/${order.order_id}`)} className='cursor-pointer text-2xl inline-block' />
+                                    <FaEye onClick={() => navigate(`/admin/orders/${order.order_id}`)} className='cursor-pointer text-2xl inline-block' />
                                 </td>
                             </tr>
                             )
-                        })}
+                        )}
                     </tbody>
                 </table>
             </div>

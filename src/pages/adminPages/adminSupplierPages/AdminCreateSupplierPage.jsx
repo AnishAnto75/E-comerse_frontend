@@ -83,7 +83,7 @@ const AdminCreateSupplierPage = () => {
 
             console.log({data})
 
-            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/supplier/create-supplier` , data)
+            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/supplier/create-supplier` , data, {withCredentials: true})
             console.log("addNewSupplier response",res.data)
             toast.success(res.data?.message)
             reset()

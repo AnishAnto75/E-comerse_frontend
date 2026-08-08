@@ -34,7 +34,7 @@ const AdminOrderProductCard = ({order}) => {
             </thead>
             <tbody>
                 {products?.map(( product, index) => (
-                    <tr key={index} className={`hover:bg-gray-100 text-center border-b ${products.length == (index+1) && "border-b-0"}`} onClick={()=>navigate(`/admin/products/${product_barcode}`)}>
+                    <tr key={index} className={`hover:bg-gray-100 text-center border-b ${products.length == (index+1) && "border-b-0"}`} onClick={()=>navigate(`/admin/products/${product.product_barcode}`)}>
                         <td className='w-24 h-24 p-2 bg-white'>
                             <img key={index} src={`${import.meta.env.VITE_IMAGE_URL}${product.product_photo}`} alt={product.product_name} className=' object-contain h-full w-full'/>
                         </td>
