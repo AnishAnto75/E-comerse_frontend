@@ -105,7 +105,7 @@ const PurchaseEntryPage = () => {
             return;
         }
         try {
-            const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/create-purchase/fetch-supplier/`, { params: {query}});
+            const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/create-purchase/fetch-supplier/`, { params: {query}, withCredentials: true });
             console.log(data)
             setSearchSupplierResults(data.data);
             setShowSupplierResults(true);
@@ -142,7 +142,7 @@ const PurchaseEntryPage = () => {
             return;
         }
         try {
-            const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/create-purchase/search-products/`, { params: {query} ,  withCredentials: true } );
+            const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/purchase/create-purchase/search-products/`, { params: {query} , withCredentials: true } );
             console.log(data)
             setSearchResults(data.data);
             setShowResults(true);

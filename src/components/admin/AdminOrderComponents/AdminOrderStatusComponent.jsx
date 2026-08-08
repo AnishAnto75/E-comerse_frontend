@@ -93,21 +93,24 @@ const AdminOrderStatusComponent = ({order}) => {
         }
     }
 
+
 // Delivered
-    const [isDeliveredModal, setDeliveredModal] = useState(false);
+
+    const [delivery_otp, setDeliveryOtp] = useState("")
 
     const deliveredOrder = async() =>{
+        if(delivery_otp.length != 6 ) {toast.warn("OTP is 6 digit"); return}
         try {
             setLoading(true)
-            const res = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}admin/order/update/delivered/${order.order_id}`)
-            if(res){ setOrderStatus(res.data?.data)}
+            const res = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}admin/order/update/deliver/${order.order_id}`, {delivery_otp}, {withCredentials: true} )
+            if(res){ setOrd(res.data?.data)}
             toast.success(res.data?.message)
+            setModelOpen(false)
             console.log("deliveredOrder Response: ", res.data)        
         } catch (error) {
             toast.error(error.response?.data?.message)
             console.log("error in deliveredOrder :", error)
         }finally {
-            setDeliveredModal(false)
             setLoading(false)
         }
     }
@@ -116,29 +119,21 @@ const AdminOrderStatusComponent = ({order}) => {
     // Cancel
     const [cancelModelOpen, setCancelModelOpen] = useState(false)
     const [reason_for_cancel, setReasonForCancel] = useState('')
-    const input1Ref = useRef(null)                                                  //focus in reason_for_cancel
 
     const cancelOrder = async() =>{
-        if(reason_for_cancel.trim().length < 10){ 
-            input1Ref.current.focus();
-            toast.warn("Minimum 10 character")
-            return
-        }
+        if ( reason_for_cancel.trim().length < 10 ){ toast.warn("Minimum 10 character"); return }
+        if ( reason_for_cancel.length > 500) { toast.warn("Cancellation reason cannot exceed 500 characters."); return }
         if ( ord.current_status == "delivered" ){ toast.warn("Order Already Delivered "); return }
         if ( ord.current_status == "cancelled" ){ toast.warn("Order Already Cancelled"); return }
         
-        toast.warn("backend not done")
-        return
-
-        // not done yet
         try {
             setLoading(true)
-            const res = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}admin/order/update/cancel/${order.order_id}`, {data : {reason_for_cancel}})
-            if(res){ setOrderStatus(res.data?.data)}
+            const res = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}admin/order/update/cancel/${order.order_id}`, {reason: reason_for_cancel} , {withCredentials: true})
+            if(res){ setOrd(res.data?.data)}
             toast.success(res.data?.message)
             console.log("cancelOrder Response: ", res)
             setReasonForCancel('')
-            setCancelModal(false)
+            setCancelModelOpen(false)
         } catch (error){
             toast.error(error.response?.data?.message)
             console.error("error in cancelOrder :", error)
@@ -170,7 +165,7 @@ const AdminOrderStatusComponent = ({order}) => {
         <div className="flex justify-between items-center">
             {/* placed */}
             <div className={`flex flex-col items-center`}>
-                <div className={`w-14 h-14 rounded-full flex items-center justify-center ${ placed.status ? "bg-green-500 text-white" : "bg-gray-200 text-gray-200" }`}><FaCheck size={30} /></div>
+                <div className={`w-14 h-14 rounded-full flex items-center justify-center ${ placed.status ? "bg-green-500 text-white" : "bg-gray-200 text-gray-200 " }`}><FaCheck size={30} /></div>
                 <div className="mt-2 text-lg">Placed</div>
                 <div className="mt-1 text-gray-500 flex flex-wrap items-center">{date_time(placed.date)}</div>
             </div>
@@ -198,7 +193,7 @@ const AdminOrderStatusComponent = ({order}) => {
          
             {/* Cancelled */}
             <div className={`flex flex-col items-center ${!cancelled.status && "hidden"}`}>
-                <div className={`w-14 h-14 rounded-full flex items-center justify-center ${ cancelled.status ? "bg-green-500 text-white" : "bg-gray-200 text-gray-200" }`}><FaCheck size={30} /></div>
+                <div className={`w-14 h-14 rounded-full flex items-center justify-center ${ cancelled.status ? "bg-red-500 text-white" : "bg-gray-200 text-gray-200" }`}><FaCheck size={30} /></div>
                 <div className="mt-2 text-lg">Cancelled</div>
                 <div className="mt-1 text-gray-500 flex flex-wrap items-center">{date_time(cancelled.date)}</div>
             </div>
@@ -211,7 +206,7 @@ const AdminOrderStatusComponent = ({order}) => {
                     <h2 className="text-2xl font-semibold text-gray-500 mb-4">Cancel Order</h2>
                     <div className='px-5'>
                         <p className="mb-2 text-xl ">Reason for cancel ?</p>
-                        <input type="text" autoComplete='off' ref={input1Ref} value={reason_for_cancel} onChange={(e)=>setReasonForCancel(e.target.value)}className='border text-gray-800 outline-none rounded-md p-2 w-full'/>
+                        <input type="text" autoComplete='off' value={reason_for_cancel} onChange={(e)=>setReasonForCancel(e.target.value)}className='border text-gray-800 outline-none rounded-md p-2 w-full'/>
                         <div className="mt-6 flex justify-end space-x-2">
                             <button className='bg-sky-500 p-2 px-3 rounded-xl text-white hover:bg-sky-600' onClick={()=>cancelOrder()}>Cancel</button>
                         </div>
@@ -235,9 +230,9 @@ const AdminOrderStatusComponent = ({order}) => {
                             <h2 className="text-2xl font-semibold text-gray-600 mb-4">Delivery</h2>
                             <div className='px-10'>
                                 <div className="mb-2 ">Verify OTP</div>
-                                <input type="text" autoComplete='off' ref={input2Ref} value={taken_by_id} onChange={(e)=>setTakenByid(e.target.value)} className='border text-gray-800 outline-none rounded-md p-2 w-full'/>
+                                <input type="Number" autoComplete='off' value={delivery_otp} onChange={(e)=>setDeliveryOtp(e.target.value)} className='border text-gray-800 outline-none rounded-md p-2 w-full'/>
                                 <div className="mt-6 flex justify-end gap-5"> 
-                                    <button className='bg-sky-500 px-4 py-2 text-white rounded-xl tracking-wide hover:bg-sky-600' onClick={deliveredOrder}>Confirm</button>
+                                    <button className='bg-sky-500 px-4 py-2 text-white rounded-xl tracking-wide hover:bg-sky-600' onClick={deliveredOrder}>Confirm Delivery</button>
                                 </div>
                             </div>
                         </div>
@@ -314,22 +309,6 @@ const AdminOrderStatusComponent = ({order}) => {
 
                     }
 
-                </div>
-            </div>
-        }
-
-        {isDeliveredModal &&
-            <div className={`fixed flex inset-0 z-50 items-center justify-center bg-black bg-opacity-50 `}>
-                <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative font-poppins">
-                    <button onClick={() => setDeliveredModal(false)} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
-                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
-                    <h2 className="text-lg font-poppins mb-2 tracking-wider">Order Delivery</h2>
-                    <p className="text-gray-700 m-1 ">Customer Recieved the Order</p>
-                    <div className="mt-6 flex justify-end gap-5"> 
-                        <Button variant='text' size='sm' color='red' onClick={()=> setDeliveredModal(false)}>No</Button>
-                        <Button variant='gradient' size='sm' color='blue' onClick={deliveredOrder}>Yes</Button>
-                    </div>
                 </div>
             </div>
         }

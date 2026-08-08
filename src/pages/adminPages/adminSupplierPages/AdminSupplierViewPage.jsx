@@ -8,8 +8,8 @@ const AdminSupplierViewPage = () => {
     const {id} = useParams()
 
     const [loading , setLoading] = useState(false)
-    const [supplier , setSupplier ] = useState()
     const [error , setError] = useState(false)
+    const [supplier , setSupplier ] = useState()
     const handleRef = useRef(true)
 
     useEffect(()=>{

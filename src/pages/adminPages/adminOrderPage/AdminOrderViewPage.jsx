@@ -47,23 +47,16 @@ const AdminOrderViewPage = () => {
     <div className='flex'>
     <AdminSideBar/>
     <div className='w-full font-inter font-medium text-gray-800 md:max-w-[calc(100%-245px)] p-5 bg-slate-50'>
-        <div className='text-xl font-semibold text-gray-600 mt-1 tracking-wide'>#{order.order_id}</div>
+        <div className='text-xl font-semibold text-gray-600 mt-1 mb-5 tracking-wide'>#{order.order_id}</div>
 
-        <div className='bg-white p-8 mt-5 rounded-xl w-full'>
-            <div className='flex overflow-scroll overflow-x-auto border bg-white rounded '>
-                {order.items?.map((item , index)=>(
-                    <img key={index} src={`${import.meta.env.VITE_IMAGE_URL}${item.product_photo}`} alt={item.product_name} className=' object-contain h-36 max-h-36 w-36 min-w-36 p-2 border-r'/>
-                ))}
-            </div>
-        </div>
+        <AdminOrderDeliveryAddressComponent delivery_address={order?.delivery_address} />
 
         <AdminOrderStatusComponent order={order} />
 
         <AdminOrderProductCard order={order} />
         
-        <div className='my-5 flex gap-3 '>
+        <div className='my-5 gap-3 grid grid-cols-3 '>
             <AdminOrderAmountComponent order={order} />
-            <AdminOrderDeliveryAddressComponent delivery_address={order?.delivery_address} />
             <AdminOrderUserComponent user={order.user_id}/>
         </div>
     </div>
