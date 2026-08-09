@@ -106,7 +106,7 @@ const AdminOrderPage = () => {
                                     <span>{order?.delivery_address?.name}</span>
                                     <span className='text-gray-500'>{order?.delivery_address?.phone_number}</span>
                                 </td>
-                                <td className='py-4 '>{order.total_quantity} items</td>
+                                <td className='py-4 '>{orders.length} / {order.total_quantity} items</td>
                                 <td className='justify-items-center py-4'>
                                     <span className={`${getPaymentColor(order.payment.status)} p-2 block capitalize w-28 text-center text-white tracking-wide rounded-2xl`}>{order.payment.status}</span>
                                 </td>

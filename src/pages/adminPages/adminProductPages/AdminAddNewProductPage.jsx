@@ -28,7 +28,7 @@ const AdminAddNewProductPage = () => {
         const fetchAllGroupsAndBrands = async()=>{
             try {
                 setLoading(true) 
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product/fetch-for-create-product`)
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product/fetch-for-create-product`, {withCredentials: true})
                 setGroups(res.data.data.groups)
                 setBrands(res.data.data.brands)
             } catch (error) {
@@ -46,7 +46,7 @@ const AdminAddNewProductPage = () => {
     const fetchCategoriesByGroup = async(id)=>{
         try {
             setLoading(true)
-            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product/fetch-categories-for-create-product/${id}`)
+            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product/fetch-categories-for-create-product/${id}`, {withCredentials: true})
             console.log("fetchCategoriesByGroup payload : " , res.data)        
             setCategories(res.data?.data)
         } catch (error) {
@@ -235,7 +235,7 @@ const AdminAddNewProductPage = () => {
                 formData.append("product_additional_photos", file);
             })
 
-            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/product/add-product` , formData)
+            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/product/add-product` , formData, {withCredentials: true})
             console.log("addNewProduct response",res.data)
             toast.success(res.data?.message)
             reset()
