@@ -88,7 +88,7 @@ return (
                 </div>
                 <div className="rounded-2xl bg-indigo-50 p-4">
                     <p className="text-sm font-medium uppercase text-indigo-600">Avg Order Value</p>
-                    <h2 className="text-2xl font-bold text-indigo-700 mt-2">₹{(customer.total_spending / (customer?.order_id?.length ? customer?.order_id?.length : 1 )).toLocaleString()}</h2>
+                    <h2 className="text-2xl font-bold text-indigo-700 mt-2">₹{(customer.total_spending / (customer?.order_id?.length || 1 )).toLocaleString()}</h2>
                 </div>
                 <div className="rounded-2xl bg-violet-50 p-4">
                     <p className="text-sm font-medium uppercase text-violet-600">Cart Products</p>

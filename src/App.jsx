@@ -152,7 +152,6 @@ function App() {
 
                 <Route path="products">
                     <Route index element={<AdminProductPage />}/>
-
                     <Route path="new-product" element={<AdminAddNewProductPage />}/>
                     <Route path="edit/:id" element={<AdminEditProductPage />}/>
                     <Route path="low-in-stock" element={<div>Low in Stock</div>}/>
@@ -182,7 +181,7 @@ function App() {
                     <Route index element={<AdminPurchasePage />}/>
                     <Route path="purchase-entry" element={<AdminPurchaseEntryPage /> } />
                     <Route path="all-purchases" element={<AdminAllPurchasesPage /> } />
-                    <Route path="purchase/:id" element={<AdminPurchaseViewPage /> } />
+                    <Route path="purchase_id/:id" element={<AdminPurchaseViewPage /> } />
                 </Route>
 
                 <Route path="supplier">

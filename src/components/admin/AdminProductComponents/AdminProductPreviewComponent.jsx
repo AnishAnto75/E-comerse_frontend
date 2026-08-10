@@ -5,16 +5,19 @@ import PageNotFoundPage from '../../../pages/PageNotFoundPage'
 import axios from 'axios'
 import LoadingComponent from '../../LoadingComponent'
 import { format } from 'date-fns'
-import { Avatar } from '@material-tailwind/react'
 import { FaIndianRupeeSign } from 'react-icons/fa6'
 import { IoIosStar } from 'react-icons/io'
+import { FiPackage } from 'react-icons/fi'
+import { Link} from 'react-router-dom'
 
 const AdminProductPreviewComponent = ({product_id}) => {
 
     const handleRef = useRef(true)
     const [loading , setLoading ] = useState(false)
     const [error , setError ] = useState(false)
-    const [product , setProduct ]  = useState(null) 
+    const [product , setProduct ]  = useState(null)
+
+    const [selectedBatch , setSelectedBatch] = useState(null)
     
     useEffect(() => {
         if (!product_id) return;
@@ -37,14 +40,19 @@ const AdminProductPreviewComponent = ({product_id}) => {
 
     const findInventoryValue = (stock)=>{
         const inventoryValue = stock.reduce((total, batch) => {
-            const unitCost = batch.purchase_cost + (batch.other_expences || 0);
-            return total + (batch.stock * unitCost);
+            return total + (batch.stock * batch.unit_purchase_cost); 
         }, 0);
-        return inventoryValue?.toLocaleString()
+        return Math.floor(inventoryValue)?.toLocaleString()
     } 
 
-    // if(loading){return <LoadingComponent/>}
+    const validDate = (date)=>{
+        return format(new Date(date) , "dd-MM-yy ")
+    }
+
+    if(loading){return <LoadingComponent />}
     if(error || !product ){ return <ErrorComponent />}
+
+    const inventory = product?.inventory
 
   return (
     <div className="p-2 font-inter text-lg font-medium ">
@@ -65,7 +73,20 @@ const AdminProductPreviewComponent = ({product_id}) => {
             <span className="p-2 rounded-xl bg-sky-500  cursor-default line-clamp-1" title='Category'>{product.category?.category_name}</span>
             <span className="p-2 rounded-xl bg-green-500 cursor-default line-clamp-1" title='Brand'>{product.brand?.brand_name}</span>
         </div>
-        <div className='flex justify-between mt-8 text-lg font-medium'>
+        <div className="mt-4">
+            <h3 className="text-cyan-800 uppercase">Stock Overview</h3>
+            <div className="grid grid-cols-2 gap-3 mt-3">
+                <div className="rounded-xl bg-green-50 p-4">
+                    <p className="text-base text-green-600">Total Stock</p>
+                    <h2 className="text-2xl font-bold text-green-700 mt-2">{product.inventory?.product_total_stock} pcs</h2>
+                </div>
+                <div className="rounded-xl bg-indigo-50 p-4">
+                    <p className="text-base  text-indigo-600">Inventory value</p>
+                    <h2 className="text-2xl font-bold text-indigo-700 mt-2">₹{findInventoryValue(product?.inventory?.product_stock)}</h2>
+                </div>
+            </div>
+        </div>
+        <div className='flex justify-between mt-8'>
             <div className='uppercase text-cyan-800'>Inventory</div>
             <div className='items-center flex gap-1'>
                 <div className={`w-5 h-5 rounded-full ${ product?.inventory?.product_total_stock == 0 ? "bg-red-500" : product?.inventory?.product_total_stock <= product?.inventory?.product_low_in_stock ? "bg-amber-400" : "bg-green-500" } `} />
@@ -74,41 +95,73 @@ const AdminProductPreviewComponent = ({product_id}) => {
                 </div>
             </div>
         </div>
-        <table className="w-full mt-4">
-            <thead className="bg-white shadow-sm rounded-lg ">
-                <tr className="text-sky-600 w-full font-normal">
-                    <th className="py-3 font-medium">Batch</th>
-                    <th className="py-3 font-medium">Stock</th>
-                    <th className="py-3 font-medium">MRP</th>
-                    <th className="py-3 font-medium">Price</th>
-                    <th className="py-3 font-medium">Pur.</th>
-                </tr>
-            </thead>
-            <tbody>
-            {product.inventory?.product_stock?.map((product_stock, index) =>{
-                return(
-                    <tr key={index} className={`text-center text-gray-600 text-base ${index % 2  && "bg-gray-50" }`}>
-                        <td className='py-2 '>{product_stock?.batch_no ? product_stock?.batch_no : "-" }</td>
-                        <td className='py-2 '>{product_stock?.stock}</td>
-                        <td className='py-2 '>
-                            <div className='flex items-center justify-center'><FaIndianRupeeSign />{product_stock?.mrp}</div>
-                        </td>
-                        <td className='py-2'>
-                            <div className='flex items-center justify-center'><FaIndianRupeeSign />{product_stock?.selling_price}</div>
-                        </td>
-                        <td className='py-2 '>
-                            <div className='flex items-center justify-center'><FaIndianRupeeSign />{product_stock?.unit_purchase_cost}</div>
-                        </td>
-                    </tr>
-                )
-            })}
-            </tbody>
-        </table>
-        <div className='mt-2 border-y-2 py-3 text-gray-500 px-4'>
-            <div>Total Stock : {product.inventory?.product_total_stock}</div>
-            <div className='flex items-center'>Inventory Value : <FaIndianRupeeSign />{findInventoryValue(product?.inventory?.product_stock)}</div>
+        <div className='grid grid-cols-3 text-center'>
+            <div className='col-span-3 grid py-2 my-2 text-gray-500 shadow-sm rounded-xl grid-cols-3'>
+                <div>Batch No</div>
+                <div>Stock</div>
+                <div>Price</div>
+            </div>
+            {inventory?.product_stock?.map((product_stock, index) => (
+                <div key={index} onClick={()=>setSelectedBatch(selectedBatch == product_stock._id ? null : product_stock._id)} className={`col-span-3 my-1 py-2 grid grid-cols-3 rounded-xl cursor-pointer ${selectedBatch === product_stock._id && "shadow bg-gray-50"} ${index %2 == 0 && "bg-gray-50"}`}>
+                    {selectedBatch != product_stock._id && <div className='col-span-1 cursor-pointer line-clamp-1'>{product_stock.batch_no || "-" }</div> }
+                    {selectedBatch != product_stock._id && <div className='col-span-1 cursor-pointer line-clamp-1'>{product_stock.stock || "-" }</div> }
+                    {selectedBatch != product_stock._id && <div className='col-span-1 cursor-pointer line-clamp-1 flex items-center justify-center'><FaIndianRupeeSign size={17} />{product_stock.selling_price || "-" }</div> }
+                    {selectedBatch === product_stock._id &&
+                        <div className='col-span-3 gap-y-5 p-5 grid grid-cols-3'>
+                            <div className='col-span-1'>
+                                <div className='line-clamp-1 text-gray-700'>{product_stock.batch_no}</div>
+                                <div className=''>Batch No</div>
+                            </div>
+                            <div className='col-span-1 '>
+                                <div className='line-clamp-1 text-gray-700'>{product_stock.stock}</div>
+                                <div className=' mt-0.5'>Stock</div>
+                            </div>
+                            <div className='col-span-1'>
+                                <div className='line-clamp-1 text-gray-700'>{product_stock.size}{product.product_UOM}</div>
+                                <div className=' mt-0.5'>Size</div>
+                            </div>
+                            <div className='col-span-1' title="Best Before">
+                                <div className='line-clamp-1 text-gray-700'>{product_stock.best_before} days</div>
+                                <div className=' mt-0.5'>BB</div>
+                            </div>
+                            <div className='col-span-1' title='Expiry Date'>
+                                <div className='line-clamp-1 text-gray-700'>{product_stock.expiry_date ? validDate(product_stock.expiry_date) : "---"}</div>
+                                <div className=' mt-0.5'>EXD</div>
+                            </div>
+                            <div className='col-span-1' title='Manufacture Date'>
+                                <div className='line-clamp-1 text-gray-700'>{product_stock.manufacture_date ? validDate(product_stock.manufacture_date) : "---"}</div>
+                                <div className=' mt-0.5'>MFD</div>
+                            </div>
+                            <div className='col-span-1'>
+                                <div className='line-clamp-1 text-gray-700'>{product_stock.gst_percentage}%</div>
+                                <div className=' mt-0.5'>GST</div>
+                            </div>
+                            <div className='col-span-1'>
+                                <div className='line-clamp-1 text-gray-700 flex items-center justify-center'><FaIndianRupeeSign size={17}/>{product_stock.mrp}</div>
+                                <div className=' mt-0.5'>MRP</div>
+                            </div>
+                            <div className='col-span-1' title='Selling Price'>
+                                <div className='line-clamp-1 text-gray-700 flex items-center justify-center'><FaIndianRupeeSign size={17}/>{product_stock.selling_price}</div>
+                                <div className=' mt-0.5'>SP</div>
+                            </div>
+                            <div className='col-span-1' title='Purchase Cost'>
+                                <div className='line-clamp-1 text-gray-700 flex items-center justify-center'><FaIndianRupeeSign size={17}/>{product_stock.purchase_cost}</div>
+                                <div className=' mt-0.5'>PC</div>
+                            </div>
+                            <div className='col-span-1' title='Other Expences'>
+                                <div className='line-clamp-1 text-gray-700 flex items-center justify-center'><FaIndianRupeeSign size={17}/>{product_stock.other_expenses || 0}</div>
+                                <div className=' mt-0.5'>OE</div>
+                            </div>
+                            <div className='col-span-1' title='Unit Purchase Cost'>
+                                <div className='line-clamp-1 text-gray-700 flex items-center justify-center'><FaIndianRupeeSign size={17}/>{product_stock.unit_purchase_cost}</div>
+                                <div className=' mt-0.5'>TPC</div>
+                            </div>
+                            <Link to={`/admin/purchase/purchase_id/${product_stock.purchase_id}`} className='col-span-3 font-semibold mt-0.5  underline text-sky-500 cursor-pointer'>Purchase Details</Link>
+                        </div>
+                    }
+                </div>
+            ))}
         </div>
-
     </div>
   )
 }
