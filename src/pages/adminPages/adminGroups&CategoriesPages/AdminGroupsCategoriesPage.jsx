@@ -1,134 +1,222 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import { toast } from 'react-toastify'
-import { Button, Avatar} from "@material-tailwind/react";
-import { debounce } from 'lodash';
-import LoadingSpinner from '../../../components/LoadingSpinner';
-import ErrorComponent from '../../../components/ErrorComponent';
-import AdminSideBar from '../../../components/admin/AdminSideBar';
-import { IoIosAddCircleOutline} from "react-icons/io";
-import { FaPlus } from 'react-icons/fa6';
+import { useState } from "react";
+import {
+    FiPlus,
+    FiSearch,
+    FiChevronDown,
+    FiChevronRight,
+    FiMoreVertical,
+    FiEdit,
+    FiTrash2,
+    FiEye,
+    FiFolder,
+    FiPackage,
+    FiLayers,
+} from "react-icons/fi";
+import { MdOutlineCategory } from "react-icons/md";
+import AdminSideBar from "../../../components/admin/AdminSideBar";
+import { useNavigate, Link } from "react-router-dom";
+import { FaChevronLeft, FaChevronRight, FaPlus, FaSearch } from "react-icons/fa";
+import { useRef } from "react";
+import { useEffect } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import LoadingSpinner from "../../../components/LoadingSpinner";
+import ErrorComponent from "../../../components/ErrorComponent";
 
-const AdminProductPage = () => {
-    
+
+const AdminGroupsCategoriesPage = () => {
+
     const navigate = useNavigate()
-
     const [loading , setLoading] = useState(false)
-    const [error , setError] = useState(false)
-        
+    const [error , setError ] = useState(false)
+
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(20);
+
+    const [expandedGroup, setExpandedGroup] = useState(null);
+    const [openMenu, setOpenMenu] = useState(null);
+    const [search, setSearch] = useState("");
+
+    const [summary, setSummary] = useState(null)
     const [groups, setGroups] = useState(null)
-    const [categories, setCategories] = useState(null)
-    const [products, setProducts] = useState(null)
+    const [pagination , setPagination] = useState(null)
 
-    const [ selectedGroup , setSelectedGroup] = useState('')
-    const [ selectedCategory, setSelectedCategory] = useState('')
-
-    const handleRef = useRef(true) 
-
+    const handleRef = useRef(true)
     useEffect(()=>{
-        const fetchForGroupsCategoriesPage = async()=>{
-           return
-        }  
+        const fetch = async()=>{
+            try {
+                setLoading(true);
+                const res = await axios.get( `${import.meta.env.VITE_BACKEND_URL}admin/product-group/groups_categories_page`, { params: { page, limit}, withCredentials: true });
+                console.log("fetchGroupsCategoriesPage payload : " , res.data)
+                setSummary(res.data?.data?.summary)
+                setGroups(res.data?.data?.groups)
+                setPagination(res.data?.data?.pagination)
+            } catch (error) {
+                console.error("Error in fetchGroupsCategoriesPage:", error);
+                toast.error( error?.response?.data?.message || "Unable to fetch Group Categories")
+            } finally { setLoading(false);}
+        }
         if(handleRef.current) {
-            fetchForGroupsCategoriesPage()
+            fetch()
             handleRef.current = false
         }
     } , [])
 
-    const fetchCategoriesByGroup = async(id)=>{
-        try {
-            setLoading(true)
-            setSelectedGroup(id)
-            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product-category/group-id/${id}`)
-            console.log("fetchCategoriesByGroup payload : " , res.data)        
-            setCategories(res.data?.data)
-        } catch (error) {
-            setError(true)
-            toast.error(error.response?.data?.message)
-            console.log("error in fetchCategoriesByGroup :" , error)
-        } finally { setLoading(false) }
-    }
-    
-    const fetchProductByCategories = async(id)=>{
-        try {
-            setLoading(true)
-            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product/category/${id}`)
-            console.log("fetchProductByCategories payload : " , res.data)        
-            setProducts(res.data?.data)
-            setSelectedCategory(id)
-        } catch (error) {
-            setError(true)
-            toast.error(error.response?.data?.message)
-            console.log("error in fetchProductByCategories :" , error)
-        } finally { setLoading(false) }
-    }
-
     if(loading){return <LoadingSpinner/>}
-    if(error){return <ErrorComponent/>}
+    if(error || !summary || !groups ){return <ErrorComponent/>}
 
-  return (
-    <div className='flex'>
-    <AdminSideBar />
-    <div className='p-2 w-full bg-white'>
-        <div className="w-full p-2">
-            <div className="rounded-none p-4">
-                <div className="flex justify-end gap-4 ">
-                    <div className="flex shrink-0 items-center gap-2">
-                        <button onClick={()=>navigate('/admin/groups-categories/new-group')} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-blue-700 transition"><FaPlus />Add Group</button>            
-                        <button onClick={()=>navigate('/admin/groups-categories/new-category')} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-blue-700 transition"><FaPlus />Add Category</button>            
-                    </div>
-                </div>
-            </div>
-            <div className="flex p-3 bg-gray-50 min-h-screen rounded-lg">
+    const toggleGroup = (id) => {
+        setExpandedGroup(prev => prev === id ? null : id )
+    };
+    return (
+        <div className="flex">
+        <AdminSideBar/>
+        <div className="w-full p-5 font-inter font-medium text-lg text-gray-900">
+
+            <div className="flex justify-between items-center mb-5 mt-3">
                 <div>
-                    <div className='text-xl border-b-2 border-gray-400 p-2 text-gray-700'>Groups</div>
-                    <div className='p-1 flex flex-col gap-2 pt-3 text-gray-800 border-r-2 border-gray-400 bg-white'>
-                        {groups?.map((group)=>
-                            <div key={group._id} onClick={()=>fetchCategoriesByGroup(group._id)} className={`flex items-center gap-2 py-2 px-5 border-b-2 border-gray-300 hover:bg-gray-100 hover:cursor-pointer ${selectedGroup == group._id && 'bg-gray-100 rounded-xl'}`}>
-                                <Avatar src={group.group_image ? group.group_image : '/3-08.webp'} alt={group.group_name} size="md" />
-                                <div>{group.group_name}</div>
-                            </div>
-                        )}
-                    </div>
+                    <h1 className="text-2xl font-semibold">Groups & Categories</h1>
+                    <p className="text-gray-500 mt-2 text-base">Organize your products into groups and categories</p>
                 </div>
-                <div className='px-5'>
-                    <div className='text-xl border-b-2 border-gray-400 p-2 text-gray-700'>Categories</div>
-                    <div className='p-1 flex flex-col gap-2 pt-3 text-gray-800 border-r-2 border-gray-400 bg-white'>
-                        <div onClick={()=>navigate('new-category')} className='flex items-center gap-2 py-4 px-5 border-b-2 border-gray-300 hover:bg-gray-100 hover:cursor-pointer'>
-                            <IoIosAddCircleOutline className='text-4xl text-gray-600'/> Create Category
-                        </div>
-                        {categories?.map((category)=>
-                            <div key={category._id} onClick={()=>fetchProductByCategories(category._id)} className={`flex items-center gap-2 py-2 px-5 border-b-2 border-gray-300 hover:bg-gray-100 hover:cursor-pointer ${selectedCategory == category._id && 'bg-gray-100 rounded-xl'}`}>
-                                <Avatar src={category.category_image ? category.category_image : '/3-08.webp'} alt={category.category_name} size="md" />
-                                {category.category_name}
-                            </div>
-                        )}
-                    </div>
-                </div>
-                <div className='px-5'>
-                    <div className='text-xl border-b-2 border-gray-400 p-2 text-gray-700'>Products</div>
-                    <div className='p-1 flex flex-col gap-2 pt-3 text-gray-800 bg-white min-w-96'>
-                        <div onClick={()=>navigate('/admin/products/new-product')} className='flex items-center gap-2 py-4 px-5 border-b-2 border-gray-300 hover:bg-gray-100 hover:cursor-pointer'>
-                            <IoIosAddCircleOutline className='text-4xl text-gray-600'/> Add Product
-                        </div>
-                        {products?.map((product)=>
-                            <div key={product._id} onClick={()=>navigate(`/admin/products/product_id/${product.product_barcode}`)} className="flex items-center gap-2 py-2 px-5 border-b hover:bg-gray-100 hover:cursor-pointer">
-                                <Avatar src={product?.product_photos ? product.product_photos : '/3-08.webp'} alt={product.product_brand} size="md" />
-                                <div className="flex flex-col text-sm">
-                                    <div className="text-blue-gray-700 line-clamp-1">{product.product_name}</div>
-                                    <div className="text-blue-gray-700 opacity-70">{product.product_barcode}</div>
-                                </div>
-                            </div>
-                        )}
-                        <div className={products && 'hidden'}>Select Group & Categories</div>
-                    </div>
-                </div>                                 
+                <button onClick={()=>navigate('/admin/groups-categories/new-group')} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-blue-700 transition"><FaPlus />Add Group</button>
             </div>
-        </div>
-    </div>
-    </div>
-  )
-}
 
-export default AdminProductPage
+            {/* Summary */}
+            <div className="grid grid-cols-3 gap-3">
+                <div className='bg-white rounded-2xl border-t-4 border-blue-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <p className="text-blue-500 font-semibold">TOTAL GROUPS</p>
+                            <h2 className='text-2xl mt-2 font-bold text-blue-600'>{summary.total_groups.toLocaleString()}</h2>
+                        </div>
+                        <div className={`bg-blue-50 p-2 rounded-2xl`}>
+                            <FiFolder size={35} className="text-blue-600"/>
+                        </div>
+                    </div>
+                </div>
+                <div className='bg-white rounded-2xl border-t-4 border-violet-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <p className="text-violet-500 font-semibold">TOTAL CATEGORIES</p>
+                            <h2 className='text-2xl mt-2 font-bold text-violet-600'>{summary.total_categories.toLocaleString()}</h2>
+                        </div>
+                        <div className={`bg-violet-50 p-2 rounded-2xl`}>
+                            <FiLayers size={35} className="text-violet-600"/>
+                        </div>
+                    </div>
+                </div>
+                <div className='bg-white rounded-2xl border-t-4 border-sky-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <p className="text-sky-500 font-semibold">TOTAL PRODUCTS</p>
+                            <h2 className='text-2xl mt-2 font-bold text-sky-600'>{summary.total_products.toLocaleString()}</h2>
+                        </div>
+                        <div className={`bg-sky-50 p-2 rounded-2xl`}>
+                            <FiPackage size={35} className="text-sky-600"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             <div className="h-[calc(100vh-40px)] border flex flex-col mt-5 rounded-2xl shadow-md p-5">
+                <div className="flex flex-col xl:flex-row gap-4 justify-between">
+                    <div className="relative flex-1">
+                        <FaSearch className="absolute left-4 top-4 text-gray-400" />
+                        <input type="text" placeholder="Search groups / categories" className="w-full font-medium text-gray-800 border rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-blue-500 outline-none"/>
+                    </div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto border rounded-xl mt-5">
+                    <div className="borde h-full rounded-xl">
+                        {groups?.map((group) => ( 
+                            <div key={group._id} className=" border-b overflow-hidden ">
+                                <div className=" flex items-center p-1 cursor-pointer hover:bg-gray-50 transition " onClick={() => setExpandedGroup(expandedGroup === group._id ? null : group._id )}>
+                                    <div className="w-24 h-24 rounded-xl p-1 overflow-hidden flex-shrink-0 ">
+                                        <img src={`${import.meta.env.VITE_IMAGE_URL}${group.group_image}`} alt={group.group_name} className=" w-full h-full rounded-xl object-cover" />
+                                    </div>
+                                    <div className="flex-1 min-w-0 p-3">
+                                        <div className=" font-semibold capitalize">{group.group_name}</div>
+                                        <p className="text-base text-gray-500 mt-1 line-clamp-1 ">{group.group_description}</p>
+                                        <div className=" flex items-center gap-5 mt-2 text-base text-gray-500 ">
+                                            <span>{group.category_count} Categories</span>
+                                            <span>{group.product_count.toLocaleString()} Products</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-gray-400 flex-shrink-0 pr-5">{expandedGroup === group._id ? <FiChevronDown size={20} /> : <FiChevronRight size={20} />}</div>
+                                </div>
+                                {/* EXPANDED CATEGORIES */}
+                                {expandedGroup === group._id && (
+                                    <div className="px-5 p-2">
+                                        <div className="flex border-t-[3px] border-gray-200/60 pt-5 items-center justify-between mb-3 " >
+                                            <div> 
+                                                <h3 className="font-semibold text-gray-700 capitalize">Categories</h3>
+                                                <p className=" text-base text-gray-500 mt-1 ">Manage categories under{" "}{group.group_name}</p>
+                                            </div>
+                                            <button onClick={()=>navigate('/admin/groups-categories/new-category')} className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-sky-50 text-sky-500 text-[15px] transition hover:text-sky-600" >
+                                                <FiPlus size={20} />Add Category
+                                            </button>
+                                        </div>
+                                        {/* CATEGORY LIST */}
+                                        <div className="space-y-1">
+                                            {group.categories.map( (category) => (
+                                                <div  key={category._id} className=" flex items-center gap-3 border border-gray-100 rounded-xl px-3 py-2 transition " >
+                                                    <div className=" w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 " >
+                                                        <img src={`${import.meta.env.VITE_IMAGE_URL}${category.category_image}`} alt={category.category_name} className=" w-full h-full object-cover "/>
+                                                    </div>
+                                                    <div className="flex-1 min-w-0 py-3">
+                                                        <div className="capitalize">{category.category_name}</div>
+                                                        <p className=" text-base text-gray-500 mt-0.5 line-clamp-2" >{category.category_description}</p>
+                                                    </div>
+                                                    <div className="text-center pr-5">
+                                                        <p className="text-base font-semibold">{category.product_count.toLocaleString()}</p>
+                                                        <p className="text-sm text-gray-500">Products</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            { group.categories.length == 0 && 
+                                                <div className="p-5 text-gray-500 text-xl min-h-96 flex items-center justify-center">
+                                                    <div>No categories created in this group yet </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                        {/* EMPTY STATE */}
+                        {groups.length === 0 && (
+                            <div className=" py-16 text-center border border-dashed border-gray-200 rounded-2xl ">
+                                <FiSearch size={30} className=" mx-auto text-gray-300 mb-3 "/>
+                                <p className=" text-sm font-medium text-gray-600">
+                                    No groups or categories found
+                                </p>
+                                <p className=" text-xs text-gray-400 mt-1 ">
+                                    Try another search term
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div className="pt-7 pb-2 flex justify-center border-t ">
+                    <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2">
+                            <button className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center"><FaChevronLeft /></button>
+                            <button className="w-11 h-11 rounded-xl bg-blue-600 text-white font-semibold">1</button>
+                            <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">2</button>
+                            <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">3</button>
+                            <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">4</button>
+                            <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">5</button>
+                            <button className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center"><FaChevronRight /></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           
+        </div>
+        </div>
+    );
+};
+
+
+export default AdminGroupsCategoriesPage

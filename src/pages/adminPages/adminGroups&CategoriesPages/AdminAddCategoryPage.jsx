@@ -28,7 +28,7 @@ const adminAddCategoryPage = () => {
         const fetchGroups = async()=>{
             try {
                 setLoading(true) 
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product-group/all-groups`)
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product-group/all-groups`, {withCredentials:true})
                 setGroups(res.data.data)
             } catch (error) {
                 setError(true)
@@ -99,7 +99,7 @@ const adminAddCategoryPage = () => {
             formData.append("category_description", category_description);
             formData.append("category_image", category_image);
 
-            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/product-category/create-category` , formData)
+            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}admin/product-category/create-category` , formData, {withCredentials:true})
             console.log("addNewCategory response",res.data)
             toast.success(res.data?.message)
             navigate('/admin/groups-categories')

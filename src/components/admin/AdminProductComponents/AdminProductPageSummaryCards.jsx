@@ -6,7 +6,7 @@ const AdminProductPageSummaryCards = ({data}) => {
     const healthy_stock = data.total_products - data.low_in_stock - data.out_of_stock
 
     return (
-     <div className="grid grid-cols-3 gap-3">
+    <div className="grid grid-cols-3 gap-3">
         <div className='bg-white rounded-2xl  border-t-4 border-indigo-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
             <div className="flex justify-between items-center">
                 <div>

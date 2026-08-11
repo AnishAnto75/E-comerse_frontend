@@ -110,11 +110,11 @@ const AdminProductPreviewComponent = ({product_id}) => {
                         <div className='col-span-3 gap-y-5 p-5 grid grid-cols-3'>
                             <div className='col-span-1'>
                                 <div className='line-clamp-1 text-gray-700'>{product_stock.batch_no}</div>
-                                <div className=''>Batch No</div>
+                                <div className='mt-0.5'>Batch No</div>
                             </div>
                             <div className='col-span-1 '>
                                 <div className='line-clamp-1 text-gray-700'>{product_stock.stock}</div>
-                                <div className=' mt-0.5'>Stock</div>
+                                <div className='mt-0.5'>Stock</div>
                             </div>
                             <div className='col-span-1'>
                                 <div className='line-clamp-1 text-gray-700'>{product_stock.size}{product.product_UOM}</div>
@@ -156,7 +156,7 @@ const AdminProductPreviewComponent = ({product_id}) => {
                                 <div className='line-clamp-1 text-gray-700 flex items-center justify-center'><FaIndianRupeeSign size={17}/>{product_stock.unit_purchase_cost}</div>
                                 <div className=' mt-0.5'>TPC</div>
                             </div>
-                            <Link to={`/admin/purchase/purchase_id/${product_stock.purchase_id}`} className='col-span-3 font-semibold mt-0.5  underline text-sky-500 cursor-pointer'>Purchase Details</Link>
+                            <Link to={`/admin/purchase/purchase_id/${product_stock.purchase_id}`} className='col-span-3 font-semibold mt-0.5  underline text-sky-500 cursor-pointer hover:text-sky-600'>Purchase Details</Link>
                         </div>
                     }
                 </div>
