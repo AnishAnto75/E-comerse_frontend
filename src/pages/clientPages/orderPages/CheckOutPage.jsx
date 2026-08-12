@@ -104,7 +104,7 @@ const CheckOutPage = () => {
             </div>
 
             {/* Address */}
-            <div className="bg-white p-6 rounded-xl font-medium text-gray-900">
+            <div className="bg-white p-6 rounded-xl font-medium text-gray-900 min-h-[170px]">
                 { selectedAddress ?
                     <div>
                         <div className="flex items-center font-semibold tracking-wide gap-2">
@@ -127,7 +127,7 @@ const CheckOutPage = () => {
                         </div>
                     </div>
                 : 
-                    <div>Add New Address</div>
+                    <AddNewAddressComponent page={"checkout"}/>                    
                 }
                 {changingAddress && 
                     <div className="fixed inset-0 overflow-y-auto z-50">

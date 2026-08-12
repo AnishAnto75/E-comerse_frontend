@@ -62,7 +62,9 @@ const AddNewAddressComponent = ({page}) => {
     { page === 'profile' ?
         <div onClick={()=> setNewAddress(true)} className={` absolute top-[-50px] right-0 py-2 px-3 text-white rounded-xl cursor-pointer flex gap-1 font-medium tracking-wide text-lg items-center bg-sky-500 ${newAddress && "hidden"}`}><HiPlus size={22}/>Add</div>
     : page === 'checkout' &&
-        <div onClick={()=> setNewAddress(true)} className={` absolute top-[-35px] right-0 py-2 px-3 text-sky-500 rounded-xl cursor-pointer flex gap-1 font-medium tracking-wide text-lg items-center`}><HiPlus size={22}/>Add</div>
+        <div onClick={()=> setNewAddress(true)} className={` border text-center p-3 text-sky-500 rounded-xl cursor-pointer flex justify-center gap-1 tracking-wide text-lg items-center`}>
+            <HiPlus size={22}/>Add Address
+        </div>
     }
 
     { newAddress &&

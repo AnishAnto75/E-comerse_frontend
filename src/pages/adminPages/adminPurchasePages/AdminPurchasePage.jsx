@@ -5,446 +5,145 @@ import { format } from 'date-fns'
 import { toast } from 'react-toastify'
 import { FaSearch } from 'react-icons/fa'
 import AdminSideBar from '../../../components/admin/AdminSideBar'
-import AdminPurchaseChartComponent from '../../../components/admin/AdminPurchaseComponents/AdminPurchaseChartComponent'
+import { useRef } from 'react'
+import { useEffect } from 'react'
+import axios from 'axios'
+import ErrorComponent from '../../../components/ErrorComponent'
+import LoadingSpinner from '../../../components/LoadingSpinner'
+import { FiClock, FiFileText } from 'react-icons/fi'
+import { BiRupee } from 'react-icons/bi'
 
 const AdminPurchasePage = () => {
     const navigate = useNavigate()
 
     const [loading , setLoading] = useState(false)
     const [error , setError ] = useState(false)
-    const [selectedPurchase, setSelectedPurchase ] = useState(null)
+
+    const [page, setPage] = useState(1)
+    const [limit, setLimit] = useState(20)
+
+    const [pagination , setPagination] = useState(null)
+        
+    const [summary, setSummary] = useState(null)
+    const [purchases, setPurchases] = useState(null)
     
     const data = {
-        totalPurchaseInvoice:{
-            value: 1025,
-            increment: 15,
-            chartData: [
-                {
-                    name: 'Mar',
-                    invoices: 4000,
-                },
-                {
-                    name: 'Apr',
-                    invoices: 3000,
-                },
-                {
-                    name: 'May',
-                    invoices: 2000,
-                },
-                {
-                    name: 'Jun',
-                    invoices: 2780,
-                },
-                {
-                    name: 'Jul',
-                    invoices: 1890,
-                },
-                {
-                    name: 'Aug',
-                    invoices: 2390,
-                },
-                {
-                    name: 'Sep',
-                    invoices: 3490,
-                },
-            ]
+        summary: {
+            total_purchases: 500,
+            pending_purchases: 3,
+            partialy_paid_purchases: 50
         },
-        totalRevenue:{
-            value: 161238152,
-            increment: -25,
-            chartData: [
-                {
-                    name: 'Mar',
-                    revenue: 2000,
-                },
-                {
-                    name: 'Apr',
-                    revenue: 3000,
-                },
-                {
-                    name: 'May',
-                    revenue: 2000,
-                },
-                {
-                    name: 'Jun',
-                    revenue: 2780,
-                },
-                {
-                    name: 'Jul',
-                    revenue: 1890,
-                },
-                {
-                    name: 'Aug',
-                    revenue: 2390,
-                },
-                {
-                    name: 'Sep',
-                    revenue: 3490,
-                },
-            ]
-        },
-        totalPurchaseValue :{
-            value: 16123152,
-            increment: -25,
-            chartData: [
-                {
-                    name: 'Mar',
-                    purchase_value: 2000,
-                },
-                {
-                    name: 'Apr',
-                    purchase_value: 3000,
-                },
-                {
-                    name: 'May',
-                    purchase_value: 2000,
-                },
-                {
-                    name: 'Jun',
-                    purchase_value: 2780,
-                },
-                {
-                    name: 'Jul',
-                    purchase_value: 1890,
-                },
-                {
-                    name: 'Aug',
-                    purchase_value: 2390,
-                },
-                {
-                    name: 'Sep',
-                    purchase_value: 2090,
-                },
-            ]
-        },
-        requested_products: [
-            {
-                product_name: "Apple Charger",
-                request_count: 10
-            },
-            {
-                product_name: "Speaker",
-                request_count: 10
-            },
-            {
-                product_name: "Sony TV",
-                request_count: 10
-            },
-            {
-                product_name: "Office Chair",
-                request_count: 10
-            },
-            {
-                product_name: "Gaming Keyboard",
-                request_count: 10
-            },
-            {
-                product_name: "Monitor",
-                request_count: 10
-            },
-            {
-                product_name: "Laptop",
-                request_count: 10
-            },
-            {
-                product_name: "Mobile",
-                request_count: 10
-            },
-            {
-                product_name: "Samsung galaxy g55 128gb",
-                request_count: 10
-            },
-        ],
         purchases: [
             {
-                _id: "69e503c93fd2367d0fbea215",
-                supplier_id: {
+                purchase_id: "PUR971487484",
+                supplier: {
                     _id: "69da818e3233da093c184147",
                     supplier_id: "SUP0411345754",
                     supplier_name: "nila agencies",
                     supplier_phone: "8148222505",
                 },
-                invoice_no: "nila-3",
-                products: [
-                    {
-                        product_barcode: "UP",
-                        quantity_recieved: 50,
-                    },
-                    {
-                        product_barcode: "SP",
-                        quantity_recieved: 50,
-                    },
-                    {
-                        product_barcode: "KVR",
-                        quantity_recieved: 50,
-                    },
-                ],
-                total_purchase_amount: 2500,
-                added_by : {
-                    staff_username: "Anish",
-                    staff_id: "STF0627732539"
-                },
-                createdAt: "2026-04-19T16:33:13.482Z",
-            },
-            {
-                _id: "69e5222309d99ca0d29455ef",
-                supplier_id: {
-                    "_id": "69da818e3233da093c184147",
-                    supplier_id: "SUP0411345754",
-                    supplier_name: "Nila agencies",
-                    supplier_phone: "9080996465",
-                },
-                invoice_no: "nila-5",
-                products: [
-                    {
-                        "product_barcode": "CO",
-                        "quantity_recieved": 51,
-                    }
-                ],
-                total_purchase_amount: 1071,
-                added_by: {
-                    staff_username: "Anish",
-                    staff_id: "STF0627732539"
-                },
-                createdAt: "2026-04-19T18:42:43.932Z"
-            },
-            {
-                _id: "69e5222309d99ca0d29455ef",
-                supplier_id: {
-                    "_id": "69da818e3233da093c184147",
-                    supplier_id: "SUP0411345754",
-                    supplier_name: "Nila agencies",
-                    supplier_phone: "9080996465",
-                },
-                invoice_no: "nila-5",
-                products: [
-                    {
-                        "product_barcode": "CO",
-                        "quantity_recieved": 51,
-                    }
-                ],
-                total_purchase_amount: 1071,
-                added_by: {
-                    staff_username: "Anish",
-                    staff_id: "STF0627732539"
-                },
-                createdAt: "2026-04-19T18:42:43.932Z"
-            },
-            {
-                _id: "69e5222309d99ca0d29455ef",
-                supplier_id: {
-                    "_id": "69da818e3233da093c184147",
-                    supplier_id: "SUP0411345754",
-                    supplier_name: "Nila agencies",
-                    supplier_phone: "9080996465",
-                },
-                invoice_no: "nila-5",
-                products: [
-                    {
-                        "product_barcode": "CO",
-                        "quantity_recieved": 51,
-                    }
-                ],
-                total_purchase_amount: 1071,
-                added_by: {
-                    staff_username: "Anish",
-                    staff_id: "STF0627732539"
-                },
-                createdAt: "2026-04-19T18:42:43.932Z"
-            },
-            {
-                _id: "69e5222309d99ca0d29455ef",
-                supplier_id: {
-                    "_id": "69da818e3233da093c184147",
-                    supplier_id: "SUP0411345754",
-                    supplier_name: "Nila agencies",
-                    supplier_phone: "9080996465",
-                },
-                invoice_no: "nila-5",
-                products: [
-                    {
-                        "product_barcode": "CO",
-                        "quantity_recieved": 51,
-                    }
-                ],
-                total_purchase_amount: 1071,
-                added_by: {
-                    staff_username: "Anish",
-                    staff_id: "STF0627732539"
-                },
-                createdAt: "2026-04-19T18:42:43.932Z"
-            },
-            {
-                _id: "69e5222309d99ca0d29455ef",
-                supplier_id: {
-                    "_id": "69da818e3233da093c184147",
-                    supplier_id: "SUP0411345754",
-                    supplier_name: "Nila agencies",
-                    supplier_phone: "9080996465",
-                },
-                invoice_no: "nila-5",
-                products: [
-                    {
-                        "product_barcode": "CO",
-                        "quantity_recieved": 51,
-                    }
-                ],
-                total_purchase_amount: 1071,
-                added_by: {
-                    staff_username: "Anish",
-                    staff_id: "STF0627732539"
-                },
-                createdAt: "2026-04-19T18:42:43.932Z"
-            },
-            {
-                _id: "69e5222309d99ca0d29455ef",
-                supplier_id: {
-                    "_id": "69da818e3233da093c184147",
-                    supplier_id: "SUP0411345754",
-                    supplier_name: "Nila agencies",
-                    supplier_phone: "9080996465",
-                },
-                invoice_no: "nila-5",
-                products: [
-                    {
-                        "product_barcode": "CO",
-                        "quantity_recieved": 51,
-                    }
-                ],
-                total_purchase_amount: 1071,
-                added_by: {
-                    staff_username: "Anish",
-                    staff_id: "STF0627732539"
-                },
-                createdAt: "2026-04-19T18:42:43.932Z"
-            },
-            {
-                _id: "69e5222309d99ca0d29455ef",
-                supplier_id: {
-                    "_id": "69da818e3233da093c184147",
-                    supplier_id: "SUP0411345754",
-                    supplier_name: "Nila agencies",
-                    supplier_phone: "9080996465",
-                },
-                invoice_no: "nila-5",
-                products: [
-                    {
-                        "product_barcode": "CO",
-                        "quantity_recieved": 51,
-                    }
-                ],
-                total_purchase_amount: 1071,
-                added_by: {
-                    staff_username: "Anish",
-                    staff_id: "STF0627732539"
-                },
-                createdAt: "2026-04-19T18:42:43.932Z"
-            },
-            {
-                _id: "69e5222309d99ca0d29455ef",
-                supplier_id: {
-                    "_id": "69da818e3233da093c184147",
-                    supplier_id: "SUP0411345754",
-                    supplier_name: "Nila agencies",
-                    supplier_phone: "9080996465",
-                },
-                invoice_no: "nila-5",
-                products: [
-                    {
-                        "product_barcode": "CO",
-                        "quantity_recieved": 51,
-                    }
-                ],
-                total_purchase_amount: 1071,
-                added_by: {
-                    staff_username: "Anish",
-                    staff_id: "STF0627732539"
-                },
-                createdAt: "2026-04-19T18:42:43.932Z"
-            },
-            {
-                _id: "69e5222309d99ca0d29455ef",
-                supplier_id: {
-                    "_id": "69da818e3233da093c184147",
-                    supplier_id: "SUP0411345754",
-                    supplier_name: "Nila agencies",
-                    supplier_phone: "9080996465",
-                },
-                invoice_no: "nila-5",
-                products: [
-                    {
-                        "product_barcode": "CO",
-                        "quantity_recieved": 51,
-                    }
-                ],
-                total_purchase_amount: 1071,
-                added_by: {
-                    staff_username: "Anish",
-                    staff_id: "STF0627732539"
-                },
-                createdAt: "2026-04-19T18:42:43.932Z"
+                supplier_invoice_no: "9274",
+                invoice_date: "2026-04-19T16:33:13.482Z",
+                delivery_date: "2026-04-19T16:33:13.482Z",
+                grand_total: "2000",
+                balance_amount: 0,
+                payment_status: "Partially",
+                total_items: 5
             },
         ]
-       
     }
 
-    const findOrderStatus = (order_status)=> {
-        const placed = order_status.placed
-        const confirmed = order_status.confirmed 
-        const out = order_status.out
-        const delivered = order_status.delivered 
-        const canceled = order_status.canceled  
-        return canceled.status ? {value: "Canceled", color:"bg-red-500"} : 
-            delivered.status ? {value: "Delivered", color:"bg-green-500"} : 
-            out.status ? {value: "Out", color:"bg-green-500"} : 
-            confirmed.status ? {value: "Confirmed", color:"bg-blue-500"} : 
-            placed.status ? {value: "Placed", color:"bg-blue-500"} : 
-            {value: "NaN", color:"yellow", date: "NaN"}
-    }
-
-    const orders = data.orders
+    const handleRef = useRef(true)
+    useEffect(()=>{
+        const fetch = async()=>{
+            try {
+                setLoading(true);
+                const res = await axios.get( `${import.meta.env.VITE_BACKEND_URL}admin/purchase/purchase_page`, { params: { page, limit }, withCredentials: true });
+                console.log("fetchPurchasePage payload : " , res.data)
+                setSummary(res.data?.data?.summary)
+                setPurchases(res.data?.data?.purchases)
+                setPagination(res.data?.data?.pagination)
+            } catch (error) {
+                console.error("Error in fetchPurchasePage:", error);
+                toast.error( error?.response?.data?.message)
+            } finally { setLoading(false);}
+        }
+        if(handleRef.current) {
+            fetch()
+            handleRef.current = false
+        }
+    } , [])
     
-    const totalPurchaseInvoice = data.totalPurchaseInvoice
-    const totalRevenue = data.totalRevenue
-    const totalPurchaseValue = data.totalPurchaseValue
-    const requested_products = data.requested_products
-    const purchases = data.purchases
+    const dateFormat = (date)=>{
+        if(isNaN(Date.parse(date))){ return }
+        return `${format(new Date(date) , "dd MMM yyyy")}`
+    }
 
     if(loading){return <LoadingSpinner/>}
-    if(error){return <ErrorComponent/>}
+    if(error || !purchases || !summary || !pagination){return <ErrorComponent/>}
 
     return (
     <div className='flex'>
         <AdminSideBar />
-        <div className="flex-1 min-w-0 min-h-screen p-5 font-inter">
+        <div className="w-full p-5 font-inter font-medium text-lg text-gray-">
 
-            {/* This page is running by sample data */}
-            <div className='text-3xl text-red-500'>This page is running by sample data</div>
-            
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex justify-between items-center mb-5 mt-3">
                 <div>
-                    <h1 className="text-4xl font-bold text-gray-800 tracking-tight">Purchases</h1>
-                    <p className="text-gray-600 mt-2"> Every purchase, tracked and organized in one place.</p>
+                    <h1 className="text-3xl font-semibold">Purchases</h1>
+                    <p className="text-gray-600 mt-2">Every purchase, tracked and organized in one place.</p>
                 </div>
-                <button onClick={()=>navigate('/admin/purchase/purchase-entry')} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-blue-700 transition"><FaPlus />Add Entry</button>
+                <button onClick={()=>navigate('purchase-entry')} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-blue-700 transition"><FaPlus />Add Entry</button>
             </div>
 
-            <AdminPurchaseChartComponent totalPurchaseInvoice={totalPurchaseInvoice} totalPurchaseValue={totalPurchaseValue} totalRevenue={totalRevenue} />
+            <div className="grid grid-cols-3 gap-3 mt-5">
+                <div className='bg-white rounded-2xl border-t-4 border-sky-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <p className="text-sky-500 font-semibold">TOTAL PURCHASES</p>
+                            <h2 className='text-2xl mt-2 font-bold text-sky-600'>{summary?.total_purchases?.toLocaleString() || 0}</h2>
+                        </div>
+                        <div className={`bg-sky-50 text-sky-600 p-2 rounded-2xl`}>
+                            <FiFileText size={35}/>
+                        </div>
+                    </div>
+                </div>
+                <div className='bg-white rounded-2xl border-t-4 border-amber-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <p className="text-amber-500 font-semibold">PARTIALLY PAID PURCHASES</p>
+                            <h2 className='text-2xl mt-2 font-bold text-amber-600'>{summary?.partialy_paid_purchases?.toLocaleString() || 0}</h2>
+                        </div>
+                        <div className={`bg-amber-50 p-2 text-amber-600 rounded-2xl`}>
+                            <BiRupee size={35}/>
+                        </div>
+                    </div>
+                </div>
+                <div className='bg-white rounded-2xl border-t-4 border-red-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <p className="text-red-500 font-semibold">PENDING CASH PURCHASES</p>
+                            <h2 className='text-2xl mt-2 font-bold text-red-600'>{summary?.pending_purchases?.toLocaleString() || 0}</h2>
+                        </div>
+                        <div className={`bg-red-50 p-2 text-red-600 rounded-2xl`}>
+                            <FiClock size={35} />
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            {/* <AdminSupplierTopRequestedComponent requested_products={requested_products} /> */}
-
-            <div className="h-[calc(100vh-40px)] border flex flex-col mt-8 rounded-2xl shadow-md p-5">
+            <div className="h-[calc(100vh-40px)] border flex flex-col mt-5 rounded-xl shadow-md p-5">
                 <div className="flex flex-col xl:flex-row gap-4 justify-between">
                     <div className="relative flex-1">
-                        <FaSearch className="absolute left-4 top-4 text-gray-400" />
-                        <input type="text" placeholder="Search invoices, supplier" className="w-full font-medium text-gray-800 border rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-blue-500 outline-none"/>
+                        <FaSearch className="absolute left-4 top-[18px] text-gray-400" />
+                        <input type="text" placeholder="Search invoices, supplier" className="w-full border rounded-xl py-3 pl-12 pr-4 outline-none"/>
                     </div>
 
-                    <select className="border rounded-xl px-4 py-3 text-gray-800 font-medium">
-                        <option>Status</option>
-                        <option>Active</option>
-                        <option>Inactive</option>
-                        <option>Deleted</option>
+                    <select className="border rounded-xl px-4 py-3">
+                        <option disabled>Status</option>
+                        <option>All</option>
+                        <option>Paid</option>
+                        <option>Partially</option>
+                        <option>Pending</option>
                     </select>
                 </div>
 
@@ -453,30 +152,42 @@ const AdminPurchasePage = () => {
                         <thead className="sticky top-0 z-20 bg-white shadow-sm">
                             <tr className="text-gray-500">
                                 <th className='py-4' />
-                                <th className='py-4'>Invoice No.</th>
-                                <th className='py-4 text-start'>Supplier</th>
-                                <th className='py-4'>Items</th>
-                                <th className='py-4'>Amount</th>
-                                <th className='py-4'>Action</th>
+                                <th className='py-4 font-semibold text-start'>Supplier</th>
+                                <th className='py-4 font-semibold text-start'>Invoice</th>
+                                <th className='py-4 font-semibold'>Items</th>
+                                <th className='py-4 font-semibold'>Amount</th>
+                                <th className='py-4 font-semibold'>Payment Status</th>
+                                <th className='py-4 font-semibold'>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                         {purchases?.map((purchase, index) =>(
-                            <tr key={index} onClick={()=>setSelectedPurchase(purchase.purchase_id)} className={`text-center border-b-[3px] border-gray-50 text-gray-800 text-base ${ selectedPurchase == purchase._id ? "bg-gray-50" : ''}`}>
+                            <tr key={index} className={`text-center hover:bg-gray-50 `}>
                                 <td className='text-gray-600 font-semibold'>{index+1})</td>
-                                <td className='py-4 font-medium text-lg text-gray-700'>{purchase?.invoice_no}</td>
                                 <td className='text-start py-4'>
                                     <div className="flex flex-col">
-                                        <span className='mb-0.5 font-semibold uppercase'>{purchase?.supplier_id?.supplier_name}</span>
-                                        <span className='text-gray-500 text-[16.5px]'>{purchase?.supplier_id?.supplier_phone}</span>
+                                        <span className='mb-0.5 font-semibold uppercase'>{purchase?.supplier?.supplier_name}</span>
+                                        <span className='text-gray-500 text-base'>{purchase?.supplier?.supplier_phone}</span>
                                     </div>
                                 </td>
-                                <td className='py-4 font-medium text-lg text-gray-700'>{purchase?.products?.length} items</td>
-                                <td className='py-4 font-medium text-lg text-gray-700'>
-                                    <div className='flex justify-center items-center'><FaIndianRupeeSign />{purchase?.total_purchase_amount?.toLocaleString()}</div>
+                                <td className='py-4 '>
+                                    <div className="flex flex-col text-start">
+                                        <span className='mb-0.5 font-semibold'>{purchase?.supplier_invoice_no}</span>
+                                        <span className='text-gray-500 text-base'>{dateFormat(purchase?.invoice_date)}</span>
+                                    </div>
+                                </td>
+                                <td className='py-4 text-gray-700'>{purchase?.total_items} items</td>
+                                <td className='py-4 '>
+                                    <div className="flex flex-col text-gray-700">
+                                        <div className='flex justify-center items-center mb-0.5 font-semibold'><FaIndianRupeeSign />{purchase?.grand_total?.toLocaleString()}</div>
+                                        { purchase.balance_amount ? <div className='flex justify-center items-center text-gray-500 text-base'><FaIndianRupeeSign />{purchase.balance_amount.toLocaleString()}</div> : <div /> }
+                                    </div>
+                                </td>
+                                <td className='py-4 capitalize' >
+                                    <span className={`p-2 rounded-xl px-3 capitalize text-white ${ purchase?.payment_status == "Paid" ? "bg-green-500" : purchase?.payment_status == "Partial" ? "bg-amber-500" : purchase?.payment_status == "Pending" && "bg-red-500" }`}>{purchase?.payment_status}</span>
                                 </td>
                                 <td className='text-center h-full align-middle'>
-                                    <FaEye onClick={() => navigate(`/admin/orders/order_id/${order.order_id}`)} className='cursor-pointer text-2xl inline-block' />
+                                    <FaEye onClick={() => navigate(`/admin/purchase/purchase_id/${purchase.purchase_id}`)} className='cursor-pointer text-2xl inline-block' />
                                 </td>
                             </tr>
                         ))}
@@ -484,7 +195,7 @@ const AdminPurchasePage = () => {
                     </table>
                 </div>
 
-                <div className="pt-7 pb-2 flex justify-center border-t ">
+                <div className="pt-5 flex justify-center border-t ">
                     <div className="flex items-center gap-2">
                         <div className="flex items-center gap-2">
                             <button className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center"><FaChevronLeft /></button>

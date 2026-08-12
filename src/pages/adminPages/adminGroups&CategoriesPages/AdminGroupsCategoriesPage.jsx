@@ -126,7 +126,7 @@ const AdminGroupsCategoriesPage = () => {
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto border rounded-xl mt-5">
+                <div className="flex-1 overflow-y-auto border rounded-t-xl mt-5">
                     <div className="borde h-full rounded-xl">
                         {groups?.map((group) => ( 
                             <div key={group._id} className=" border-b overflow-hidden ">
@@ -146,7 +146,7 @@ const AdminGroupsCategoriesPage = () => {
                                 </div>
                                 {/* EXPANDED CATEGORIES */}
                                 {expandedGroup === group._id && (
-                                    <div className="px-5 p-2">
+                                    <div className="p-5">
                                         <div className="flex border-t-[3px] border-gray-200/60 pt-5 items-center justify-between mb-3 " >
                                             <div> 
                                                 <h3 className="font-semibold text-gray-700 capitalize">Categories</h3>
@@ -159,7 +159,7 @@ const AdminGroupsCategoriesPage = () => {
                                         {/* CATEGORY LIST */}
                                         <div className="space-y-1">
                                             {group.categories.map( (category) => (
-                                                <div  key={category._id} className=" flex items-center gap-3 border border-gray-100 rounded-xl px-3 py-2 transition " >
+                                                <div  key={category._id} className=" flex items-center gap-3 shadow-sm border-gray-100 rounded-lg px-3 py-2 transition " >
                                                     <div className=" w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 " >
                                                         <img src={`${import.meta.env.VITE_IMAGE_URL}${category.category_image}`} alt={category.category_name} className=" w-full h-full object-cover "/>
                                                     </div>

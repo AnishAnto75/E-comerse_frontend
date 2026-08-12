@@ -197,8 +197,9 @@ function App() {
                 <Route path="staff">
                     <Route index element={<AdminStaffManagementPage />}/>
                     <Route path="create-staff" element={<AdminAddNewStaffPage />}/>
-                    <Route path="all-staff" element={<AdminAllStaffPage />}/>
                     <Route path="staff_id/:id" element={<AdminStaffViewPage />}/>
+
+                    <Route path="all-staff" element={<AdminAllStaffPage />}/>
                 </Route>
 
                 <Route path="payments" element={<div>payments</div>} />

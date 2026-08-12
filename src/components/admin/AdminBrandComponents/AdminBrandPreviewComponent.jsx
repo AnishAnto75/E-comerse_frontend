@@ -19,11 +19,10 @@ const AdminBrandPreviewComponent = ({brand_id}) => {
     
     useEffect(() => {
         if (!brand_id) return;
-        const fetchProduct = async () => {
+        const fetch = async () => {
             try {
                 setLoading(true);
                 setError(false);
-                console.log(`${import.meta.env.VITE_BACKEND_URL}admin/brand/brand_id/${brand_id}`)
                 const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/brand/brand_id/${brand_id}`, {withCredentials: true})
                 setBrand(res.data.data);
                 console.log("fetchBrand response:", res.data);
@@ -34,7 +33,7 @@ const AdminBrandPreviewComponent = ({brand_id}) => {
                 setLoading(false);
             }
         };
-        fetchProduct();
+        fetch();
     }, [brand_id]);
 
     if(loading){return <LoadingComponent />}

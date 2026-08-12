@@ -13,7 +13,7 @@ const useCartStore = create((set, get) => ({
     // fetch cart withot populate
     fetchCartSummary: async () => {
         try {
-            const res = await axios.get( `${API}user/cart`, { withCredentials: true });
+            const res = await axios.get( `${API}user/cart/summary`, { withCredentials: true });
             console.log("fetchCartSummary Data : ",res.data)
             set({
                 cartSummary: res.data?.data?.cart,
