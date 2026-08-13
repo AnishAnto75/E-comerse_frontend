@@ -58,7 +58,7 @@ const AdminProductPreviewComponent = ({product_id}) => {
     <div className="p-2 font-inter text-lg font-medium ">
         <div className='text-xl font-semibold'>Product Preview</div>
         <div className="flex relative justify-center mt-5 rounded-3xl py-5 flex-col items-center bg-gray-50">
-            <div className={`absolute w-6 h-6 rounded-full top-5 right-5 ${ product.out_of_stock ? "bg-red-500 " : product?.status == "active" ? "bg-sky-500" : product?.status == "inactive" && "bg-gray-700"}`} title='Status' />
+            <div className={`absolute w-6 h-6 rounded-full top-5 right-5 ${ product.status == "out_of_stock" ? "bg-red-500 " : product?.status == "active" ? "bg-sky-500" : product?.status == "inactive" && "bg-gray-700"}`} title='Status' />
             <img src={`${import.meta.env.VITE_IMAGE_URL}${product?.product_photo}`} alt={product?.product_name} className="w-36 h-36 text-center bg-white rounded-full p-2 object-cover"/>
             <div className='flex gap-1.5 mt-1' title='Ratings'>
                 {Array.from({ length: product?.review?.product_average_ratings || 3  }).map((_, index) => (

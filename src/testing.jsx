@@ -1,252 +1,277 @@
-import { useState } from "react";
-import {
-    FiChevronDown,
-    FiChevronUp,
-    FiPackage,
-    FiCalendar,
-    FiHash,
-    FiTruck,
-    FiAlertTriangle,
-    FiCheckCircle,
-    FiXCircle,
-} from "react-icons/fi";
-import { FaIndianRupeeSign } from "react-icons/fa6";
+import React, { useState } from "react";
+import {FaBoxOpen, FaWarehouse, FaRupeeSign, FaExclamationTriangle, FaTimesCircle, FaCheckCircle, FaChartLine, FaTags, FaPlus, FaDownload, FaUpload, FaFilter, FaSortAmountDown, FaSyncAlt, FaEye, FaTrash, FaFire, FaClock, FaArrowUp, FaChevronLeft, FaChevronRight, FaTrashAlt, FaFileExport, FaEdit, FaSearch, FaUsers, FaUserCheck, FaUserSlash } from "react-icons/fa";
+import { IoIosStar } from "react-icons/io";
+import { IoCloseSharp } from "react-icons/io5";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
+import { FaIndianRupeeSign, FaMoneyBillTrendUp } from "react-icons/fa6";
+import AdminSideBar from "../../../components/admin/AdminSideBar";
+import AdminProductPreviewComponent from "../../../components/admin/AdminProductComponents/AdminProductPreviewComponent";
+import AdminStaffPreviewComponent from "../../../components/admin/AdminStaffComponent/AdminStaffPreviewComponent";
+import { FiUserMinus, FiUserX } from "react-icons/fi";
+import axios from "axios";
+import { useRef } from "react";
+import { useEffect } from "react";
+import LoadingSpinner from "../../../components/LoadingSpinner";
+import ErrorComponent from "../../../components/ErrorComponent";
 
-const ProductInventoryComponent = ({ inventory }) => {
+const AdminStaffManagementPage = () => {
 
-    const [expandedIndex, setExpandedIndex] = useState(null);
+    const navigate = useNavigate()
 
-    const productStock = inventory?.product_stock || [];
+    const [loading , setLoading] = useState(false)
+    const [error , setError ] = useState(false)
 
-    const totalStock = inventory?.product_total_stock || 0;
+    const [page, setPage] = useState(1)
+    const [limit, setLimit] = useState(20)
+    
+    const [pagination , setPagination] = useState(null)
+        
+    const [summary, setSummary] = useState(null)
+    const [staffs, setStaffs] = useState(null)
+    
+    const [selected_staff , setSelectedStaff] = useState(null)
 
-    const lowStockLimit = inventory?.product_low_in_stock || 1;
-
-    const inventoryValue = productStock.reduce(
-        (total, item) => total + ((item.stock || 0) * (item.unit_purchase_cost || 0)),
-        0
-    );
-
-    const toggleRow = (index) => {
-        setExpandedIndex(
-            expandedIndex === index ? null : index
-        );
-    };
-
-    const getStockStatus = (stock) => {
-
-        if (stock <= 0) {
-            return {
-                label: "Out of Stock",
-                className: "text-red-600 bg-red-50",
-                icon: <FiXCircle size={14} />
-            };
+    const handleRef = useRef(true)
+    useEffect(()=>{
+        const fetch = async()=>{
+            try {
+                setLoading(true);
+                const res = await axios.get( `${import.meta.env.VITE_BACKEND_URL}admin/staff/staff_page`, { params: { page, limit }, withCredentials: true });
+                console.log("fetchStaffPage payload : " , res.data)
+                setSummary(res.data?.data?.summary)
+                setStaffs(res.data?.data?.staffs)
+                setPagination(res.data?.data?.pagination)
+            } catch (error) {
+                console.error("Error in fetchStaffPage:", error);
+                toast.error( error?.response?.data?.message)
+            } finally { setLoading(false);}
         }
-
-        if (stock <= lowStockLimit) {
-            return {
-                label: "Low Stock",
-                className: "text-amber-600 bg-amber-50",
-                icon: <FiAlertTriangle size={14} />
-            };
+        if(handleRef.current) {
+            fetch()
+            handleRef.current = false
         }
+    } , [])
 
-        return {
-            label: "In Stock",
-            className: "text-emerald-600 bg-emerald-50",
-            icon: <FiCheckCircle size={14} />
-        };
-    };
 
-    const formatDate = (date) => {
+    // const data = {
+    //     summary : {
+    //         total_employee : 105,
+    //         active_employee : 90,
+    //         inactive_employee : 15,
+    //         blocked_employee : 15,
+    //     },
+    //     staff : [
+    //         {
+    //             staff_id: "STF0627732539",
+    //             name: "staff1",
+    //             email: "staff1",
+    //             gender: "male",
+    //             salary: 0,
+    //             photo: '/3-08.webp',
+    //             status: "active",
+    //             _id: "6a3f9a5550650a2226dcaaaf",
+    //             department: "delivery",
+    //             role: "delivery",
+    //             phone_number: 8451255645,
+    //             staff_DOB: null,
+    //             joining_date: "2026-07-04T16:22:25.625Z"
+    //         },
+    //         {
+    //             gender: "female",
+    //             salary: 30000,
+    //             photo: '/3-08.webp',
+    //             status: "inactive",
+    //             _id: "6a3f9a5550650a2226dcaaaf",
+    //             staff_id: "STF0627732585",
+    //             name: "Anish Anto",
+    //             email: "antoanish75@gmail.com",
+    //             department: "administration",
+    //             role: "general manager",
+    //             phone_number: 8451255645,
+    //             staff_DOB: "2005-12-05T16:22:25.625Z",
+    //             joining_date: "2026-07-04T16:22:25.625Z"
+    //         },
+    //     ]
+    // }
 
-        if (!date) return "-";
+    if(loading){return <LoadingSpinner/>}
+    if(error || !staffs || !summary || !pagination){return <ErrorComponent/>}
 
-        return new Date(date).toLocaleDateString("en-IN", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-        });
-    };
+    
+  return (
+    <div className="flex">
+    <AdminSideBar />
+    <div className="w-full p-5 font-inter font-medium text-lg text-gray-900">
 
-    return (
-        <div className="w-full rounded-2xl border border-gray-200 bg-white overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-200">
-                <div className="flex items-center justify-between gap-4">
+        <div className="flex justify-between items-center mb-5 mt-3">
+            <div>
+                <h1 className="text-3xl font-semibold">Staff Management</h1>
+                <p className="text-gray-600 mt-2">Manage employees, roles, and access permissions.</p>
+            </div>
+            <button onClick={()=>navigate('/admin/staff/create-staff')} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-blue-700 transition"><FaPlus />Add Staff</button>
+        </div>
+
+        <div className="grid xl:grid-cols-4 md:grid-cols-2 gap-6">
+            <div className='bg-white rounded-2xl  border-t-4 border-indigo-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
+                <div className="flex justify-between items-center">
                     <div>
-                        <div className="flex items-center gap-2">
-                            <FiPackage size={19} className="text-cyan-600"/>
-                            <h2 className="text-lg font-semibold text-gray-800">Inventory</h2>
-                        </div>
-                        <p className="text-sm text-gray-500 mt-1">
-                            {productStock.length} batches · {totalStock.toLocaleString("en-IN")} units
-                        </p>
+                        <p className="text-indigo-500 font-semibold">TOTAL EMPLOYEE</p>
+                        <h2 className='text-3xl mt-2 font-bold text-indigo-600'>{summary.total_employee}</h2>
                     </div>
-
-                    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${ totalStock <= 0 ? "text-red-600 bg-red-50" : totalStock <= lowStockLimit ? "text-amber-600 bg-amber-50" : "text-emerald-600 bg-emerald-50" }`} >
-                        <span className={`w-2 h-2 rounded-full ${ totalStock <= 0 ? "bg-red-500" : totalStock <= lowStockLimit ? "bg-amber-500" : "bg-emerald-500" }`}/>
-                        {totalStock <= 0 ? "Out of Stock" : totalStock <= lowStockLimit ? "Low Stock" : "In Stock" }
+                    <div className={`bg-indigo-50 p-2 rounded-2xl`}>
+                        <FaUsers size={35} className="text-indigo-600"/>
                     </div>
                 </div>
             </div>
+            <div className='bg-white rounded-2xl border-t-4 border-sky-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <p className="text-sky-500 font-semibold">ACTIVE EMPLOYEE</p>
+                        <h2 className='text-3xl mt-2 font-bold text-sky-500'>{summary.active_employee}</h2>
+                    </div>
+                    <div className={`bg-sky-50 text-sky-500 p-2 rounded-2xl`}>
+                        <FaUserCheck size={35} />
+                    </div>
+                </div>
+            </div>
+            <div className='bg-white rounded-2xl border-t-4 border-gray-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <p className="text-gray-500 font-semibold">INACTIVE EMPLOYEE</p>
+                        <h2 className='text-3xl mt-2 font-bold text-gray-700'>{summary.inactive_employee}</h2>
+                    </div>
+                    <div className={`bg-gray-50 p-2 text-gray-600 rounded-2xl`}>
+                        <FiUserMinus size={35} />
+                    </div>
+                </div>
+            </div>
+            <div className='bg-white rounded-2xl border-t-4 border-red-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <p className="text-red-500 font-semibold">BLOCKED EMPLOYEE</p>
+                        <h2 className='text-3xl mt-2 font-bold text-red-500'>{summary.blocked_employee}</h2>
+                    </div>
+                    <div className={`bg-red-50 text-red-500 p-2 rounded-2xl`}>
+                        <FiUserX size={35} />
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            <div className="overflow-x-auto">
-                <table className="w-full min-w-[700px]">
-                    <thead>
-                        <tr className="bg-gray-50 border-b border-gray-200">
-                            <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Batch</th>
-                            <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Stock</th>
-                            <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">MRP</th>
-                            <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Selling</th>
-                            <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Purchase</th>
-                            <th className="w-12"></th>
+        <div className="h-[calc(100vh-40px)] border flex flex-col mt-5 rounded-2xl shadow-md p-5">
+            <div className="flex flex-col xl:flex-row gap-4 justify-between">
+                <div className="relative flex-1">
+                    <FaSearch className="absolute left-4 top-[18px] text-gray-400" />
+                    <input type="text" placeholder="Search products, barcode" className="w-full font-medium text-gray-800 border rounded-xl py-3 pl-12 pr-4 outline-none"/>
+                </div>
+                <div className="flex flex-wrap gap-3">
+
+                    <select className="border rounded-xl px-4 py-3">
+                        <option>Status</option>
+                        <option>Active</option>
+                        <option>Inactive</option>
+                        <option>Blocked</option>
+                    </select>
+
+                    <select className="border rounded-xl px-4 py-3">
+                        <option>Roles</option>
+                        <option>Staff</option>
+                        <option>Delevery</option>
+                        <option>Managers</option>
+                    </select>
+
+                </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto mt-5">
+                <table className="w-full border-separate border-spacing-0">
+                    <thead className="sticky top-0 z-20 bg-white shadow-sm">
+                        <tr className="text-gray-400">
+                            <th className="py-4 font-medium bg-white"></th>
+                            <th className="py-4 font-semibold bg-white text-start">Employee Name </th>
+                            <th className="py-4 font-semibold bg-white text-start">Email / Ph. No</th>
+                            <th className="py-4 font-semibold bg-white">Department</th>
+                            <th className="py-4 font-semibold bg-white">Salary</th>
+                            <th className="py-4 font-semibold bg-white">Gender</th>
+                            <th className="py-4 font-semibold bg-white">Joined</th>
+                            <th className="py-4 font-semibold bg-white">Status</th>
+                            <th className="py-4 font-semibold bg-white">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {productStock.length === 0 ? (
-                            <tr>
-                                <td colSpan={6} className="py-12 text-center">
-                                    <FiPackage size={30} className="mx-auto text-gray-300"/>
-                                    <p className="mt-2 text-sm text-gray-500">No inventory batches available</p>
+                    {staffs?.map((staff, index) =>{
+                        return(
+                            <tr key={index} onClick={()=>setSelectedStaff(staff.staff_id)} className={`text-center hover:bg-gray-50 ${ staff.staff_id == selected_staff ? "bg-gray-100" : ''}`}>
+                                <td className='text-gray-600 font-semibold px-2'>{index+1})</td>
+                                <td className="text-start ">
+                                    <div className="flex items-center gap-2 py-2">
+                                        <div className="h-20 w-20 p-1">
+                                            <img src={`${import.meta.env.VITE_IMAGE_URL}${staff?.photo?.url}`} alt={staff?.name} className="w-full h-full rounded-xl object-contain"/>
+                                        </div>
+                                        <div className="flex flex-col ">
+                                            <span className='mb-0.5 font-semibold capitalize'>{staff.name}</span>
+                                            <span className='text-gray-500 text-[17px]'>{staff.staff_id}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className='py-4'>
+                                    <div className="flex text-start capitalize flex-col">
+                                        <span className='font-semibold'>{staff.email}</span>
+                                        <span className='text-gray-500'>{staff.phone_number}</span>
+                                    </div>
+                                </td>
+                                <td className='py-4'>
+                                    <div className="flex capitalize flex-col">
+                                        <span className='font-semibold'>{staff.department}</span>
+                                        <span className='text-gray-500'>{staff.role}</span>
+                                    </div>
+                                </td>
+                                <td className='py-4 '>
+                                    { staff.salary ? <div className="flex items-center justify-center"><FaIndianRupeeSign />{ staff.salary?.toLocaleString() }</div> : "---" }
+                                </td>
+                                <td className='py-4 capitalize'>{staff.gender}</td>
+                                <td className='py-4 '>{format(staff.joining_date, 'dd MMM yyy')}</td>
+                                <td className='py-4'>
+                                    <span className={`p-2 rounded-xl px-3 capitalize text-white ${ staff.status == "blocked" ? "bg-red-500" : staff?.status == "active" ? "bg-sky-500" : "bg-gray-600" }`}>{staff?.status == "inactive" ? "In Active" : staff.status}</span>
+                                </td>
+                                <td className='space-x-2 text-2xl '>
+                                    <FaEye onClick={() => navigate(`/admin/staff/staff_id/${staff.staff_id}`)} className='cursor-pointer text-cyan-600 inline-block' />
                                 </td>
                             </tr>
-                        ) : (
-                            productStock.map((item, index) => {
-                                const isExpanded = expandedIndex === index;
-                                const stockStatus = getStockStatus(item.stock);
-                                return ( 
-                                    <>
-                                        <tr key={item._id || `${item.batch_no}-${index}`} onClick={() => toggleRow(index)} className={` border-b border-gray-100 cursor-pointer transition-colors ${ isExpanded ? "bg-cyan-50/40" : "hover:bg-gray-50" }`}>
-                                            <td className="px-5 py-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className=" w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 ">
-                                                        <FiPackage size={17} />
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-sm font-semibold text-gray-800">{item.batch_no || "No Batch"}</p>
-                                                        <p className="text-xs text-gray-400 mt-0.5">FIFO #{index + 1}</p>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-4">
-                                                <div className="flex flex-col items-center gap-1">
-                                                    <span className="text-sm font-semibold text-gray-700">{(item.stock || 0).toLocaleString("en-IN")}</span>
-                                                    <span className={` flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${stockStatus.className}`}>
-                                                        {stockStatus.icon}
-                                                        {stockStatus.label}
-                                                    </span>
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-4 text-right">
-                                                <div className="flex justify-end items-center gap-1 text-sm text-gray-600">
-                                                    <FaIndianRupeeSign size={11} />
-                                                    {item.mrp?.toLocaleString("en-IN") || "0"}
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-4 text-right">
-                                                <div className="flex justify-end items-center gap-1 text-sm font-semibold text-gray-800">
-                                                    <FaIndianRupeeSign size={11} />
-                                                    {item.selling_price?.toLocaleString("en-IN") || "0"}
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-4 text-right">
-                                                <div className="flex justify-end items-center gap-1 text-sm text-gray-600">
-                                                    <FaIndianRupeeSign size={11} />
-                                                    {item.unit_purchase_cost?.toLocaleString("en-IN") || "0"}
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-4">
-                                                <div className=" w-7 h-7 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 ">
-                                                    {isExpanded ? <FiChevronUp size={17} /> : <FiChevronDown size={17} />}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        {isExpanded && (
-                                            <tr key={`expanded-${item._id || index}`} className="bg-gray-50/70 border-b border-gray-200">
-                                                <td colSpan={6} className="px-5 py-5">
-                                                    <div className=" grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-5">
-                                                        <Detail icon={<FiTruck />} label="Purchase ID" value={ item.purchase_id || "-"} />
-                                                        <Detail icon={<FiPackage />} label="Size" value={ item.size || "-" }/>
-                                                        <Detail icon={<FiCalendar />} label="Manufacture Date" value={ formatDate( item.manufacture_date )}/>
-                                                        <Detail icon={<FiCalendar />} label="Expiry Date" value={ formatDate( item.expiry_date )}/>
-                                                        <Detail label="Best Before" value={ item.best_before ? `${item.best_before} months` : "-" }/>
-                                                        <Detail label="Purchase Cost" value={ `₹${(item.purchase_cost || 0).toLocaleString("en-IN")}` }/>
-                                                        <Detail label="GST" value={ `${item.gst_percentage || 0}%` }/>
-                                                        <Detail label="Other Expenses" value={ `₹${(item.other_expenses || 0).toLocaleString("en-IN")}` }/>
-                                                    </div>
-                                                    <div className=" mt-5 pt-4 border-t border-gray-200 flex flex-wrap items-center justify-between gap-3 ">
-                                                        <div className="flex items-center gap-2">
-                                                            <FiHash size={14} className="text-cyan-600" />
-                                                            <span className="text-xs text-gray-500">FIFO Position</span>
-                                                            <span className=" text-xs font-semibold text-gray-700">#{index + 1}</span>
-                                                        </div>
-                                                        <div className="text-xs text-gray-500">
-                                                            Batch stock: 
-                                                            <span className="ml-1 font-semibold text-gray-800">{(item.stock || 0).toLocaleString("en-IN")} units</span>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </>
-                                );
-                            })
-                        )}
+                        )
+                    })}
                     </tbody>
                 </table>
             </div>
-            <div className=" border-t border-gray-200 bg-gray-50 px-5 py-4 grid grid-cols-2 gap-4 ">
-                <div>
-                    <p className="text-xs text-gray-500">Total Stock</p>
-                    <p className="text-lg font-bold text-gray-800 mt-0.5">
-                        {totalStock.toLocaleString("en-IN")}
-                        <span className="text-xs font-medium text-gray-500 ml-1">units</span>
-                    </p>
-                </div>
-                <div className="text-right">
-                    <p className="text-xs text-gray-500">Inventory Value</p>
-                    <p className="text-lg font-bold text-gray-800 mt-0.5 flex justify-end items-center gap-1">
-                        <FaIndianRupeeSign size={13} />
-                        {inventoryValue.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                    </p>
+            <div className="pt-5 flex justify-center border-t ">
+                <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
+                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center"><FaChevronLeft /></button>
+                        <button className="w-11 h-11 rounded-xl bg-blue-600 text-white font-semibold">1</button>
+                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">2</button>
+                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">3</button>
+                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">4</button>
+                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">5</button>
+                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center"><FaChevronRight /></button>
+                    </div>
                 </div>
             </div>
-
         </div>
-    );
+    </div>
+
+    {/* Product Preview */}
+    {selected_staff &&
+    <div className='relative min-w-[26rem] max-w-[26rem] shrink-1 py-5 pr-5'>
+        <div className='sticky top-5 h-[calc(100vh-40px)] rounded-xl shadow-lg overflow-y-auto p-3'>
+            <IoCloseSharp onClick={()=>setSelectedStaff(null)} className='absolute top-4 right-4 text-4xl cursor-pointer z-10 rounded-full hover:bg-red-50 text-red-500 p-1' />
+            <AdminStaffPreviewComponent staff_id={selected_staff} />
+        </div>
+    </div> 
+    } 
+    </div>
+  );
 };
 
-
-/* -------------------------------- */
-/* DETAIL COMPONENT                 */
-/* -------------------------------- */
-
-const Detail = ({ icon, label, value }) => {
-
-    return (
-        <div>
-
-            <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-1">
-
-                {icon && (
-                    <span className="text-gray-400">
-                        {icon}
-                    </span>
-                )}
-
-                <span>
-                    {label}
-                </span>
-
-            </div>
-
-            <p className="text-sm font-medium text-gray-700 truncate">
-                {value}
-            </p>
-
-        </div>
-    );
-};
-
-
-export default ProductInventoryComponent;
+export default AdminStaffManagementPage

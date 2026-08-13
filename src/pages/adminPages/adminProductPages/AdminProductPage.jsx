@@ -23,8 +23,12 @@ const AdminProductPage = () => {
     const [error , setError ] = useState(false)
     const [selected_product , setSelectedProduct] = useState(null)
 
-    const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(20);
+    const [page, setPage] = useState(1)
+    const [limit, setLimit] = useState(20)
+
+    const [status, setStatus] = useState("all")
+
+    const [pagination , setPagination] = useState(null)
 
     const [summary, setSummary] = useState(null)
     const [products, setProducts] = useState(null)
@@ -32,25 +36,26 @@ const AdminProductPage = () => {
     const handleRef = useRef(true)
     useEffect(()=>{
         const fetch = async()=>{
+            const controller = new AbortController();
             try {
                 setLoading(true);
-                const res = await axios.get( `${import.meta.env.VITE_BACKEND_URL}admin/product/product_page`, { params: { page, limit}, withCredentials: true });
+                const res = await axios.get( `${import.meta.env.VITE_BACKEND_URL}admin/product/product_page`, { params: { page, limit, status}, withCredentials: true });
                 console.log("fetchProductPage payload : " , res.data)
                 setSummary(res.data?.data?.summary)
                 setProducts(res.data?.data?.products)
+                setPagination(res.data?.data?.pagination)
             } catch (error) {
                 console.error("Error in fetchProductPage:", error);
                 toast.error( error?.response?.data?.message || "Unable to fetch products")
-            } finally { setLoading(false);}
+            } finally {
+                if (!controller.signal.aborted) { setLoading(false) }
+            }
         }
-        if(handleRef.current) {
-            fetch()
-            handleRef.current = false
-        }
-    } , [])
+        fetch()
+    } , [page, limit, status])
 
     if(loading){return <LoadingSpinner/>}
-    if(error || !summary || !products ){return <ErrorComponent/>}
+    if(error || !summary || !products || !pagination){return <ErrorComponent/>}
 
   return (
     <div className="flex">
@@ -77,17 +82,11 @@ const AdminProductPage = () => {
                 </div>
                 <div className="flex flex-wrap gap-3 text-gray-800 font-medium">
 
-                    <select className="border rounded-xl px-4 py-3 text-gray-800 font-medium">
-                        <option>Status</option>
-                        <option>Active</option>
-                        <option>Inactive</option>
-                    </select>
-
-                    <select className="border rounded-xl px-4 py-3 text-gray-800 font-medium">
-                        <option>All Stock</option>
-                        <option>In Stock</option>
-                        <option>Low Stock</option>
-                        <option>Out Of Stock</option>
+                    <select value={status} onChange={(e)=>setStatus(e.target.value)} className="border rounded-xl px-4 py-3">
+                        <option value={"all"}>Status</option>
+                        <option value={"active"}>Active</option>
+                        <option value={"inactive"}>Inactive</option>
+                        <option value={"out_of_stock"}>Out Of Stock</option>
                     </select>
 
                 </div>
@@ -112,7 +111,7 @@ const AdminProductPage = () => {
                     {products?.map((product, index) =>{
                         return(
                             <tr onClick={()=>setSelectedProduct(product.product_barcode)} key={index} className={`text-center hover:bg-gray-50 ${ selected_product == product.product_barcode ? "bg-gray-100" : ''}`}>
-                                <td className='text-gray-600 font-semibold pl-2 w-10'>{index+1} )</td>
+                                <td className='text-gray-600 font-semibold pl-2 w-10'>{index+1}.</td>
                                 <td className="w-20">
                                     <div className="flex justify-center">
                                         <img src={`${import.meta.env.VITE_IMAGE_URL}${product?.product_photo}`} alt={product?.product_name} className="w-16 h-16 rounded-xl object-contain"/>
@@ -127,7 +126,11 @@ const AdminProductPage = () => {
                                     <span className='text-gray-500 font-semibold '>{product?.category_name}</span>
                                 </td>
                                 <td className='py-4'>{product?.product_brand}</td>
-                                <td className="py-4">{product?.current_stock}</td>
+                                <td className="py-4">
+                                    <span className={`p-2 rounded-xl px-3 capitalize ${ product.current_stock === 0 ? "bg-red-100 text-red-500 " : product.product_low_in_stock >= product.current_stock && "bg-amber-100 text-amber-500" }`}>
+                                        {product?.current_stock}
+                                    </span>
+                                </td>
                                 <td className="py-4">
                                     <span className='flex gap-0.5 py-4 items-center justify-center'>
                                         <IoIosStar className='h-5 w-5 text-amber-500'/>
@@ -135,8 +138,8 @@ const AdminProductPage = () => {
                                     </span>
                                 </td>
                                 <td className='py-4'>
-                                    <span className={`p-2 rounded-xl px-3 capitalize text-white ${ product.out_of_stock ? "bg-red-500 " : product.product_low_in_stock >= product.current_stock ? "bg-amber-400" : product?.status == "active" ? "bg-sky-500" : product?.status == "inactive" && "bg-gray-700" }`}>
-                                        { product.out_of_stock ? "Out of stock" : product.product_low_in_stock >= product.current_stock ? "Low In Stock" : product?.status === "inactive" ? "In Active" : product.status  }
+                                    <span className={`p-2 rounded-xl px-3 capitalize text-white ${ product?.status === "out_of_stock" ? "bg-red-500 " : product?.status == "active" ? "bg-sky-500" : product?.status == "inactive" && "bg-gray-700" }`}>
+                                        { product?.status === "out_of_stock" ? "Out of stock" : product?.status === "inactive" ? "In Active" : product.status  }
                                     </span>
                                 </td>
                                 <td className='space-x-2 text-2xl '>
@@ -149,19 +152,35 @@ const AdminProductPage = () => {
                     </tbody>
                 </table>
             </div>
-            <div className="pt-5 flex justify-center border-t ">
+
+            <div className="pt-5 flex justify-between items-center px-3 border-t ">
+                <div className="text-gray-500">
+                    Showing page <span className="text-gray-600">{pagination.current_page}</span> of <span className="text-gray-700">{pagination.total_pages}</span>
+                    <span className="mx-3">•</span>
+                    {pagination.total_products} results found
+                </div>
                 <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-2">
-                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center"><FaChevronLeft /></button>
-                        <button className="w-11 h-11 rounded-xl bg-blue-600 text-white font-semibold">1</button>
-                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">2</button>
-                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">3</button>
-                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">4</button>
-                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">5</button>
-                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center"><FaChevronRight /></button>
-                    </div>
+                    <button disabled={!pagination.has_previous_page || loading} onClick={() => setPage(prev => prev - 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronLeft /></button>
+                    {Array.from({ length: pagination.total_pages }, (_, index) => index + 1).map((pageNumber) => (
+                        <button key={pageNumber} disabled={loading} onClick={() => setPage(pageNumber)} className={` w-11 h-11 rounded-xl font-semibold " ${ pagination.current_page === pageNumber ? "bg-blue-600 text-white cursor-default" : "border border-gray-200 text-gray-600 hover:bg-gray-50" }`}>
+                            {pageNumber}
+                        </button>
+                    ))}
+                    <button disabled={!pagination.has_next_page || loading} onClick={() => setPage(prev => prev + 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronRight /></button>
+                </div>
+                <div className="flex items-center gap-2">
+                    <span className="text-gray-600">Show</span>
+                    <select value={limit} onChange={(e) => { setLimit(Number(e.target.value)); setPage(1) }} className=" px-3 py-2 border border-gray-100 rounded-lg text-base outline-none ">
+                        <option value={2}>2</option>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
+                        <option value={100}>100</option>
+                    </select>
+                    <span className="text-gray-600">per page</span>
                 </div>
             </div>
+            
         </div>
     </div>
 

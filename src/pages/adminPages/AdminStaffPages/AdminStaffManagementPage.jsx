@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { FaIndianRupeeSign, FaMoneyBillTrendUp } from "react-icons/fa6";
 import AdminSideBar from "../../../components/admin/AdminSideBar";
-import AdminProductPreviewComponent from "../../../components/admin/AdminProductComponents/AdminProductPreviewComponent";
 import AdminStaffPreviewComponent from "../../../components/admin/AdminStaffComponent/AdminStaffPreviewComponent";
 import { FiUserMinus, FiUserX } from "react-icons/fi";
 import axios from "axios";
@@ -25,6 +24,10 @@ const AdminStaffManagementPage = () => {
 
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(20)
+
+    const [status, setStatus] = useState("all")
+    const [department, setDepartment] = useState("all")
+    const [gender, setGender] = useState("all")
     
     const [pagination , setPagination] = useState(null)
         
@@ -33,12 +36,12 @@ const AdminStaffManagementPage = () => {
     
     const [selected_staff , setSelectedStaff] = useState(null)
 
-    const handleRef = useRef(true)
     useEffect(()=>{
         const fetch = async()=>{
+            const controller = new AbortController();
             try {
                 setLoading(true);
-                const res = await axios.get( `${import.meta.env.VITE_BACKEND_URL}admin/staff/staff_page`, { params: { page, limit }, withCredentials: true });
+                const res = await axios.get( `${import.meta.env.VITE_BACKEND_URL}admin/staff/staff_page`, { params: { page, limit, status, department, gender }, withCredentials: true });
                 console.log("fetchStaffPage payload : " , res.data)
                 setSummary(res.data?.data?.summary)
                 setStaffs(res.data?.data?.staffs)
@@ -46,55 +49,12 @@ const AdminStaffManagementPage = () => {
             } catch (error) {
                 console.error("Error in fetchStaffPage:", error);
                 toast.error( error?.response?.data?.message)
-            } finally { setLoading(false);}
+            } finally {
+                if (!controller.signal.aborted) { setLoading(false) }
+            }
         }
-        if(handleRef.current) {
-            fetch()
-            handleRef.current = false
-        }
-    } , [])
-
-
-    // const data = {
-    //     summary : {
-    //         total_employee : 105,
-    //         active_employee : 90,
-    //         inactive_employee : 15,
-    //         blocked_employee : 15,
-    //     },
-    //     staff : [
-    //         {
-    //             staff_id: "STF0627732539",
-    //             name: "staff1",
-    //             email: "staff1",
-    //             gender: "male",
-    //             salary: 0,
-    //             photo: '/3-08.webp',
-    //             status: "active",
-    //             _id: "6a3f9a5550650a2226dcaaaf",
-    //             department: "delivery",
-    //             role: "delivery",
-    //             phone_number: 8451255645,
-    //             staff_DOB: null,
-    //             joining_date: "2026-07-04T16:22:25.625Z"
-    //         },
-    //         {
-    //             gender: "female",
-    //             salary: 30000,
-    //             photo: '/3-08.webp',
-    //             status: "inactive",
-    //             _id: "6a3f9a5550650a2226dcaaaf",
-    //             staff_id: "STF0627732585",
-    //             name: "Anish Anto",
-    //             email: "antoanish75@gmail.com",
-    //             department: "administration",
-    //             role: "general manager",
-    //             phone_number: 8451255645,
-    //             staff_DOB: "2005-12-05T16:22:25.625Z",
-    //             joining_date: "2026-07-04T16:22:25.625Z"
-    //         },
-    //     ]
-    // }
+        fetch()
+    } , [page, limit, gender, status, department ])
 
     if(loading){return <LoadingSpinner/>}
     if(error || !staffs || !summary || !pagination){return <ErrorComponent/>}
@@ -164,22 +124,30 @@ const AdminStaffManagementPage = () => {
             <div className="flex flex-col xl:flex-row gap-4 justify-between">
                 <div className="relative flex-1">
                     <FaSearch className="absolute left-4 top-[18px] text-gray-400" />
-                    <input type="text" placeholder="Search products, barcode" className="w-full font-medium text-gray-800 border rounded-xl py-3 pl-12 pr-4 outline-none"/>
+                    <input type="text" placeholder="Search Id, Name, Phone no." className="w-full font-medium text-gray-800 border rounded-xl py-3 pl-12 pr-4 outline-none"/>
                 </div>
                 <div className="flex flex-wrap gap-3">
 
-                    <select className="border rounded-xl px-4 py-3">
-                        <option>Status</option>
-                        <option>Active</option>
-                        <option>Inactive</option>
-                        <option>Blocked</option>
+                    <select value={status} onChange={(e)=>setStatus(e.target.value)} className="border rounded-xl px-4 py-3">
+                        <option value={"all"}>Status</option>
+                        <option value={"active"}>Active</option>
+                        <option value={"inactive"}>Inactive</option>
+                        <option value={"blocked"}>Blocked</option>
                     </select>
 
-                    <select className="border rounded-xl px-4 py-3">
-                        <option>Roles</option>
-                        <option>Staff</option>
-                        <option>Delevery</option>
-                        <option>Managers</option>
+                    <select value={department} onChange={(e)=>setDepartment(e.target.value)} className="border rounded-xl px-4 py-3">
+                        <option value={"all"}>Department</option>
+                        <option value={"sales"}>Sales</option>
+                        <option value={"inventory"}>Inventory</option>
+                        <option value={"delivery"}>Delivery</option>
+                        <option value={"administration"}>administration</option>
+                    </select>
+
+                    <select value={gender} onChange={(e)=>setGender(e.target.value)} className="border rounded-xl px-4 py-3">
+                        <option value={"all"}>Gender</option>
+                        <option value={"male"}>Male</option>
+                        <option value={"female"}>Female</option>
+                        <option value={"others"}>Others</option>
                     </select>
 
                 </div>
@@ -245,19 +213,34 @@ const AdminStaffManagementPage = () => {
                     </tbody>
                 </table>
             </div>
-            <div className="pt-5 flex justify-center border-t ">
+
+            <div className="pt-5 flex justify-between items-center px-3 border-t ">
+                <div className="text-gray-500">
+                    Showing page <span className="text-gray-600">{pagination.current_page}</span> of <span className="text-gray-700">{pagination.total_pages}</span>
+                    <span className="mx-3">•</span>
+                    {pagination.total_staff} results found
+                </div>
                 <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-2">
-                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center"><FaChevronLeft /></button>
-                        <button className="w-11 h-11 rounded-xl bg-blue-600 text-white font-semibold">1</button>
-                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">2</button>
-                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">3</button>
-                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">4</button>
-                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">5</button>
-                        <button className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center"><FaChevronRight /></button>
-                    </div>
+                    <button disabled={!pagination.has_previous_page || loading} onClick={() => setPage(prev => prev - 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronLeft /></button>
+                    {Array.from({ length: pagination.total_pages }, (_, index) => index + 1).map((pageNumber) => (
+                        <button key={pageNumber} disabled={loading} onClick={() => setPage(pageNumber)} className={` w-11 h-11 rounded-xl font-semibold " ${ pagination.current_page === pageNumber ? "bg-blue-600 text-white cursor-default" : "border border-gray-200 text-gray-600 hover:bg-gray-50" }`}>
+                            {pageNumber}
+                        </button>
+                    ))}
+                    <button disabled={!pagination.has_next_page || loading} onClick={() => setPage(prev => prev + 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronRight /></button>
+                </div>
+                <div className="flex items-center gap-2">
+                    <span className="text-gray-600">Show</span>
+                    <select value={limit} onChange={(e) => { setLimit(Number(e.target.value)); setPage(1) }} className=" px-3 py-2 border border-gray-100 rounded-lg text-base outline-none ">
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
+                        <option value={100}>100</option>
+                    </select>
+                    <span className="text-gray-600">per page</span>
                 </div>
             </div>
+
         </div>
     </div>
 

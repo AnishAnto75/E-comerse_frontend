@@ -26,6 +26,8 @@ const AdminCustomerPage = () => {
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(20)
     
+    const [status, setStatus] = useState("all")
+
     const [pagination , setPagination] = useState(null)
 
     const [summary, setSummary] = useState(null)
@@ -33,12 +35,12 @@ const AdminCustomerPage = () => {
     
     const [selectedCustomer , setSelectedCustomer] = useState(null)
 
-    const handleRef = useRef(true)
     useEffect(()=>{
         const fetch = async()=>{
+            const controller = new AbortController();
             try {
                 setLoading(true);
-                const res = await axios.get( `${import.meta.env.VITE_BACKEND_URL}admin/customer/customer_page`, { params: { page, limit }, withCredentials: true });
+                const res = await axios.get( `${import.meta.env.VITE_BACKEND_URL}admin/customer/customer_page`, { params: { page, limit, status }, withCredentials: true });
                 console.log("fetchCustomerPage payload : " , res.data)
                 setSummary(res.data?.data?.summary)
                 setCustomers(res.data?.data?.customers)
@@ -46,13 +48,12 @@ const AdminCustomerPage = () => {
             } catch (error) {
                 console.error("Error in fetchCustomerPage:", error);
                 toast.error( error?.response?.data?.message)
-            } finally { setLoading(false);}
+            } finally {
+                if (!controller.signal.aborted) { setLoading(false) }
+            }
         }
-        if(handleRef.current) {
-            fetch()
-            handleRef.current = false
-        }
-    } , [])
+        fetch()
+    } , [page, limit, status])
 
     if(loading){return <LoadingSpinner/>}
     if(error || !customers || !summary || !pagination){return <ErrorComponent/>}
@@ -120,13 +121,13 @@ const AdminCustomerPage = () => {
                         <input type="text" placeholder="Search customer / phone no. / email" className="w-full font-medium text-gray-800 border rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-blue-500 outline-none"/>
                     </div>
 
-                    <select className="border rounded-xl px-4 py-3 text-gray-800 font-medium">
-                        <option>Status</option>
-                        <option>Active</option>
-                        <option>Inactive</option>
-                        <option>Blocked</option>
-                        <option>Deleted</option>
+                    <select value={status} onChange={(e)=>setStatus(e.target.value)} className="border rounded-xl px-4 py-3">
+                        <option value={"all"}>Status</option>
+                        <option value={"active"}>Active</option>
+                        <option value={"inactive"}>Inactive</option>
+                        <option value={"blocked"}>Blocked</option>
                     </select>
+
                 </div>
 
                 <div className="flex-1 overflow-y-auto mt-5 mx-5">
@@ -182,17 +183,30 @@ const AdminCustomerPage = () => {
                     </table>
                 </div>
 
-                <div className="pt-5 flex justify-center border-t ">
+                <div className="pt-5 flex justify-between items-center px-3 border-t ">
+                    <div className="text-gray-500">
+                        Showing page <span className="text-gray-600">{pagination.current_page}</span> of <span className="text-gray-700">{pagination.total_pages}</span>
+                        <span className="mx-3">•</span>
+                        {pagination.total_customers} results found
+                    </div>
                     <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-2">
-                            <button className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center"><FaChevronLeft /></button>
-                            <button className="w-11 h-11 rounded-xl bg-blue-600 text-white font-semibold">1</button>
-                            <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">2</button>
-                            <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">3</button>
-                            <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">4</button>
-                            <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">5</button>
-                            <button className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center"><FaChevronRight /></button>
-                        </div>
+                        <button disabled={!pagination.has_previous_page || loading} onClick={() => setPage(prev => prev - 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronLeft /></button>
+                        {Array.from({ length: pagination.total_pages }, (_, index) => index + 1).map((pageNumber) => (
+                            <button key={pageNumber} disabled={loading} onClick={() => setPage(pageNumber)} className={` w-11 h-11 rounded-xl font-semibold " ${ pagination.current_page === pageNumber ? "bg-blue-600 text-white cursor-default" : "border border-gray-200 text-gray-600 hover:bg-gray-50" }`}>
+                                {pageNumber}
+                            </button>
+                        ))}
+                        <button disabled={!pagination.has_next_page || loading} onClick={() => setPage(prev => prev + 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronRight /></button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="text-gray-600">Show</span>
+                        <select value={limit} onChange={(e) => { setLimit(Number(e.target.value)); setPage(1) }} className=" px-3 py-2 border border-gray-100 rounded-lg text-base outline-none ">
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
+                        </select>
+                        <span className="text-gray-600">per page</span>
                     </div>
                 </div>
             </div>

@@ -15,6 +15,7 @@ import AdminOrderPreviewComponent from '../../../components/admin/AdminOrderComp
 import { useRef } from 'react'
 import { useEffect } from 'react'
 import axios from 'axios'
+import { FaChevronLeft, FaChevronRight, FaSearch } from 'react-icons/fa'
 
 const AdminOrderPage = () => {
     const navigate = useNavigate()
@@ -23,28 +24,35 @@ const AdminOrderPage = () => {
     const [error , setError ] = useState(false)
     const [selected_order, setSelectedOrder ] = useState(null)
 
-    const [data, setData] = useState(null)
+    const [page, setPage] = useState(1)
+    const [limit, setLimit] = useState(20)
+    
+    const [status, setStatus] = useState("all")
 
-    const handleRef = useRef(true)
+    const [pagination , setPagination] = useState(null)
+
+    const [pendingOrders, setPendingOrders] = useState(null)
+    const [orders, setOrders] = useState(null)
+
     useEffect(()=>{
         const fetch = async()=>{
+            const controller = new AbortController();
             try {
                 setLoading(true)
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/order/order_page`, {withCredentials: true})
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/order/order_page`, { params: { page, limit, status}, withCredentials: true} )
                 console.log("fetchOrderPage payload : " , res.data)
-                setData(res.data.data)
+                setPendingOrders(res.data?.data?.pendingOrders)
+                setOrders(res.data?.data?.orders)
+                setPagination(res.data?.data?.pagination)
             } catch (error){
                 setError(true)
-                toast.error("Internal Server Error")
                 console.error("error in fetchOrderPage :" , error)
-            } finally { setLoading(false) }
+            } finally {
+                if (!controller.signal.aborted) { setLoading(false) }
+            }
         }
-        if(handleRef.current) {
-            fetch()
-            handleRef.current = false
-        }
-    } , [])
-
+        fetch()
+    } , [page, limit, status])
 
     const getStatusColor = (status)=>{
         return status === 'cancelled' ? "bg-red-500" : status === 'delivered' ? "bg-green-500" : "bg-sky-500"
@@ -54,11 +62,10 @@ const AdminOrderPage = () => {
         return status === "Pending" ? "bg-amber-500" : status === "Paid" ? "bg-green-500" : status === "Failed" ? "bg-red-500" : status === "Refunded" && "bg-sky-500"
     }
 
-    const pendingOrders = data?.pendingOrders
-    const orders = data?.orders
-
     if(loading){return <LoadingSpinner/>}
-    if(error || !data){return <ErrorComponent/>}
+    if(error || !orders || !pendingOrders || !pagination){return <ErrorComponent/>}
+
+    console.log({orders})
 
     return (
     <div className='flex'>
@@ -69,32 +76,53 @@ const AdminOrderPage = () => {
             
             <AdminOrderHeaderComponent pendingOrders={pendingOrders}/>
 
-            <div className='flex justify-between pt-5'>
-                {/* Search Orders */}
-                <div className="items-center md:w-72 relative">
-                    <input type='text' placeholder='Search' className='shadow border-2 py-2 px-2 pr-9 w-full rounded-lg text-gray-900 text-[15px] focus:outline-none'/>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-6 absolute top-2 right-2 text-gray-700 cursor-pointer"><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+            <div className="h-[calc(100vh-40px)] border flex flex-col mt-5 rounded-2xl shadow-md p-5">
+                <div className="flex flex-col xl:flex-row gap-4 justify-between">
+                    <div className="relative flex-1">
+                        <FaSearch className="absolute left-4 top-4 text-gray-400" />
+                        <input type="text" placeholder="Search suppliers" className="w-full font-medium text-gray-800 border rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-blue-500 outline-none"/>
+                    </div>
+                    <div className="flex flex-wrap gap-3 text-gray-800 font-medium">
+    
+                        <select value={status} onChange={(e)=>setStatus(e.target.value)} className="border rounded-xl px-4 py-3">
+                            <option value={"all"}>Order Status</option>
+                            <option value={"placed"}>Placed</option>
+                            <option value={"confirmed"}>Confirmed</option>
+                            <option value={"out"}>Out For Delivery</option>
+                            <option value={"delivered"}>Delivered</option>
+                            <option value={"cancelled"}>Cancelled</option>
+                        </select>
+                        
+                        <select value={status} onChange={(e)=>setStatus(e.target.value)} className="border rounded-xl px-4 py-3">
+                            <option value={"all"}>Order Status</option>
+                            <option value={"placed"}>Placed</option>
+                            <option value={"confirmed"}>Confirmed</option>
+                            <option value={"out"}>Out For Delivery</option>
+                            <option value={"delivered"}>Delivered</option>
+                            <option value={"cancelled"}>Cancelled</option>
+                        </select>
+    
+                        <div onClick={()=>toast.warn("function Not added")} className='border-[3px] border-gray-100 p-[5.5px] rounded-xl px-5 text-lg font-inter font-medium text-gray-600 mr-3 tracking-wide flex items-center gap-1 cursor-pointer'><IoFilter className='text-2xl'/>Filter</div>
+                        
+                    </div>
                 </div>
-                <div onClick={()=>toast.warn("function Not added")} className='border-[3px] border-blue-100 p-[5.5px] rounded-xl px-5 text-lg font-inter font-medium text-blue-500 mr-3 tracking-wide flex items-center gap-1 cursor-pointer'><IoFilter className='text-2xl'/>Filter</div>
-            </div>
-
-            <div className='mt-5 h-[calc(100vh-40px)] overflow-y-auto border shadow-md font-inter tracking-tight rounded-xl px-5'>
-                {/* Table */}
-                <table className='w-full mt-3'>
-                    <thead className='sticky top-0 bg-white'>
-                        <tr className='text-gray-500'>
-                            <th className='py-4' />
-                            <th className='py-4 text-start'>Order Id</th>
-                            <th className='py-4 text-start'>Customer</th>
-                            <th className='py-4'>Quantity</th>
-                            <th className='py-4'>Payment</th>
-                            <th className='py-4'>Amount</th>
-                            <th className='py-4'>Status</th>
-                            <th className='py-4'>Ratings</th>
-                            <th className='py-4'>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+    
+                <div className="flex-1 overflow-y-auto mt-5">
+                    <table className="w-full border-separate border-spacing-0">
+                        <thead className="sticky top-0 z-20 shadow-sm">
+                            <tr className="text-gray-600">
+                                <th className='py-4' />
+                                <th className='py-4 text-start'>Order Id</th>
+                                <th className='py-4 text-start'>Customer</th>
+                                <th className='py-4'>Quantity</th>
+                                <th className='py-4'>Payment</th>
+                                <th className='py-4'>Amount</th>
+                                <th className='py-4'>Status</th>
+                                <th className='py-4'>Ratings</th>
+                                <th className='py-4'>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                         {orders?.map((order, index) =>(
                             <tr key={index} onClick={()=>setSelectedOrder(order.order_id)} className={`text-center border-b-[3px] border-gray-50 text-gray-800 ${ selected_order == order.order_id ? "bg-gray-50" : ''}`}>
                                 <td className='text-gray-600 font-semibold'>{index+1})</td>
@@ -131,10 +159,37 @@ const AdminOrderPage = () => {
                                     <FaEye onClick={() => navigate(`/admin/orders/${order.order_id}`)} className='cursor-pointer text-2xl inline-block' />
                                 </td>
                             </tr>
-                            )
-                        )}
-                    </tbody>
-                </table>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
+                    <div className="pt-5 flex justify-between items-center px-3 border-t ">
+                    <div className="text-gray-500">
+                        Showing page <span className="text-gray-600">{pagination.current_page}</span> of <span className="text-gray-700">{pagination.total_pages}</span>
+                        <span className="mx-3">•</span>
+                        {pagination.total_orders} results found
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button disabled={!pagination.has_previous_page || loading} onClick={() => setPage(prev => prev - 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronLeft /></button>
+                        {Array.from({ length: pagination.total_pages }, (_, index) => index + 1).map((pageNumber) => (
+                            <button key={pageNumber} disabled={loading} onClick={() => setPage(pageNumber)} className={` w-11 h-11 rounded-xl font-semibold " ${ pagination.current_page === pageNumber ? "bg-blue-600 text-white cursor-default" : "border border-gray-200 text-gray-600 hover:bg-gray-50" }`}>
+                                {pageNumber}
+                            </button>
+                        ))}
+                        <button disabled={!pagination.has_next_page || loading} onClick={() => setPage(prev => prev + 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronRight /></button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="text-gray-600">Show</span>
+                        <select value={limit} onChange={(e) => { setLimit(Number(e.target.value)); setPage(1) }} className=" px-3 py-2 border border-gray-100 rounded-lg text-base outline-none ">
+                            <option value={1}>1</option>
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
+                        </select>
+                        <span className="text-gray-600">per page</span>
+                    </div>
+                </div>
             </div>
         </div>
         {selected_order &&

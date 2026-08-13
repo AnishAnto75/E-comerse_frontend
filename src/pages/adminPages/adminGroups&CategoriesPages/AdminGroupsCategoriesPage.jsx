@@ -39,7 +39,6 @@ const AdminGroupsCategoriesPage = () => {
 
     const [summary, setSummary] = useState(null)
     const [groups, setGroups] = useState(null)
-    const [pagination , setPagination] = useState(null)
 
     const handleRef = useRef(true)
     useEffect(()=>{
@@ -50,7 +49,6 @@ const AdminGroupsCategoriesPage = () => {
                 console.log("fetchGroupsCategoriesPage payload : " , res.data)
                 setSummary(res.data?.data?.summary)
                 setGroups(res.data?.data?.groups)
-                setPagination(res.data?.data?.pagination)
             } catch (error) {
                 console.error("Error in fetchGroupsCategoriesPage:", error);
                 toast.error( error?.response?.data?.message || "Unable to fetch Group Categories")
@@ -126,7 +124,7 @@ const AdminGroupsCategoriesPage = () => {
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto border rounded-t-xl mt-5">
+                <div className="flex-1 overflow-y-auto border rounded-xl mt-5">
                     <div className="borde h-full rounded-xl">
                         {groups?.map((group) => ( 
                             <div key={group._id} className=" border-b overflow-hidden ">
@@ -161,7 +159,7 @@ const AdminGroupsCategoriesPage = () => {
                                             {group.categories.map( (category) => (
                                                 <div  key={category._id} className=" flex items-center gap-3 shadow-sm border-gray-100 rounded-lg px-3 py-2 transition " >
                                                     <div className=" w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 " >
-                                                        <img src={`${import.meta.env.VITE_IMAGE_URL}${category.category_image}`} alt={category.category_name} className=" w-full h-full object-cover "/>
+                                                        <img src={`${import.meta.env.VITE_IMAGE_URL}${category.category_image}`} alt={category.category_name} className=" w-full h-full object-contain rounded-lg "/>
                                                     </div>
                                                     <div className="flex-1 min-w-0 py-3">
                                                         <div className="capitalize">{category.category_name}</div>
@@ -197,7 +195,7 @@ const AdminGroupsCategoriesPage = () => {
                         )}
                     </div>
                 </div>
-
+{/* 
                 <div className="pt-7 pb-2 flex justify-center border-t ">
                     <div className="flex items-center gap-2">
                         <div className="flex items-center gap-2">
@@ -210,7 +208,7 @@ const AdminGroupsCategoriesPage = () => {
                             <button className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center"><FaChevronRight /></button>
                         </div>
                     </div>
-                </div>
+                </div> */}
             </div>
            
         </div>

@@ -28,7 +28,7 @@ const adminAddCategoryPage = () => {
         const fetchGroups = async()=>{
             try {
                 setLoading(true) 
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product-group/all-groups`, {withCredentials:true})
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/product-category/fetch_groups_for_create`, {withCredentials:true})
                 setGroups(res.data.data)
             } catch (error) {
                 setError(true)
