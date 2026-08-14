@@ -313,7 +313,7 @@ const AdminDashboardPage = () => {
   return (
     <div className='w-full flex font-inter'>
         <AdminSideBar />
-        <div className='w-full h-full p-5'>
+        <div className='w-full border-l h-full p-5'>
             <div className='text-2xl text-gray-800 font-semibold font-inter pt-2 pb-5'>Dashboard</div>
             <div className='flex gap-5'>
                 <div className='w-full'>

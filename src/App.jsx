@@ -10,7 +10,6 @@ import ClientLayout from "./layout/ClientLayout.jsx";
 import HomePage from "./pages/clientPages/HomePage.jsx";
 import ProfilePage from "./pages/clientPages/accountPages/ProfilePage.jsx";
 
-import AdminHomePage from "./pages/adminPages/AdminHomePage.jsx";
 import AdminDashboardPage from "./pages/adminPages/AdminDashboardPage.jsx";
 import AdminOrderPage from "./pages/adminPages/adminOrderPage/AdminOrderPage.jsx";
 import AdminOrderViewPage from "./pages/adminPages/adminOrderPage/AdminOrderViewPage.jsx";
@@ -19,7 +18,6 @@ import AdminAddNewProductPage from "./pages/adminPages/adminProductPages/AdminAd
 import AdminCustomerPage from "./pages/adminPages/adminCustomerPages/AdminCustomerPage.jsx";
 import AdminStaffManagementPage from "./pages/adminPages/AdminStaffPages/AdminStaffManagementPage.jsx";
 import AdminAddNewStaffPage from "./pages/adminPages/AdminStaffPages/AdminAddNewStaffPage.jsx";
-import AdminAllStaffPage from "./pages/adminPages/AdminStaffPages/AdminAllStaffPage.jsx";
 import AdminStaffViewPage from "./pages/adminPages/AdminStaffPages/AdminStaffViewPage.jsx";
 
 import CartPage from "./pages/clientPages/cartPages/CartPage.jsx";
@@ -35,7 +33,6 @@ import AdminProductViewPage from "./pages/adminPages/adminProductPages/AdminProd
 import AdminSupplierPage from "./pages/adminPages/adminSupplierPages/AdminSupplierPage.jsx";
 import AdminSupplierViewPage from "./pages/adminPages/adminSupplierPages/AdminSupplierViewPage.jsx";
 import AdminPurchaseEntryPage from "./pages/adminPages/adminPurchasePages/AdminPurchaseEntryPage.jsx";
-import AdminAllPurchasesPage from "./pages/adminPages/adminPurchasePages/AdminAllPurchasesPage.jsx";
 import AdminPurchaseViewPage from "./pages/adminPages/adminPurchasePages/AdminPurchaseViewPage.jsx";
 import AdminEditProductPage from "./pages/adminPages/adminProductPages/AdminEditProductPage.jsx";
 import AdminViewCustomerPage from "./pages/adminPages/adminCustomerPages/AdminViewCustomerPage.jsx";
@@ -57,6 +54,7 @@ import ProductViewPage from './pages/clientPages/productPages/ProductViewPage.js
 import useUserStore from "./store/authStore.js";
 import useCartStore from "./store/cartStore.js";
 import useAddressStore from "./store/addressStore.js";
+import AdminRecentActivityPage from "./pages/adminPages/adminRecentActivityPages/adminRecentActivityPage.jsx";
 
 
 function App() {
@@ -140,10 +138,8 @@ function App() {
 {/* Admin */}
 
             <Route path='admin' element={ <AdminLayout /> }>
-                <Route path="home" element={<AdminHomePage />} />
 
                 <Route path="dashboard" element={<AdminDashboardPage />} />
-                <Route path="orders" element={<AdminOrderPage />} />
 
                 <Route path="orders">
                     <Route index element={<AdminOrderPage />}/>
@@ -180,7 +176,6 @@ function App() {
                 <Route path="purchase">
                     <Route index element={<AdminPurchasePage />}/>
                     <Route path="purchase-entry" element={<AdminPurchaseEntryPage /> } />
-                    <Route path="all-purchases" element={<AdminAllPurchasesPage /> } />
                     <Route path="purchase_id/:id" element={<AdminPurchaseViewPage /> } />
                 </Route>
 
@@ -191,18 +186,17 @@ function App() {
                     <Route path="edit/supplier_id/:id" element={<div>Edit Supplier</div>}/>
                 </Route>
 
-                <Route path="stock" element={<div>stock</div>} />
-                <Route path="notification" element={<div>notification</div>} />
+                <Route path="recent-activity">
+                    <Route index element={<AdminRecentActivityPage />}/>
+                </Route>
 
                 <Route path="staff">
                     <Route index element={<AdminStaffManagementPage />}/>
                     <Route path="create-staff" element={<AdminAddNewStaffPage />}/>
                     <Route path="staff_id/:id" element={<AdminStaffViewPage />}/>
-
-                    <Route path="all-staff" element={<AdminAllStaffPage />}/>
                 </Route>
 
-                <Route path="payments" element={<div>payments</div>} />
+                <Route path="transactions" element={<div>payments</div>} />
 
             </Route>
 

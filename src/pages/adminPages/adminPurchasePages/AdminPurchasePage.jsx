@@ -12,6 +12,7 @@ import ErrorComponent from '../../../components/ErrorComponent'
 import LoadingSpinner from '../../../components/LoadingSpinner'
 import { FiClock, FiFileText } from 'react-icons/fi'
 import { BiRupee } from 'react-icons/bi'
+import LoadingComponent from '../../../components/LoadingComponent'
 
 const AdminPurchasePage = () => {
     const navigate = useNavigate()
@@ -22,71 +23,57 @@ const AdminPurchasePage = () => {
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(20)
 
-    const [pagination , setPagination] = useState(null)
-
     const [payment_status , setPaymentStatus] = useState("all")
-        
+
+    const [search, setSearch] = useState("")
+    const [searchInput, setSearchInput] = useState("")
+    
+    const [pagination , setPagination] = useState(null)
     const [summary, setSummary] = useState(null)
     const [purchases, setPurchases] = useState(null)
-    
-    const data = {
-        summary: {
-            total_purchases: 500,
-            pending_purchases: 3,
-            partialy_paid_purchases: 50
-        },
-        purchases: [
-            {
-                purchase_id: "PUR971487484",
-                supplier: {
-                    _id: "69da818e3233da093c184147",
-                    supplier_id: "SUP0411345754",
-                    supplier_name: "nila agencies",
-                    supplier_phone: "8148222505",
-                },
-                supplier_invoice_no: "9274",
-                invoice_date: "2026-04-19T16:33:13.482Z",
-                delivery_date: "2026-04-19T16:33:13.482Z",
-                grand_total: "2000",
-                balance_amount: 0,
-                payment_status: "Partially",
-                total_items: 5
-            },
-        ]
-    }
 
     useEffect(()=>{
+        const controller = new AbortController();
         const fetch = async()=>{
-            const controller = new AbortController();
             try {
                 setLoading(true);
-                const res = await axios.get( `${import.meta.env.VITE_BACKEND_URL}admin/purchase/purchase_page`, { params: { page, limit, payment_status }, withCredentials: true });
+                const res = await axios.get( `${import.meta.env.VITE_BACKEND_URL}admin/purchase/purchase_page`, { params: { page, limit, payment_status, search: search.trim() }, withCredentials: true, signal: controller.signal })
                 console.log("fetchPurchasePage payload : " , res.data)
                 setSummary(res.data?.data?.summary)
                 setPurchases(res.data?.data?.purchases)
                 setPagination(res.data?.data?.pagination)
             } catch (error) {
+                if (error.name === "CanceledError") { return }
+                if (axios.isCancel(error)) { return }
+                setError(true)
                 console.error("Error in fetchPurchasePage:", error);
-                toast.error( error?.response?.data?.message)
             } finally {
                 if (!controller.signal.aborted) { setLoading(false) }
             }
         }
         fetch()
-    } , [page, limit, payment_status])
+        return () => { controller.abort() }
+    } , [page, limit, payment_status, search])
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setSearch(searchInput.trim())
+            setPage(1)
+        }, 400)
+        return () => clearTimeout(timer)
+    }, [searchInput])
     
     const dateFormat = (date)=>{
         if(isNaN(Date.parse(date))){ return }
         return `${format(new Date(date) , "dd MMM yyyy")}`
     }
 
-    if(loading){return <LoadingSpinner/>}
-    if(error || !purchases || !summary || !pagination){return <ErrorComponent/>}
+    if( error ){return <ErrorComponent/>}
 
     return (
     <div className='flex'>
         <AdminSideBar />
-        <div className="w-full p-5 font-inter font-medium text-lg text-gray-">
+        <div className="w-full border-l p-5 font-inter font-medium text-lg text-gray-">
 
             <div className="flex justify-between items-center mb-5 mt-3">
                 <div>
@@ -96,47 +83,51 @@ const AdminPurchasePage = () => {
                 <button onClick={()=>navigate('purchase-entry')} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-blue-700 transition"><FaPlus />Add Entry</button>
             </div>
 
-            <div className="grid grid-cols-3 gap-3 mt-5">
-                <div className='bg-white rounded-2xl border-t-4 border-sky-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <p className="text-sky-500 font-semibold">TOTAL PURCHASES</p>
-                            <h2 className='text-2xl mt-2 font-bold text-sky-600'>{summary?.total_purchases?.toLocaleString() || 0}</h2>
+            { !loading && summary ?    
+                <div className="grid grid-cols-3 gap-3 mt-5">
+                    <div className='bg-white rounded-2xl border-t-4 border-sky-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <p className="text-sky-500 font-semibold">TOTAL PURCHASES</p>
+                                <h2 className='text-2xl mt-2 font-bold text-sky-600'>{summary?.total_purchases?.toLocaleString() || 0}</h2>
+                            </div>
+                            <div className={`bg-sky-50 text-sky-600 p-2 rounded-2xl`}>
+                                <FiFileText size={35}/>
+                            </div>
                         </div>
-                        <div className={`bg-sky-50 text-sky-600 p-2 rounded-2xl`}>
-                            <FiFileText size={35}/>
+                    </div>
+                    <div className='bg-white rounded-2xl border-t-4 border-amber-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <p className="text-amber-500 font-semibold">PARTIALLY PAID PURCHASES</p>
+                                <h2 className='text-2xl mt-2 font-bold text-amber-600'>{summary?.partialy_paid_purchases?.toLocaleString() || 0}</h2>
+                            </div>
+                            <div className={`bg-amber-50 p-2 text-amber-600 rounded-2xl`}>
+                                <BiRupee size={35}/>
+                            </div>
+                        </div>
+                    </div>
+                    <div className='bg-white rounded-2xl border-t-4 border-red-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <p className="text-red-500 font-semibold">PENDING CASH PURCHASES</p>
+                                <h2 className='text-2xl mt-2 font-bold text-red-600'>{summary?.pending_purchases?.toLocaleString() || 0}</h2>
+                            </div>
+                            <div className={`bg-red-50 p-2 text-red-600 rounded-2xl`}>
+                                <FiClock size={35} />
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div className='bg-white rounded-2xl border-t-4 border-amber-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <p className="text-amber-500 font-semibold">PARTIALLY PAID PURCHASES</p>
-                            <h2 className='text-2xl mt-2 font-bold text-amber-600'>{summary?.partialy_paid_purchases?.toLocaleString() || 0}</h2>
-                        </div>
-                        <div className={`bg-amber-50 p-2 text-amber-600 rounded-2xl`}>
-                            <BiRupee size={35}/>
-                        </div>
-                    </div>
-                </div>
-                <div className='bg-white rounded-2xl border-t-4 border-red-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <p className="text-red-500 font-semibold">PENDING CASH PURCHASES</p>
-                            <h2 className='text-2xl mt-2 font-bold text-red-600'>{summary?.pending_purchases?.toLocaleString() || 0}</h2>
-                        </div>
-                        <div className={`bg-red-50 p-2 text-red-600 rounded-2xl`}>
-                            <FiClock size={35} />
-                        </div>
-                    </div>
-                </div>
-            </div>
+            :
+                <div className='rounded-2xl shadow-sm border mt-5 h-[121px]'><LoadingComponent height={16} width={16}/></div>
+            }
 
             <div className="h-[calc(100vh-40px)] border flex flex-col mt-5 rounded-xl shadow-md p-5">
                 <div className="flex flex-col xl:flex-row gap-4 justify-between">
                     <div className="relative flex-1">
                         <FaSearch className="absolute left-4 top-[18px] text-gray-400" />
-                        <input type="text" placeholder="Search invoices, supplier" className="w-full border rounded-xl py-3 pl-12 pr-4 outline-none"/>
+                        <input type="text" value={searchInput} onChange={(e) => { setSearchInput(e.target.value); setPage(1) }} placeholder="Search purchase id, invoices" className="w-full border rounded-xl py-3 pl-12 pr-4 outline-none"/>
                     </div>
 
                     <select value={payment_status} onChange={(e)=>setPaymentStatus(e.target.value)} className="border rounded-xl px-4 py-3">
@@ -148,6 +139,9 @@ const AdminPurchasePage = () => {
                 </div>
 
                 <div className="flex-1 overflow-y-auto mt-5 mx-5">
+                { loading ? 
+                    <LoadingComponent />
+                    :
                     <table className="w-full border-separate border-spacing-0">
                         <thead className="sticky top-0 z-20 bg-white shadow-sm">
                             <tr className="text-gray-500">
@@ -193,36 +187,37 @@ const AdminPurchasePage = () => {
                         ))}
                         </tbody>
                     </table>
+                }
                 </div>
-
-                <div className="pt-5 flex justify-between items-center px-3 border-t ">
-                    <div className="text-gray-500">
-                        Showing page <span className="text-gray-600">{pagination.current_page}</span> of <span className="text-gray-700">{pagination.total_pages}</span>
-                        <span className="mx-3">•</span>
-                        {pagination.total_purchases} results found
+                { !loading && pagination &&
+                    <div className="pt-5 flex justify-between items-center px-3 border-t ">
+                        <div className="text-gray-500">
+                            Showing page <span className="text-gray-600">{pagination.current_page}</span> of <span className="text-gray-700">{pagination.total_pages}</span>
+                            <span className="mx-3">•</span>
+                            {pagination.total_purchases} results found
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button disabled={!pagination.has_previous_page || loading} onClick={() => setPage(prev => prev - 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronLeft /></button>
+                            {Array.from({ length: pagination.total_pages }, (_, index) => index + 1).map((pageNumber) => (
+                                <button key={pageNumber} disabled={loading} onClick={() => setPage(pageNumber)} className={` w-11 h-11 rounded-xl font-semibold " ${ pagination.current_page === pageNumber ? "bg-blue-600 text-white cursor-default" : "border border-gray-200 text-gray-600 hover:bg-gray-50" }`}>
+                                    {pageNumber}
+                                </button>
+                            ))}
+                            <button disabled={!pagination.has_next_page || loading} onClick={() => setPage(prev => prev + 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronRight /></button>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-gray-600">Show</span>
+                            <select value={limit} onChange={(e) => { setLimit(Number(e.target.value)); setPage(1) }} className=" px-3 py-2 border border-gray-100 rounded-lg text-base outline-none ">
+                                <option value={1}>1</option>
+                                <option value={10}>10</option>
+                                <option value={20}>20</option>
+                                <option value={50}>50</option>
+                                <option value={100}>100</option>
+                            </select>
+                            <span className="text-gray-600">per page</span>
+                        </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <button disabled={!pagination.has_previous_page || loading} onClick={() => setPage(prev => prev - 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronLeft /></button>
-                        {Array.from({ length: pagination.total_pages }, (_, index) => index + 1).map((pageNumber) => (
-                            <button key={pageNumber} disabled={loading} onClick={() => setPage(pageNumber)} className={` w-11 h-11 rounded-xl font-semibold " ${ pagination.current_page === pageNumber ? "bg-blue-600 text-white cursor-default" : "border border-gray-200 text-gray-600 hover:bg-gray-50" }`}>
-                                {pageNumber}
-                            </button>
-                        ))}
-                        <button disabled={!pagination.has_next_page || loading} onClick={() => setPage(prev => prev + 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronRight /></button>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-gray-600">Show</span>
-                        <select value={limit} onChange={(e) => { setLimit(Number(e.target.value)); setPage(1) }} className=" px-3 py-2 border border-gray-100 rounded-lg text-base outline-none ">
-                            <option value={1}>1</option>
-                            <option value={10}>10</option>
-                            <option value={20}>20</option>
-                            <option value={50}>50</option>
-                            <option value={100}>100</option>
-                        </select>
-                        <span className="text-gray-600">per page</span>
-                    </div>
-                </div>
-
+                }
             </div>
         </div>
     </div>

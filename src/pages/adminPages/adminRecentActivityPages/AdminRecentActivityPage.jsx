@@ -16,7 +16,7 @@ import LoadingSpinner from "../../../components/LoadingSpinner";
 import ErrorComponent from "../../../components/ErrorComponent";
 import LoadingComponent from "../../../components/LoadingComponent";
 
-const AdminStaffManagementPage = () => {
+const AdminRecentActivityPage = () => {
 
     const navigate = useNavigate()
 
@@ -28,26 +28,16 @@ const AdminStaffManagementPage = () => {
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(20)
 
-    const [search, setSearch] = useState("")
-    const [searchInput, setSearchInput] = useState("")
-
-    const [status, setStatus] = useState("all")
-    const [department, setDepartment] = useState("all")
-    const [gender, setGender] = useState("all")
-    
     const [pagination , setPagination] = useState(null)    
-    const [summary, setSummary] = useState(null)
     const [staffs, setStaffs] = useState(null)
     
-
     useEffect(()=>{
         const controller = new AbortController()
         const fetch = async()=>{
             try {
                 setLoading(true);
-                const res = await axios.get( `${import.meta.env.VITE_BACKEND_URL}admin/staff/staff_page`, { params: { page, limit, status, department, gender, search: search.trim() }, withCredentials: true, signal: controller.signal })
+                const res = await axios.get( `${import.meta.env.VITE_BACKEND_URL}admin/staff/staff_page`, { params: { page, limit }, withCredentials: true, signal: controller.signal })
                 console.log("fetchStaffPage payload : " , res.data)
-                setSummary(res.data?.data?.summary)
                 setStaffs(res.data?.data?.staffs)
                 setPagination(res.data?.data?.pagination)
             } catch (error) {
@@ -61,116 +51,22 @@ const AdminStaffManagementPage = () => {
         }
         fetch()
         return () => { controller.abort() }
-    } , [page, limit, gender, status, department, search ])
+    } , [page, limit ])
 
-     useEffect(() => {
-        const timer = setTimeout(() => {
-            setSearch(searchInput.trim())
-            setPage(1)
-        }, 400)
-        return () => clearTimeout(timer)
-    }, [searchInput])
-
-    if( error ){return <ErrorComponent/>}
+    if( error || !staffs ){return <ErrorComponent/>}
     
   return (
     <div className="flex">
     <AdminSideBar />
     <div className="w-full border-l p-5 font-inter font-medium text-lg text-gray-900">
 
-        <div className="flex justify-between items-center mb-5 mt-3">
-            <div>
-                <h1 className="text-3xl font-semibold">Staff Management</h1>
-                <p className="text-gray-600 mt-2">Manage employees, roles, and access permissions.</p>
-            </div>
-            <button onClick={()=>navigate('/admin/staff/create-staff')} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-blue-700 transition"><FaPlus />Add Staff</button>
+        <div className="mb-5 mt-3">
+            <h1 className="text-3xl font-semibold">Recent Activity</h1>
+            <p className="text-gray-600 mt-2">Track the latest actions and updates.</p>
         </div>
 
-        { !loading && summary ?
-            <div className="grid xl:grid-cols-4 md:grid-cols-2 gap-6">
-                <div className='bg-white rounded-2xl  border-t-4 border-indigo-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <p className="text-indigo-500 font-semibold">TOTAL EMPLOYEE</p>
-                            <h2 className='text-3xl mt-2 font-bold text-indigo-600'>{summary.total_employee}</h2>
-                        </div>
-                        <div className={`bg-indigo-50 p-2 rounded-2xl`}>
-                            <FaUsers size={35} className="text-indigo-600"/>
-                        </div>
-                    </div>
-                </div>
-                <div className='bg-white rounded-2xl border-t-4 border-sky-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <p className="text-sky-500 font-semibold">ACTIVE EMPLOYEE</p>
-                            <h2 className='text-3xl mt-2 font-bold text-sky-500'>{summary.active_employee}</h2>
-                        </div>
-                        <div className={`bg-sky-50 text-sky-500 p-2 rounded-2xl`}>
-                            <FaUserCheck size={35} />
-                        </div>
-                    </div>
-                </div>
-                <div className='bg-white rounded-2xl border-t-4 border-gray-600 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <p className="text-gray-500 font-semibold">INACTIVE EMPLOYEE</p>
-                            <h2 className='text-3xl mt-2 font-bold text-gray-700'>{summary.inactive_employee}</h2>
-                        </div>
-                        <div className={`bg-gray-50 p-2 text-gray-600 rounded-2xl`}>
-                            <FiUserMinus size={35} />
-                        </div>
-                    </div>
-                </div>
-                <div className='bg-white rounded-2xl border-t-4 border-red-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <p className="text-red-500 font-semibold">BLOCKED EMPLOYEE</p>
-                            <h2 className='text-3xl mt-2 font-bold text-red-500'>{summary.blocked_employee}</h2>
-                        </div>
-                        <div className={`bg-red-50 text-red-500 p-2 rounded-2xl`}>
-                            <FiUserX size={35} />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        :
-            <div className='rounded-2xl shadow-sm border mt-5 h-[125px]'><LoadingComponent height={16} width={16}/></div>
-        }
-
         <div className="h-[calc(100vh-40px)] border flex flex-col mt-5 rounded-2xl shadow-md p-5">
-            <div className="flex flex-col xl:flex-row gap-4 justify-between">
-                <div className="relative flex-1">
-                    <FaSearch className="absolute left-4 top-[18px] text-gray-400" />
-                    <input type="text" value={searchInput} onChange={(e) => { setSearchInput(e.target.value); setPage(1) }} placeholder="Search Id, Name, Phone no." className="w-full font-medium text-gray-800 border rounded-xl py-3 pl-12 pr-4 outline-none"/>
-                </div>
-                <div className="flex flex-wrap gap-3">
-
-                    <select value={status} onChange={(e)=>setStatus(e.target.value)} className="border rounded-xl px-4 py-3">
-                        <option value={"all"}>Status</option>
-                        <option value={"active"}>Active</option>
-                        <option value={"inactive"}>Inactive</option>
-                        <option value={"blocked"}>Blocked</option>
-                    </select>
-
-                    <select value={department} onChange={(e)=>setDepartment(e.target.value)} className="border rounded-xl px-4 py-3">
-                        <option value={"all"}>Department</option>
-                        <option value={"sales"}>Sales</option>
-                        <option value={"inventory"}>Inventory</option>
-                        <option value={"delivery"}>Delivery</option>
-                        <option value={"administration"}>administration</option>
-                    </select>
-
-                    <select value={gender} onChange={(e)=>setGender(e.target.value)} className="border rounded-xl px-4 py-3">
-                        <option value={"all"}>Gender</option>
-                        <option value={"male"}>Male</option>
-                        <option value={"female"}>Female</option>
-                        <option value={"others"}>Others</option>
-                    </select>
-
-                </div>
-            </div>
-
-            <div className="flex-1 overflow-y-auto mt-5">
+            <div className="flex-1 overflow-y-auto">
             { loading ? 
                 <LoadingComponent />
                 :
@@ -178,7 +74,7 @@ const AdminStaffManagementPage = () => {
                     <thead className="sticky top-0 z-20 bg-white shadow-sm">
                         <tr className="text-gray-400">
                             <th className="py-4 font-medium bg-white"></th>
-                            <th className="py-4 font-semibold bg-white text-start">Employee Name </th>
+                            <th className="py-4 font-semibold bg-white text-start"></th>
                             <th className="py-4 font-semibold bg-white text-start">Email / Ph. No</th>
                             <th className="py-4 font-semibold bg-white">Department</th>
                             <th className="py-4 font-semibold bg-white">Salary</th>
@@ -279,4 +175,4 @@ const AdminStaffManagementPage = () => {
   );
 };
 
-export default AdminStaffManagementPage
+export default AdminRecentActivityPage

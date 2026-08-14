@@ -16,47 +16,62 @@ import ErrorComponent from "../../../components/ErrorComponent";
 import { useRef } from "react";
 import { useEffect } from "react";
 import AdminBrandPreviewComponent from "../../../components/admin/AdminBrandComponents/AdminBrandPreviewComponent";
+import LoadingComponent from "../../../components/LoadingComponent";
 
 const AdminBrandPage = () => {
 
     const navigate = useNavigate()
     const [loading , setLoading] = useState(false)
     const [error , setError ] = useState(false)
+
     const [selected_brand , setSelectedBrand] = useState(null)
-    const [brands , setBrands] = useState(null)
     
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(20)
+    
+    const [search, setSearch] = useState("")
+    const [searchInput, setSearchInput] = useState("")
+
+    const [brands , setBrands] = useState(null)
     const [pagination , setPagination] = useState(null)
 
-    const handleRef = useRef(true)
     useEffect(()=>{
+        const controller = new AbortController();
         const fetch = async()=>{
-            const controller = new AbortController();
             try {
                 setLoading(true);
-                const res = await axios.get( `${import.meta.env.VITE_BACKEND_URL}admin/brand/brand_page`, { params: { page, limit}, withCredentials: true });
+                const res = await axios.get( `${import.meta.env.VITE_BACKEND_URL}admin/brand/brand_page`, { params: { page, limit, search: search.trim()}, withCredentials: true, signal: controller.signal })
                 console.log("fetchBrandPage payload : " , res.data)
                 setBrands(res.data?.data?.brands)
                 setPagination(res.data?.data?.pagination)
             } catch (error) {
-                console.error("Error in fetchBrandPage:", error);
-                toast.error( error?.response?.data?.message || "Unable to fetch brand")
+                if (error.name === "CanceledError") { return }
+                if (axios.isCancel(error)) { return }
+                console.error("Error in fetchBrandPage:", error)
             } finally {
                 if (!controller.signal.aborted) { setLoading(false) }
             }
         }
         fetch()
-    } , [page, limit])
+        return () => { controller.abort() }
+    } , [page, limit, search])
 
-    if(loading){return <LoadingSpinner/>}
-    if(error || !brands || !pagination){return <ErrorComponent/>}
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setSearch(searchInput.trim())
+            setPage(1)
+        }, 400)
+        return () => clearTimeout(timer)
+    }, [searchInput])
+
+    // if(loading){return <LoadingSpinner/>}
+    if(error){return <ErrorComponent/>}
 
   return (
     <div className="flex">
     <AdminSideBar/>
 
-    <div className="w-full p-5 font-inter font-medium text-lg text-gray-900">
+    <div className="w-full border-l p-5 font-inter font-medium text-lg text-gray-900">
 
       {/* Header */}
         <div className="flex justify-between items-center mb-5 mt-3">
@@ -71,11 +86,14 @@ const AdminBrandPage = () => {
             <div className="flex flex-col xl:flex-row gap-4 justify-between">
                 <div className="relative flex-1">
                     <FaSearch className="absolute left-4 top-5 text-gray-400" />
-                    <input type="text" placeholder="Search Brand" className="w-full border rounded-xl py-3 pl-12 pr-4 outline-none"/>
+                    <input type="text" value={searchInput} onChange={(e) => { setSearchInput(e.target.value); setPage(1) }} placeholder="Search Brand" className="w-full border rounded-xl py-3 pl-12 pr-4 outline-none"/>
                 </div>
             </div>
 
             <div className="flex-1 overflow-y-auto mt-3">
+            { loading ? 
+                <LoadingComponent />
+                :
                 <table className="w-full border-separate border-spacing-0">
                     <thead className="sticky top-0 z-20 bg-white shadow-sm">
                         <tr className="text-gray-500">
@@ -114,35 +132,37 @@ const AdminBrandPage = () => {
                     })}
                     </tbody>
                 </table>
+            }
             </div>
 
-            <div className="pt-5 flex justify-between items-center px-3 border-t ">
-                <div className="text-gray-500">
-                    Showing page <span className="text-gray-600">{pagination.current_page}</span> of <span className="text-gray-700">{pagination.total_pages}</span>
-                    <span className="mx-3">•</span>
-                    {pagination.total_brands} results found
+            { !loading && pagination &&
+                <div className="pt-5 flex justify-between items-center px-3 border-t ">
+                    <div className="text-gray-500">
+                        Showing page <span className="text-gray-600">{pagination.current_page}</span> of <span className="text-gray-700">{pagination.total_pages}</span>
+                        <span className="mx-3">•</span>
+                        {pagination.total_brands} results found
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button disabled={!pagination.has_previous_page || loading} onClick={() => setPage(prev => prev - 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronLeft /></button>
+                        {Array.from({ length: pagination.total_pages }, (_, index) => index + 1).map((pageNumber) => (
+                            <button key={pageNumber} disabled={loading} onClick={() => setPage(pageNumber)} className={` w-11 h-11 rounded-xl font-semibold " ${ pagination.current_page === pageNumber ? "bg-blue-600 text-white cursor-default" : "border border-gray-200 text-gray-600 hover:bg-gray-50" }`}>
+                                {pageNumber}
+                            </button>
+                        ))}
+                        <button disabled={!pagination.has_next_page || loading} onClick={() => setPage(prev => prev + 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronRight /></button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="text-gray-600">Show</span>
+                        <select value={limit} onChange={(e) => { setLimit(Number(e.target.value)); setPage(1) }} className=" px-3 py-2 border border-gray-100 rounded-lg text-base outline-none ">
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
+                        </select>
+                        <span className="text-gray-600">per page</span>
+                    </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <button disabled={!pagination.has_previous_page || loading} onClick={() => setPage(prev => prev - 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronLeft /></button>
-                    {Array.from({ length: pagination.total_pages }, (_, index) => index + 1).map((pageNumber) => (
-                        <button key={pageNumber} disabled={loading} onClick={() => setPage(pageNumber)} className={` w-11 h-11 rounded-xl font-semibold " ${ pagination.current_page === pageNumber ? "bg-blue-600 text-white cursor-default" : "border border-gray-200 text-gray-600 hover:bg-gray-50" }`}>
-                            {pageNumber}
-                        </button>
-                    ))}
-                    <button disabled={!pagination.has_next_page || loading} onClick={() => setPage(prev => prev + 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronRight /></button>
-                </div>
-                <div className="flex items-center gap-2">
-                    <span className="text-gray-600">Show</span>
-                    <select value={limit} onChange={(e) => { setLimit(Number(e.target.value)); setPage(1) }} className=" px-3 py-2 border border-gray-100 rounded-lg text-base outline-none ">
-                        <option value={10}>10</option>
-                        <option value={20}>20</option>
-                        <option value={50}>50</option>
-                        <option value={100}>100</option>
-                    </select>
-                    <span className="text-gray-600">per page</span>
-                </div>
-            </div>
-            
+            }
         </div>
     </div>
 

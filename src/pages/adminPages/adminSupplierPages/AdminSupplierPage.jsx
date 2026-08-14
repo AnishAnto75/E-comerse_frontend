@@ -10,6 +10,7 @@ import AdminSupplierPreviewComponent from "../../../components/admin/AdminSuppli
 import axios from "axios";
 import ErrorComponent from "../../../components/ErrorComponent";
 import LoadingSpinner from "../../../components/LoadingSpinner";
+import LoadingComponent from "../../../components/LoadingComponent";
 
 
 const AdminSupplierPage = () => {
@@ -22,26 +23,29 @@ const AdminSupplierPage = () => {
     const [selectedSupplier, setSelectedSupplier] = useState(null)
     
     const [page, setPage] = useState(1)
-    const [limit, setLimit] = useState(20)
-    
+    const [limit, setLimit] = useState(20)    
     const [status, setStatus] = useState("all")
 
-    const [pagination , setPagination] = useState(null)
+    const [search, setSearch] = useState("")
+    const [searchInput, setSearchInput] = useState("")
 
+    const [pagination , setPagination] = useState(null)
     const [summary, setSummary] = useState(null)
     const [suppliers, setSuppliers] = useState(null)
 
     useEffect(()=>{
+        const controller = new AbortController();
         const fetch = async()=>{
-            const controller = new AbortController();
             try {
                 setLoading(true)
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/supplier/supplier_page`, { params: { page, limit, status}, withCredentials: true})
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}admin/supplier/supplier_page`, { params: { page, limit, status, search: search.trim()}, withCredentials: true, signal: controller.signal})
                 console.log("fetchSupplierPage payload : " , res.data)
                 setSummary(res.data?.data?.summary)
                 setSuppliers(res.data?.data?.suppliers)
                 setPagination(res.data?.data?.pagination)
             } catch (error){
+                if (error.name === "CanceledError") { return }
+                if (axios.isCancel(error)) { return }
                 setError(true)
                 console.error("error in fetchSupplierPage :" , error)
             } finally {
@@ -49,16 +53,24 @@ const AdminSupplierPage = () => {
             }
         }
         fetch()
-    } , [page, limit, status])
+        return () => { controller.abort() }
+    } , [page, limit, status, search])
 
-    if(loading){return <LoadingSpinner/>}
-    if(error || !suppliers || !summary || !pagination){return <ErrorComponent/>}
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setSearch(searchInput.trim());
+            setPage(1);
+        }, 400);
+        return () => clearTimeout(timer);
+    }, [searchInput])
+
+    if(error){return <ErrorComponent/>}
 
   return (
     <div className="flex">
     <AdminSideBar />
 
-    <div className="flex-1 p-5 font-inter text-lg font-medium pt-7">
+    <div className="flex-1 border-l p-5 font-inter text-lg font-medium pt-7">
     
         <div className="flex justify-between items-center mb-7">
             <div>
@@ -68,13 +80,17 @@ const AdminSupplierPage = () => {
             <button onClick={()=>navigate('/admin/supplier/create-supplier')} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-blue-700 transition"><FaPlus />Add Suppliers</button>
         </div>
 
-        <AdminSupplierSummaryCardsComponent data={summary} />
+        { !loading && summary ?
+            <AdminSupplierSummaryCardsComponent data={summary} />
+            :
+            <div className='rounded-2xl shadow-sm border mt-5 h-[125px]'><LoadingComponent height={16} width={16}/></div>
+        }
 
         <div className="h-[calc(100vh-40px)] border flex flex-col mt-5 rounded-2xl shadow-md p-5">
             <div className="flex flex-col xl:flex-row gap-4 justify-between">
                 <div className="relative flex-1">
                     <FaSearch className="absolute left-4 top-4 text-gray-400" />
-                    <input type="text" placeholder="Search suppliers" className="w-full font-medium text-gray-800 border rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-blue-500 outline-none"/>
+                    <input type="text" value={searchInput} onChange={(e) => { setSearchInput(e.target.value); setPage(1) }} placeholder="Search suppliers" className="w-full font-medium text-gray-800 border rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-blue-500 outline-none"/>
                 </div>
                 <div className="flex flex-wrap gap-3 text-gray-800 font-medium">
 
@@ -90,6 +106,9 @@ const AdminSupplierPage = () => {
             </div>
 
             <div className="flex-1 overflow-y-auto mt-5">
+            { loading ? 
+                <LoadingComponent />
+                :
                 <table className="w-full border-separate border-spacing-0">
                     <thead className="sticky top-0 z-20 shadow-sm">
                         <tr className="text-gray-600">
@@ -133,34 +152,37 @@ const AdminSupplierPage = () => {
                     ))}
                     </tbody>
                 </table>
+            }
             </div>
-             <div className="pt-5 flex justify-between items-center px-3 border-t ">
-                <div className="text-gray-500">
-                    Showing page <span className="text-gray-600">{pagination.current_page}</span> of <span className="text-gray-700">{pagination.total_pages}</span>
-                    <span className="mx-3">•</span>
-                    {pagination.total_suppliers} results found
+            { !loading && pagination &&
+                <div className="pt-5 flex justify-between items-center px-3 border-t ">
+                    <div className="text-gray-500">
+                        Showing page <span className="text-gray-600">{pagination.current_page}</span> of <span className="text-gray-700">{pagination.total_pages}</span>
+                        <span className="mx-3">•</span>
+                        {pagination.total_suppliers} results found
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button disabled={!pagination.has_previous_page || loading} onClick={() => setPage(prev => prev - 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronLeft /></button>
+                        {Array.from({ length: pagination.total_pages }, (_, index) => index + 1).map((pageNumber) => (
+                            <button key={pageNumber} disabled={loading} onClick={() => setPage(pageNumber)} className={` w-11 h-11 rounded-xl font-semibold " ${ pagination.current_page === pageNumber ? "bg-blue-600 text-white cursor-default" : "border border-gray-200 text-gray-600 hover:bg-gray-50" }`}>
+                                {pageNumber}
+                            </button>
+                        ))}
+                        <button disabled={!pagination.has_next_page || loading} onClick={() => setPage(prev => prev + 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronRight /></button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="text-gray-600">Show</span>
+                        <select value={limit} onChange={(e) => { setLimit(Number(e.target.value)); setPage(1) }} className=" px-3 py-2 border border-gray-100 rounded-lg text-base outline-none ">
+                            <option value={1}>1</option>
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
+                        </select>
+                        <span className="text-gray-600">per page</span>
+                    </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <button disabled={!pagination.has_previous_page || loading} onClick={() => setPage(prev => prev - 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronLeft /></button>
-                    {Array.from({ length: pagination.total_pages }, (_, index) => index + 1).map((pageNumber) => (
-                        <button key={pageNumber} disabled={loading} onClick={() => setPage(pageNumber)} className={` w-11 h-11 rounded-xl font-semibold " ${ pagination.current_page === pageNumber ? "bg-blue-600 text-white cursor-default" : "border border-gray-200 text-gray-600 hover:bg-gray-50" }`}>
-                            {pageNumber}
-                        </button>
-                    ))}
-                    <button disabled={!pagination.has_next_page || loading} onClick={() => setPage(prev => prev + 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronRight /></button>
-                </div>
-                <div className="flex items-center gap-2">
-                    <span className="text-gray-600">Show</span>
-                    <select value={limit} onChange={(e) => { setLimit(Number(e.target.value)); setPage(1) }} className=" px-3 py-2 border border-gray-100 rounded-lg text-base outline-none ">
-                        <option value={1}>1</option>
-                        <option value={10}>10</option>
-                        <option value={20}>20</option>
-                        <option value={50}>50</option>
-                        <option value={100}>100</option>
-                    </select>
-                    <span className="text-gray-600">per page</span>
-                </div>
-            </div>
+            }
         </div>
     </div>
     {selectedSupplier &&

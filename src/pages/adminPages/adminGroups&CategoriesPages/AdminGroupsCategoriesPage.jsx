@@ -1,17 +1,5 @@
 import { useState } from "react";
-import {
-    FiPlus,
-    FiSearch,
-    FiChevronDown,
-    FiChevronRight,
-    FiMoreVertical,
-    FiEdit,
-    FiTrash2,
-    FiEye,
-    FiFolder,
-    FiPackage,
-    FiLayers,
-} from "react-icons/fi";
+import { FiPlus, FiSearch, FiChevronDown, FiChevronRight, FiMoreVertical, FiEdit, FiTrash2, FiEye, FiFolder, FiPackage, FiLayers, } from "react-icons/fi";
 import { MdOutlineCategory } from "react-icons/md";
 import AdminSideBar from "../../../components/admin/AdminSideBar";
 import { useNavigate, Link } from "react-router-dom";
@@ -22,12 +10,12 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import ErrorComponent from "../../../components/ErrorComponent";
-
+import LoadingComponent from "../../../components/LoadingComponent";
 
 const AdminGroupsCategoriesPage = () => {
 
     const navigate = useNavigate()
-    const [loading , setLoading] = useState(false)
+    const [loading , setLoading] = useState(1)
     const [error , setError ] = useState(false)
 
     const [page, setPage] = useState(1);
@@ -52,7 +40,9 @@ const AdminGroupsCategoriesPage = () => {
             } catch (error) {
                 console.error("Error in fetchGroupsCategoriesPage:", error);
                 toast.error( error?.response?.data?.message || "Unable to fetch Group Categories")
-            } finally { setLoading(false);}
+            } finally { 
+                setLoading(false)
+            }
         }
         if(handleRef.current) {
             fetch()
@@ -60,8 +50,7 @@ const AdminGroupsCategoriesPage = () => {
         }
     } , [])
 
-    if(loading){return <LoadingSpinner/>}
-    if(error || !summary || !groups ){return <ErrorComponent/>}
+    if(error ){return <ErrorComponent/>}
 
     const toggleGroup = (id) => {
         setExpandedGroup(prev => prev === id ? null : id )
@@ -69,7 +58,7 @@ const AdminGroupsCategoriesPage = () => {
     return (
         <div className="flex">
         <AdminSideBar/>
-        <div className="w-full p-5 font-inter font-medium text-lg text-gray-900">
+        <div className="w-full border-l p-5 font-inter font-medium text-lg text-gray-900">
 
             <div className="flex justify-between items-center mb-5 mt-3">
                 <div>
@@ -79,52 +68,51 @@ const AdminGroupsCategoriesPage = () => {
                 <button onClick={()=>navigate('/admin/groups-categories/new-group')} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-blue-700 transition"><FaPlus />Add Group</button>
             </div>
 
-            {/* Summary */}
-            <div className="grid grid-cols-3 gap-3">
-                <div className='bg-white rounded-2xl border-t-4 border-blue-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <p className="text-blue-500 font-semibold">TOTAL GROUPS</p>
-                            <h2 className='text-2xl mt-2 font-bold text-blue-600'>{summary.total_groups.toLocaleString()}</h2>
+            { !loading && summary ?
+                <div className="grid grid-cols-3 gap-3">
+                    <div className='bg-white rounded-2xl border-t-4 border-blue-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <p className="text-blue-500 font-semibold">TOTAL GROUPS</p>
+                                <h2 className='text-2xl mt-2 font-bold text-blue-600'>{summary.total_groups.toLocaleString()}</h2>
+                            </div>
+                            <div className={`bg-blue-50 p-2 rounded-2xl`}>
+                                <FiFolder size={35} className="text-blue-600"/>
+                            </div>
                         </div>
-                        <div className={`bg-blue-50 p-2 rounded-2xl`}>
-                            <FiFolder size={35} className="text-blue-600"/>
+                    </div>
+                    <div className='bg-white rounded-2xl border-t-4 border-violet-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <p className="text-violet-500 font-semibold">TOTAL CATEGORIES</p>
+                                <h2 className='text-2xl mt-2 font-bold text-violet-600'>{summary.total_categories.toLocaleString()}</h2>
+                            </div>
+                            <div className={`bg-violet-50 p-2 rounded-2xl`}>
+                                <FiLayers size={35} className="text-violet-600"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div className='bg-white rounded-2xl border-t-4 border-sky-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <p className="text-sky-500 font-semibold">TOTAL PRODUCTS</p>
+                                <h2 className='text-2xl mt-2 font-bold text-sky-600'>{summary.total_products.toLocaleString()}</h2>
+                            </div>
+                            <div className={`bg-sky-50 p-2 rounded-2xl`}>
+                                <FiPackage size={35} className="text-sky-600"/>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div className='bg-white rounded-2xl border-t-4 border-violet-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <p className="text-violet-500 font-semibold">TOTAL CATEGORIES</p>
-                            <h2 className='text-2xl mt-2 font-bold text-violet-600'>{summary.total_categories.toLocaleString()}</h2>
-                        </div>
-                        <div className={`bg-violet-50 p-2 rounded-2xl`}>
-                            <FiLayers size={35} className="text-violet-600"/>
-                        </div>
-                    </div>
-                </div>
-                <div className='bg-white rounded-2xl border-t-4 border-sky-500 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6'>
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <p className="text-sky-500 font-semibold">TOTAL PRODUCTS</p>
-                            <h2 className='text-2xl mt-2 font-bold text-sky-600'>{summary.total_products.toLocaleString()}</h2>
-                        </div>
-                        <div className={`bg-sky-50 p-2 rounded-2xl`}>
-                            <FiPackage size={35} className="text-sky-600"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                :
+                <div className='rounded-2xl shadow-sm border mt-5 h-[123px]'><LoadingComponent height={16} width={16}/></div>
+            }          
 
-             <div className="h-[calc(100vh-40px)] border flex flex-col mt-5 rounded-2xl shadow-md p-5">
-                <div className="flex flex-col xl:flex-row gap-4 justify-between">
-                    <div className="relative flex-1">
-                        <FaSearch className="absolute left-4 top-4 text-gray-400" />
-                        <input type="text" placeholder="Search groups / categories" className="w-full font-medium text-gray-800 border rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-blue-500 outline-none"/>
-                    </div>
-                </div>
-
-                <div className="flex-1 overflow-y-auto border rounded-xl mt-5">
+            <div className="h-[calc(100vh-40px)] border flex flex-col mt-5 rounded-2xl shadow-md p-5">
+                <div className="flex-1 overflow-y-auto border rounded-xl ">
+                { loading ? 
+                    <LoadingComponent />
+                    :
                     <div className="borde h-full rounded-xl">
                         {groups?.map((group) => ( 
                             <div key={group._id} className=" border-b overflow-hidden ">
@@ -171,7 +159,7 @@ const AdminGroupsCategoriesPage = () => {
                                                     </div>
                                                 </div>
                                             ))}
-                                            { group.categories.length == 0 && 
+                                            { group.categories?.length == 0 && 
                                                 <div className="p-5 text-gray-500 text-xl min-h-96 flex items-center justify-center">
                                                     <div>No categories created in this group yet </div>
                                                 </div>
@@ -182,7 +170,7 @@ const AdminGroupsCategoriesPage = () => {
                             </div>
                         ))}
                         {/* EMPTY STATE */}
-                        {groups.length === 0 && (
+                        {groups?.length === 0 && (
                             <div className=" py-16 text-center border border-dashed border-gray-200 rounded-2xl ">
                                 <FiSearch size={30} className=" mx-auto text-gray-300 mb-3 "/>
                                 <p className=" text-sm font-medium text-gray-600">
@@ -194,23 +182,9 @@ const AdminGroupsCategoriesPage = () => {
                             </div>
                         )}
                     </div>
+                }
                 </div>
-{/* 
-                <div className="pt-7 pb-2 flex justify-center border-t ">
-                    <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-2">
-                            <button className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center"><FaChevronLeft /></button>
-                            <button className="w-11 h-11 rounded-xl bg-blue-600 text-white font-semibold">1</button>
-                            <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">2</button>
-                            <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">3</button>
-                            <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">4</button>
-                            <button className="w-11 h-11 rounded-xl border hover:bg-gray-100">5</button>
-                            <button className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center"><FaChevronRight /></button>
-                        </div>
-                    </div>
-                </div> */}
             </div>
-           
         </div>
         </div>
     );

@@ -11,57 +11,68 @@ import AdminProductPreviewComponent from "../../../components/admin/AdminProduct
 import { FaIndianRupeeSign } from "react-icons/fa6";
 import AdminProductPageSummaryCards from "../../../components/admin/AdminProductComponents/AdminProductPageSummaryCards";
 import axios from "axios";
-import LoadingSpinner from "../../../components/LoadingSpinner";
 import ErrorComponent from "../../../components/ErrorComponent";
 import { useRef } from "react";
 import { useEffect } from "react";
+import LoadingComponent from "../../../components/LoadingComponent";
 
 const AdminProductPage = () => {
 
     const navigate = useNavigate()
     const [loading , setLoading] = useState(false)
     const [error , setError ] = useState(false)
+
     const [selected_product , setSelectedProduct] = useState(null)
 
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(20)
-
     const [status, setStatus] = useState("all")
 
+    const [search, setSearch] = useState("")
+    const [searchInput, setSearchInput] = useState("")
+    
     const [pagination , setPagination] = useState(null)
-
     const [summary, setSummary] = useState(null)
     const [products, setProducts] = useState(null)
 
-    const handleRef = useRef(true)
     useEffect(()=>{
+        const controller = new AbortController();
         const fetch = async()=>{
-            const controller = new AbortController();
             try {
                 setLoading(true);
-                const res = await axios.get( `${import.meta.env.VITE_BACKEND_URL}admin/product/product_page`, { params: { page, limit, status}, withCredentials: true });
+                const res = await axios.get( `${import.meta.env.VITE_BACKEND_URL}admin/product/product_page`, { params: { page, limit, status, search: search.trim()}, withCredentials: true, signal: controller.signal });
                 console.log("fetchProductPage payload : " , res.data)
                 setSummary(res.data?.data?.summary)
                 setProducts(res.data?.data?.products)
                 setPagination(res.data?.data?.pagination)
             } catch (error) {
+                if (error.name === "CanceledError") { return }
+                if (axios.isCancel(error)) { return }
+                setError(true)
                 console.error("Error in fetchProductPage:", error);
-                toast.error( error?.response?.data?.message || "Unable to fetch products")
             } finally {
                 if (!controller.signal.aborted) { setLoading(false) }
             }
         }
         fetch()
-    } , [page, limit, status])
+        return () => { controller.abort() }
+    } , [page, limit, status, search])
 
-    if(loading){return <LoadingSpinner/>}
-    if(error || !summary || !products || !pagination){return <ErrorComponent/>}
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setSearch(searchInput.trim())
+            setPage(1)
+        }, 400)
+        return () => clearTimeout(timer)
+    }, [searchInput])
+
+    if(error){return <ErrorComponent/>}
 
   return (
     <div className="flex">
     <AdminSideBar/>
 
-    <div className="w-full p-5 font-inter font-medium text-lg text-gray-900">
+    <div className="w-full border-l p-5 font-inter font-medium text-lg text-gray-900">
 
       {/* Header */}
         <div className="flex justify-between items-center mb-5 mt-3">
@@ -72,13 +83,17 @@ const AdminProductPage = () => {
             <button onClick={()=>navigate('/admin/products/new-product')} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-blue-700 transition"><FaPlus />Add Product</button>
         </div>
 
-        <AdminProductPageSummaryCards data={summary}/>
+        { !loading && summary ?
+            <AdminProductPageSummaryCards data={summary}/>
+            :
+            <div className='rounded-2xl shadow-sm border mt-5 h-[125px]'><LoadingComponent height={16} width={16}/></div>
+        }
 
         <div className="h-[calc(100vh-40px)] border flex flex-col rounded-2xl shadow-md p-5 mt-5">
             <div className="flex flex-col xl:flex-row gap-4 justify-between">
                 <div className="relative flex-1">
                     <FaSearch className="absolute left-4 top-4 text-gray-400" />
-                    <input type="text" placeholder="Search products, barcode" className="w-full font-medium text-gray-800 border rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-blue-500 outline-none"/>
+                    <input type="text" value={searchInput} onChange={(e) => { setSearchInput(e.target.value); setPage(1) }} placeholder="Search products, barcode" className="w-full font-medium text-gray-800 border rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-blue-500 outline-none"/>
                 </div>
                 <div className="flex flex-wrap gap-3 text-gray-800 font-medium">
 
@@ -93,6 +108,9 @@ const AdminProductPage = () => {
             </div>
 
             <div className="flex-1 overflow-y-auto mt-3">
+            { loading ? 
+                <LoadingComponent />
+                :
                 <table className="w-full border-separate border-spacing-0">
                     <thead className="sticky top-0 z-20 bg-white shadow-sm">
                         <tr className="text-gray-500">
@@ -151,36 +169,37 @@ const AdminProductPage = () => {
                     })}
                     </tbody>
                 </table>
+            }
             </div>
-
-            <div className="pt-5 flex justify-between items-center px-3 border-t ">
-                <div className="text-gray-500">
-                    Showing page <span className="text-gray-600">{pagination.current_page}</span> of <span className="text-gray-700">{pagination.total_pages}</span>
-                    <span className="mx-3">•</span>
-                    {pagination.total_products} results found
+            { !loading && pagination &&
+                <div className="pt-5 flex justify-between items-center px-3 border-t ">
+                    <div className="text-gray-500">
+                        Showing page <span className="text-gray-600">{pagination.current_page}</span> of <span className="text-gray-700">{pagination.total_pages}</span>
+                        <span className="mx-3">•</span>
+                        {pagination.total_products} results found
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button disabled={!pagination.has_previous_page || loading} onClick={() => setPage(prev => prev - 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronLeft /></button>
+                        {Array.from({ length: pagination.total_pages }, (_, index) => index + 1).map((pageNumber) => (
+                            <button key={pageNumber} disabled={loading} onClick={() => setPage(pageNumber)} className={` w-11 h-11 rounded-xl font-semibold " ${ pagination.current_page === pageNumber ? "bg-blue-600 text-white cursor-default" : "border border-gray-200 text-gray-600 hover:bg-gray-50" }`}>
+                                {pageNumber}
+                            </button>
+                        ))}
+                        <button disabled={!pagination.has_next_page || loading} onClick={() => setPage(prev => prev + 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronRight /></button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="text-gray-600">Show</span>
+                        <select value={limit} onChange={(e) => { setLimit(Number(e.target.value)); setPage(1) }} className=" px-3 py-2 border border-gray-100 rounded-lg text-base outline-none ">
+                            <option value={2}>2</option>
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
+                        </select>
+                        <span className="text-gray-600">per page</span>
+                    </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <button disabled={!pagination.has_previous_page || loading} onClick={() => setPage(prev => prev - 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronLeft /></button>
-                    {Array.from({ length: pagination.total_pages }, (_, index) => index + 1).map((pageNumber) => (
-                        <button key={pageNumber} disabled={loading} onClick={() => setPage(pageNumber)} className={` w-11 h-11 rounded-xl font-semibold " ${ pagination.current_page === pageNumber ? "bg-blue-600 text-white cursor-default" : "border border-gray-200 text-gray-600 hover:bg-gray-50" }`}>
-                            {pageNumber}
-                        </button>
-                    ))}
-                    <button disabled={!pagination.has_next_page || loading} onClick={() => setPage(prev => prev + 1)} className="w-11 h-11 rounded-xl border hover:bg-gray-100 flex justify-center items-center disabled:opacity-40 disabled:cursor-not-allowed"><FaChevronRight /></button>
-                </div>
-                <div className="flex items-center gap-2">
-                    <span className="text-gray-600">Show</span>
-                    <select value={limit} onChange={(e) => { setLimit(Number(e.target.value)); setPage(1) }} className=" px-3 py-2 border border-gray-100 rounded-lg text-base outline-none ">
-                        <option value={2}>2</option>
-                        <option value={10}>10</option>
-                        <option value={20}>20</option>
-                        <option value={50}>50</option>
-                        <option value={100}>100</option>
-                    </select>
-                    <span className="text-gray-600">per page</span>
-                </div>
-            </div>
-            
+            }
         </div>
     </div>
 

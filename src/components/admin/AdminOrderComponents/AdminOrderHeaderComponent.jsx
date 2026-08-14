@@ -4,8 +4,7 @@ import { FaArrowDown, FaArrowUp, FaIndianRupeeSign } from 'react-icons/fa6'
 
 const AdminOrderHeaderComponent = ({pendingOrders}) => {
   return (
-    <div className='grid grid-cols- gap-5 mt-5'>
-
+    <div className='grid grid-cols max-h-64 gap-5 mt-5'>
         <div className='col-span-1 rounded-xl shadow-md border p-5'>
             <div className=' text-xl font-semibold mb-3'>Pending Orders</div>
             <ResponsiveContainer width="100%" height={143}>
