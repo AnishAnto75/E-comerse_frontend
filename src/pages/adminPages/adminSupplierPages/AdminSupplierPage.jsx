@@ -72,7 +72,7 @@ const AdminSupplierPage = () => {
 
     <div className="flex-1 border-l p-5 font-inter text-lg font-medium pt-7">
     
-        <div className="flex justify-between items-center mb-7">
+        <div className="flex justify-between items-center mb-5">
             <div>
                 <h1 className="text-3xl font-semibold ">Suppliers</h1>
                 <p className="text-gray-600 mt-2"> Manage all registered suppliers</p>
