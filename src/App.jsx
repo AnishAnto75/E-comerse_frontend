@@ -55,6 +55,7 @@ import useUserStore from "./store/authStore.js";
 import useCartStore from "./store/cartStore.js";
 import useAddressStore from "./store/addressStore.js";
 import AdminRecentActivityPage from "./pages/adminPages/adminRecentActivityPages/adminRecentActivityPage.jsx";
+import AdminTransactionPage from "./pages/adminPages/adminTransactionsPages/AdminTransactionPage.jsx";
 
 
 function App() {
@@ -195,8 +196,12 @@ function App() {
                     <Route path="create-staff" element={<AdminAddNewStaffPage />}/>
                     <Route path="staff_id/:id" element={<AdminStaffViewPage />}/>
                 </Route>
+                
+                <Route path="transactions">
+                    <Route index element={<AdminTransactionPage />}/>
+                    <Route path="create-transaction" element={<AdminAddNewStaffPage />}/>
+                </Route>
 
-                <Route path="transactions" element={<div>payments</div>} />
 
             </Route>
 
