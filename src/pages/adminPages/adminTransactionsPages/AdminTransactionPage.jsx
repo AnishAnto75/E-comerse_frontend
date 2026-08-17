@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { FiArchive, FiBox, FiChevronLeft, FiChevronRight, FiClock, FiFilter, FiGrid, FiLayers, FiPackage, FiRefreshCw, FiSearch, FiShoppingBag, FiShoppingCart, FiTag, FiTruck, FiUser, FiUsers, FiX, FiCheck, FiAlertCircle, FiFileText } from "react-icons/fi";
+import { FiArchive, FiBox, FiChevronLeft, FiChevronRight, FiClock, FiFilter, FiGrid, FiLayers, FiPackage, FiRefreshCw, FiSearch, FiShoppingBag, FiShoppingCart, FiTag, FiTruck, FiUser, FiUsers, FiX, FiCheck, FiAlertCircle, FiFileText, FiPlus, FiMinus } from "react-icons/fi";
 import { FaChevronLeft, FaChevronRight, FaEye, FaSearch } from "react-icons/fa";
 import { IoCloseSharp, IoFilter } from "react-icons/io5";
 import { useEffect } from "react";
@@ -9,9 +9,12 @@ import AdminSideBar from "../../../components/admin/AdminSideBar";
 import LoadingComponent from "../../../components/LoadingComponent";
 import AdminPreviewRecentActivityComponent from "../../../components/admin/AdminRecentActivityComponents/AdminPreviewRecentActivityComponent";
 import { GiPayMoney, GiReceiveMoney } from "react-icons/gi";
-import { FaIndianRupeeSign } from "react-icons/fa6";
-import { useNavigate } from "react-router-dom";
-
+import { FaIndianRupeeSign, FaMinus, FaPlus } from "react-icons/fa6"
+import { useNavigate } from "react-router-dom"
+import { BiX } from "react-icons/bi";
+import AdminCreateTransactionComponent from "../../../components/admin/AdminTransactionComponents/AdminCreateTransactionComponent";
+import { TbRefresh } from "react-icons/tb";
+import { format } from "date-fns";
 
 const paymentMethodColors = {
     "Cash" : "bg-emerald-500",
@@ -25,18 +28,8 @@ const paymentMethodColors = {
 
 const formatTime = (date) => {
 
-    const diff = Date.now() - new Date(date).getTime()
-
-    const minutes = Math.floor(diff / 60000)
-    const hours = Math.floor(diff / 3600000)
-    const days = Math.floor(diff / 86400000)
-
-    if (minutes < 1) return "Just now"
-    if (minutes < 60) return `${minutes} min ago`
-    if (hours < 24) return `${hours} hr${hours > 1 ? "s" : ""} ago`
-    if (days === 1) return "Yesterday"
-
-    return new Date(date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric"})
+    if(isNaN(Date.parse(date))){ return }
+    return `${format(new Date(date) , "dd MMM yyyy")}`
 }
 
 const AdminTransactionPage = () => {
@@ -45,6 +38,8 @@ const AdminTransactionPage = () => {
 
     const [loading , setLoading] = useState(false)
     const [error , setError ] = useState(false)
+
+    const [reload, setReload] = useState(true)
 
     const [selectedTransaction, setSelectedTransaction] = useState(null)
 
@@ -61,6 +56,8 @@ const AdminTransactionPage = () => {
 
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(20)
+
+    const [createTransactionModel, setCreateTransactionModel] = useState(false)
 
     useEffect(()=>{
         const controller = new AbortController();
@@ -82,7 +79,7 @@ const AdminTransactionPage = () => {
         }
         fetch()
         return () => { controller.abort() }
-    } , [ page, limit, type, category, payment_method ])
+    } , [ page, limit, type, category, payment_method, reload])
 
     if(error ){return <ErrorComponent />}
 
@@ -95,29 +92,32 @@ const AdminTransactionPage = () => {
                     <h1 className="text-3xl font-semibold">Financial Transactions</h1>
                     <p className="text-gray-500 mt-2">Track every transaction with clarity.</p>
                 </div>
-                <button onClick={()=>navigate('create-transaction')} className="bg-blue-600 text-white px-5 py-3 rounded-xl text-base shadow-lg hover:bg-blue-700 transition">Create Transaction</button>
+                <button onClick={()=>setCreateTransactionModel(true)} className="bg-blue-600 text-white px-5 py-3 rounded-xl text-base shadow-lg hover:bg-blue-700 transition">Create Transaction</button>
                 
             </div>
 
             <div className="border flex flex-col mt-5 rounded-xl border-gray-100 p-5 text-base">
 
-                <div className="grid gap-3 grid-cols-5">    
-                    <select value={type} onChange={(e) => { setType(e.target.value); setPage(1) }} className="border rounded-xl px-4 py-3">
+                <div className="flex gap-3">    
+                    <select value={type} onChange={(e) => { setType(e.target.value); setPage(1) }} className="border w-full rounded-xl px-4 py-3">
                         <option value="all">All Types</option>
                         <option value="income">Income</option>
                         <option value="expense">Expense</option>
                     </select>
 
-                    <select value={category} onChange={(e) => { setCategory(e.target.value); setPage(1) }} className="border rounded-xl px-4 py-3">
+                    <select value={category} onChange={(e) => { setCategory(e.target.value); setPage(1) }} className="border w-full rounded-xl px-4 py-3">
                         <option value={"all"}>All Category</option>
                         { type === "income" || "all" && incomes.map((income, index)=> <option key={index} value={income}>{income}</option> ) }
                         { type === "expense" || "all" && expenses.map((expense, index)=> <option key={index} value={expense}>{expense}</option> )}
                     </select>
                     
-                    <select value={payment_method} onChange={(e) => { setPaymentMethod(e.target.value); setPage(1) }} className="border rounded-xl px-4 py-3">
+                    <select value={payment_method} onChange={(e) => { setPaymentMethod(e.target.value); setPage(1) }} className="border w-full rounded-xl px-4 py-3">
                         <option value={"all"}>All Methods</option>
                         { validPaymentMethods.map((method, index)=> <option key={index} value={method}>{method}</option> )}
                     </select>
+
+                    <div onClick={()=>setReload(!reload)} className="p-2 flex items-center rounded-full cursor-pointer justify-center text-cyan-500 hover:text-cyan-600"><TbRefresh size={25} /></div>
+
 
                 </div>
 
@@ -143,8 +143,8 @@ const AdminTransactionPage = () => {
                         <div key={transaction._id} onClick={()=>setSelectedTransaction(transaction._id)} className={` relative flex gap-5 items-center rounded-xl p-3 transition hover:bg-gray-50 ${selectedTransaction == transaction._id && "bg-slate-100/80" }`} >
 
                             <div className={` flex h-14 w-14 text-3xl shrink-0 items-center justify-center rounded-full border ${transaction.type === "income" ? "bg-green-50 text-green-500 border-green-100" : transaction.type === "expense" ? "bg-red-50 text-red-500 border-red-100" :"bg-gray-50 text-gray-500 border-gray-100"}`}>
-                                {transaction.type === "income" && <GiPayMoney size={32}/>}
-                                {transaction.type === "expense" && <GiReceiveMoney size={33}/>}
+                                {transaction.type === "income" && <GiReceiveMoney size={33}/>}
+                                {transaction.type === "expense" && <GiPayMoney size={32}/>}
                             </div>
                             <div className="flex-1">
                                 <div className="flex flex-row items-start justify-between">
@@ -161,7 +161,11 @@ const AdminTransactionPage = () => {
                                         <span className={` rounded-md px-2 py-1 text-white capitalize ${transaction.type === "income" ? "bg-green-500" : transaction.type === "expense" ? "bg-red-500" :"bg-gray-500"} `}>{transaction.category}</span>
                                         <span className={` rounded-md px-2 py-1 capitalize text-white ${paymentMethodColors[transaction.payment_method]}`}>{transaction.payment_method}</span>
                                     </div>
-                                    <div className={`text-base pr-3 flex items-center ${transaction.type === "income" ? "text-green-500" : transaction.type === "expense" ? "text-red-500" :"bg-gray-500"} `}><FaIndianRupeeSign/>{transaction.amount?.toLocaleString()}</div>
+                                    <div className={`text-base pr-3 flex items-center ${transaction.type === "income" ? "text-green-500" : transaction.type === "expense" ? "text-red-500" :"bg-gray-500"} `}>
+                                        { transaction.type === "income" && <FaPlus size={15}/>}
+                                        { transaction.type === "expense" && <FaMinus size={12}/> }
+                                        <FaIndianRupeeSign/> {transaction.amount?.toLocaleString()}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -205,10 +209,15 @@ const AdminTransactionPage = () => {
             <div className='relative min-w-[26rem] max-w-[26rem] shrink-1 py-5 pr-5'>
                 <div className='sticky top-5 h-[calc(100vh-40px)] rounded-xl shadow-lg border border-gray-100 overflow-y-auto p-3'>
                     <IoCloseSharp onClick={()=>setSelectedTransaction(null)} className='absolute top-3 right-3 text-4xl cursor-pointer z-10 rounded-full hover:bg-red-50 text-red-500 p-1' />
-                    {/* <AdminPreviewRecentActivityComponent activity_id={selectedActivity._id} activityIcons={activityIcons} activityStyles={activityStyles}/> */}
+                        {/* Not Yet Created */}
                 </div>
             </div> 
         )}
+
+        { createTransactionModel && 
+            <AdminCreateTransactionComponent setCreateTransactionModel={setCreateTransactionModel} setReload={setReload} reload={reload} />
+        }
+
     </div>
     )
 }
