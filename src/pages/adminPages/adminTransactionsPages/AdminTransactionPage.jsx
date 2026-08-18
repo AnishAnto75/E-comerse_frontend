@@ -96,9 +96,9 @@ const AdminTransactionPage = () => {
                 
             </div>
 
-            <div className="border flex flex-col mt-5 rounded-xl border-gray-100 p-5 text-base">
+            <div className="border flex flex-col mt-5 rounded-xl border-gray-100 p-5 ">
 
-                <div className="flex gap-3">    
+                <div className="flex gap-3 text-base">    
                     <select value={type} onChange={(e) => { setType(e.target.value); setPage(1) }} className="border w-full rounded-xl px-4 py-3">
                         <option value="all">All Types</option>
                         <option value="income">Income</option>
@@ -149,7 +149,7 @@ const AdminTransactionPage = () => {
                             <div className="flex-1">
                                 <div className="flex flex-row items-start justify-between">
                                     <div>
-                                        <div className="text-base">{transaction.title}</div>
+                                        <div className="text-[17px]">{transaction.title}</div>
                                         <p className="mt-1 text-base font-normal text-gray-500">{transaction.notes}</p>
                                     </div>
                                     <div className="flex shrink-0 items-center justify-center gap-1 text-sm text-gray-500 p-3">
@@ -161,10 +161,10 @@ const AdminTransactionPage = () => {
                                         <span className={` rounded-md px-2 py-1 text-white capitalize ${transaction.type === "income" ? "bg-green-500" : transaction.type === "expense" ? "bg-red-500" :"bg-gray-500"} `}>{transaction.category}</span>
                                         <span className={` rounded-md px-2 py-1 capitalize text-white ${paymentMethodColors[transaction.payment_method]}`}>{transaction.payment_method}</span>
                                     </div>
-                                    <div className={`text-base pr-3 flex items-center ${transaction.type === "income" ? "text-green-500" : transaction.type === "expense" ? "text-red-500" :"bg-gray-500"} `}>
-                                        { transaction.type === "income" && <FaPlus size={15}/>}
-                                        { transaction.type === "expense" && <FaMinus size={12}/> }
-                                        <FaIndianRupeeSign/> {transaction.amount?.toLocaleString()}
+                                    <div className={`pr-3 flex items-center ${transaction.type === "income" ? "text-green-500" : transaction.type === "expense" ? "text-red-500" :"bg-gray-500"} `}>
+                                        { transaction.type === "income" && <FaPlus size={16}/>}
+                                        { transaction.type === "expense" && <FaMinus size={12}/>}
+                                        &nbsp;<FaIndianRupeeSign/>{transaction.amount?.toLocaleString()}
                                     </div>
                                 </div>
                             </div>

@@ -57,7 +57,7 @@ const ProfilePage = () => {
     if(!isAuthenticated){return <PageNotFoundPage />}
 
   return (
-      <div className="flex justify-center">
+    <div className="flex justify-center">
         <div className=" max-w-[1920px] px-5 w-full m-14">
             <div className="grid gap-4 gap-y-2 grid-cols-8">
 
@@ -68,14 +68,19 @@ const ProfilePage = () => {
                     {orders.length ? 
                         <div className='space-y-2'>
                             { orders.map((order, index) => 
-                                <Link to={`/orders/${order.order_id}`} className='border flex rounded p-2 cursor-pointer' key={index}>
-                                    <div className="grid grid-cols-2 gap-1.5 border-r min-w-[180px] pr-3 ">
-                                        {order.items.slice(0, 3).map((item, index) => (
-                                            <div key={index} className='h-20 w-20 bg-white rounded-full col-span-1 p-0.5 border'>
-                                                <img src={`${import.meta.env.VITE_IMAGE_URL}${item.product_photo}`} alt={item.product_name} className={`h-full w-full rounded-full object-contain `} />
+                                <Link to={`/orders/${order.order_id}`} className='border flex rounded-lg p-2 cursor-pointer' key={index}>
+                                    <div className="grid grid-cols-2 gap-1 min-w-[170px] max-w-[170px] p-1 ">
+                                        { order.items.length === 1 ?
+                                            <div className='h-40 w-40 col-span-2 bg-white rounded-md p-1 border'>
+                                                <img src={`${import.meta.env.VITE_IMAGE_URL}${order.items[0].product_photo}`} alt={order.items[0].product_name} className={`h-full w-full rounded-md object-contain `} />
+                                            </div>
+                                        :
+                                        order.items.slice(0, 3).map((item, index) => (
+                                            <div key={index} className='h-20 w-20 bg-white rounded-md col-span-1 p-1 border'>
+                                                <img src={`${import.meta.env.VITE_IMAGE_URL}${item.product_photo}`} alt={item.product_name} className={`h-full w-full rounded-md object-contain `} />
                                             </div>
                                         ))}
-                                        {order.items.length > 3 && <div className="w-20 h-20 col-span-1 rounded-full bg-gray-100 flex items-center justify-center text-xl font-semibold text-gray-700"> +{order.items.length - 3}</div>}
+                                        {order.items.length > 3 && <div className="w-20 h-20 col-span-1 rounded-md bg-gray-100 flex items-center justify-center text-xl font-semibold border text-gray-700"> +{order.items.length - 3}</div>}
                                     </div>
                                     <div className='py-5 space-y-3 px-5 text-xl font-medium text-gray-700 tracking-widew-full'>
                                         <div className='text-gray-500 font-bold'>#{order.order_id}</div>

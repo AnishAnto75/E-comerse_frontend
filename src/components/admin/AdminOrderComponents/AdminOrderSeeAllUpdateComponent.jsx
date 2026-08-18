@@ -61,7 +61,7 @@ const AdminOrderSeeAllUpdateComponent = ({order_status}) => {
             {cancelled.status && (<MdDoneAll className='bg-white rounded-full absolute h-10 w-10 -top-5 text-green-500 p-1'/>) }
             <h2 className='text-center font-semibold text-green-500'>Cancelled</h2>
             <p className='pt-2' >Date : <span className='text-gray-600'>{date_time(cancelled.date)}</span></p>
-            <p className='pt-1.5'>Delivered By : {cancelled.canceled_by} <span onClick={()=>navigate(`/admin/staff/${cancelled.cancelled_staff_id}`)} className='text-sky-500 cursor-pointer'>{cancelled.cancelled_staff_id}</span></p>
+            <p className='pt-1.5'>Delivered By : {cancelled.cancelled_by} <span onClick={()=>navigate(`/admin/staff/${cancelled.cancelled_staff_id}`)} className='text-sky-500 cursor-pointer'>{cancelled.cancelled_staff_id}</span></p>
             <p className='pt-1.5' >Reason : <span className='text-gray-600'>{cancelled.reason}</span></p>
         </div>
 

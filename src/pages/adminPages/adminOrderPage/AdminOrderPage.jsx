@@ -128,7 +128,7 @@ const AdminOrderPage = () => {
                         :
                         <table className="w-full border-separate border-spacing-0">
                             <thead className="sticky top-0 z-20 shadow-sm">
-                                <tr className="text-gray-600">
+                                <tr className="text-gray-600 bg-white">
                                     <th className='py-4' />
                                     <th className='py-4 text-start'>Order Id</th>
                                     <th className='py-4 text-start'>Customer</th>

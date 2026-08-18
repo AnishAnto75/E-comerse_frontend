@@ -8,6 +8,7 @@ import ErrorComponent from "../../../components/ErrorComponent";
 import AdminSideBar from "../../../components/admin/AdminSideBar";
 import LoadingComponent from "../../../components/LoadingComponent";
 import AdminPreviewRecentActivityComponent from "../../../components/admin/AdminRecentActivityComponents/AdminPreviewRecentActivityComponent";
+import { TbRefresh } from "react-icons/tb";
 
 const activityIcons = {
     product: FiBox,
@@ -67,6 +68,8 @@ const AdminRecentActivityPage = () => {
     const [loading , setLoading] = useState(false)
     const [error , setError ] = useState(false)
 
+    const [reload, setReload] = useState(true)
+
     const [selectedActivity, setSelectedActivity] = useState(null)
 
     const [activities, setActivities] = useState([])
@@ -101,7 +104,7 @@ const AdminRecentActivityPage = () => {
         }
         fetch()
         return () => { controller.abort() }
-    } , [page, limit, activityType, action, viewStatus])
+    } , [page, limit, activityType, action, viewStatus, reload])
 
     const markAsRead = (id) => {
         const activity = activities.find(activity => activity._id === id)
@@ -130,8 +133,8 @@ const AdminRecentActivityPage = () => {
 
             <div className="border flex flex-col mt-5 rounded-xl border-gray-100 p-5">
 
-                <div className="grid gap-3 grid-cols-5">    
-                    <select value={activityType} onChange={(e) => { setActivityType(e.target.value); setPage(1) }} className="border rounded-xl text-base px-4 py-3">
+                <div className="flex gap-3">    
+                    <select value={activityType} onChange={(e) => { setActivityType(e.target.value); setPage(1) }} className="border w-full rounded-xl text-base px-4 py-3">
                         <option value="all"> All Activities</option>
                         <option value="product">Product</option>
                         <option value="purchase">Purchase</option>
@@ -145,7 +148,7 @@ const AdminRecentActivityPage = () => {
                         <option value="staff">Staff</option>
                     </select>
 
-                    <select value={action} onChange={(e) => { setAction(e.target.value); setPage(1) }} className="border rounded-xl text-base px-4 py-3">
+                    <select value={action} onChange={(e) => { setAction(e.target.value); setPage(1) }} className="border w-full rounded-xl text-base px-4 py-3">
                         <option value="all"> All Actions</option>
                         <option value="created">Created</option>
                         <option value="updated">Updated</option>
@@ -159,11 +162,14 @@ const AdminRecentActivityPage = () => {
                         <option value="logout">Logout</option>
                     </select>
 
-                    <select value={viewStatus} onChange={(e) => { setViewStatus(e.target.value); setPage(1) }} className="border rounded-xl text-base px-4 py-3">
+                    <select value={viewStatus} onChange={(e) => { setViewStatus(e.target.value); setPage(1) }} className="border w-full rounded-xl text-base px-4 py-3">
                         <option value="all">All Status</option>
                         <option value="unread">Unread</option>
                         <option value="read">Read</option>
                     </select>
+
+                    <div onClick={()=>setReload(!reload)} className="p-2 flex items-center rounded-full cursor-pointer justify-center text-cyan-500 hover:text-cyan-600"><TbRefresh size={25} /></div>
+                    
                             
                 </div>
 

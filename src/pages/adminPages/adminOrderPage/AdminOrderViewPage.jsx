@@ -43,6 +43,8 @@ const AdminOrderViewPage = () => {
     if(error){ return <ErrorComponent/>}
     if(!order){return <PageNotFoundPage/>}
 
+    const payment = order.payment
+
   return (
     <div className='flex'>
     <AdminSideBar/>
@@ -57,7 +59,34 @@ const AdminOrderViewPage = () => {
         
         <div className='my-5 gap-3 grid grid-cols-3 '>
             <AdminOrderAmountComponent order={order} />
+
+            <div className=' w-full p-5 bg-white rounded-xl'>
+                <div className='mb-3 text-xl text-sky-800 '>Payment Details</div> 
+                <table className='border-separate border-spacing-3 text-lg '>
+                    <tbody>
+                        <tr>
+                            <td>Gateway</td>
+                            <td className=' capitalize'>: &nbsp; {payment?.gateway || "---"}</td>
+                        </tr>
+                        <tr>
+                            <td>Method &nbsp;&nbsp;</td>
+                            <td>: &nbsp; {payment?.method || "---"}</td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td>: &nbsp; {payment?.status || "---"}</td>
+                        </tr>
+                        <tr>
+                            <td>Transaction ID</td>
+                            <td>: &nbsp; {payment?.transaction_id || "---"}</td>
+                        </tr>
+                    </tbody>
+                </table>  
+            </div>
+
             <AdminOrderUserComponent user={order.user_id}/>
+
+
         </div>
     </div>
     </div>
